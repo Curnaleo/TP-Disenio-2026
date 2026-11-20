@@ -7,7 +7,7 @@ Sistema de gestión de evaluaciones de candidatos para puestos de trabajo. El re
 - **Backend:** generado con Spring Initializr. Todavía no hay funcionalidades del TP implementadas.
 - **Frontend:** carpeta creada; proyecto Next.js pendiente.
 - **Base de datos:** carpeta para scripts; configuración y servidor PostgreSQL pendientes.
-- **Documentación:** carpetas creadas para los entregables.
+- **Documentación:** diagramas y devoluciones del grupo 30 disponibles en [docs/README.md](docs/README.md).
 
 ## Stack
 
@@ -45,14 +45,19 @@ TP-Disenio-2026/
 │   └── scripts/             # Vacía
 ├── docs/
 │   ├── casos-de-uso/
+│   ├── der/                 # DER en PDF y PlantUML
 │   ├── diagramas/
-│   ├── der/
-│   └── entregas/
+│   │   ├── clases/          # Diagrama de clases en PDF y PlantUML
+│   │   └── secuencia/       # CU020, CU021 y CU025
+│   ├── entregas/
+│   │   ├── etapa-4/         # Devolución del docente
+│   │   └── etapa-5/         # Devolución del docente
+│   └── README.md           # Índice y observaciones pendientes
 ├── .gitignore
 └── README.md
 ```
 
-Las carpetas vacías contienen `.gitkeep` para que Git las conserve. No se han creado todavía `Dockerfile`, `docker-compose.yml` ni `frontend/package.json`.
+Las carpetas que permanecen vacías contienen `.gitkeep` para que Git las conserve. No se han creado todavía `Dockerfile`, `docker-compose.yml` ni `frontend/package.json`.
 
 ## Backend
 
@@ -87,5 +92,13 @@ Por ahora `application.properties` solo define `spring.application.name=evaluaci
 ## Alcance funcional del TP
 
 Autenticación; importación de candidatos; exportación de resultados; gestión de puestos, competencias, factores, preguntas y opciones; evaluación de candidatos; resolución de cuestionarios; reporte comparativo y orden de mérito.
+
+### Casos de uso a implementar
+
+- **CU025** — Evaluar a candidatos.
+- **CU020** — Gestionar preguntas.
+- **CU023** — Dar de alta pregunta.
+- **CU026** — Completar cuestionario.
+- **CU028** — Emitir orden de mérito.
 
 Según la última comunicación de la cátedra, la entrega final unificada es el **27/11/2026** y los coloquios de cierre posteriores son obligatorios. Durante la implementación, cada grupo debe mostrar sus avances de código en los espacios de consulta.
