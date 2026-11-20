@@ -1,356 +1,91 @@
-# Configuración del Entorno
+# TP Diseño de Sistemas 2026
 
-## Stack Tecnológico
+Sistema de gestión de evaluaciones de candidatos para puestos de trabajo. El repositorio contiene el proyecto inicial del backend y carpetas reservadas para el frontend, la base de datos y la documentación.
 
-### Backend
+## Estado actual
 
-| Componente | Versión |
-|------------|----------|
-| Java | 21 LTS |
-| Spring Boot | 3.5.x |
-| Maven | 3.9.x |
-| Spring Data JPA | Incluido en Spring Boot |
-| Spring Security | Incluido en Spring Boot |
-| Hibernate | Incluido en Spring Boot |
-| Lombok | Última estable |
+- **Backend:** generado con Spring Initializr. Todavía no hay funcionalidades del TP implementadas.
+- **Frontend:** carpeta creada; proyecto Next.js pendiente.
+- **Base de datos:** carpeta para scripts; configuración y servidor PostgreSQL pendientes.
+- **Documentación:** carpetas creadas para los entregables.
 
-### Frontend
+## Stack
 
-| Componente | Versión |
-|------------|----------|
-| Node.js | 22 LTS |
-| npm | 10.x |
-| Next.js | 15.x |
-| React | 19.x |
-| TypeScript | 5.x |
-| Tailwind CSS | 4.x |
+| Componente | Versión o estado |
+| --- | --- |
+| Java del proyecto | 21 (`pom.xml`) |
+| Spring Boot | 4.1.3 |
+| Maven Wrapper | Maven 3.10.1 (`backend/.mvn/wrapper/maven-wrapper.properties`) |
+| Persistencia y seguridad | Spring Data JPA, Spring Security y PostgreSQL Driver |
+| API y validación | Spring Web MVC y Validation |
+| Lombok | Gestionado por Spring Boot |
+| Frontend | Next.js, React y TypeScript: pendiente de crear |
+| Base de datos | PostgreSQL: pendiente de configurar |
 
-### Base de Datos
+El Java instalado en el equipo puede ser más reciente que Java 21; el proyecto está configurado para compilar con Java 21.
 
-| Componente | Versión |
-|------------|----------|
-| PostgreSQL | 17 |
-| pgAdmin | Última estable |
-
-### Herramientas
-
-| Componente | Versión |
-|------------|----------|
-| Git | 2.49+ |
-| Docker | 28+ |
-| Docker Compose | Última estable |
-
----
-
-# Estructura del Proyecto
+## Estructura actual
 
 ```text
-tp-diseno/
-│
+TP-Disenio-2026/
 ├── backend/
+│   ├── .mvn/wrapper/
 │   ├── src/
-│   ├── pom.xml
-│   └── Dockerfile
-│
+│   │   ├── main/java/com/capitalhumano/evaluaciones/
+│   │   │   └── EvaluacionesApplication.java
+│   │   ├── main/resources/application.properties
+│   │   └── test/java/com/capitalhumano/evaluaciones/
+│   │       └── EvaluacionesApplicationTests.java
+│   ├── mvnw
+│   ├── mvnw.cmd
+│   └── pom.xml
 ├── frontend/
-│   ├── src/
-│   ├── package.json
-│   └── Dockerfile
-│
+│   └── src/                 # Vacía, reservada para Next.js
 ├── database/
-│   ├── scripts/
-│   └── docker-compose.yml
-│
+│   └── scripts/             # Vacía
 ├── docs/
 │   ├── casos-de-uso/
 │   ├── diagramas/
 │   ├── der/
 │   └── entregas/
-│
+├── .gitignore
 └── README.md
 ```
 
----
-
-# Convenciones Generales
-
-## Java
-
-- JDK: 21
-- UTF-8 obligatorio
-- Tabulación: 4 espacios
-- Lenguaje: Inglés
-- Nombres de clases en PascalCase
-- Variables y métodos en camelCase
-
-Ejemplo:
-
-```java
-public class CuestionarioService {
-
-    public void generarCuestionario() {
-
-    }
-
-}
-```
-
----
-
-## TypeScript
-
-- Strict Mode habilitado
-- ESLint obligatorio
-- Prettier obligatorio
-
-```json
-{
-  "strict": true
-}
-```
-
----
-
-# Git
-
-## Rama principal
-
-```text
-main
-```
-
-## Desarrollo
-
-```text
-develop
-```
-
-## Features
-
-```text
-feature/gestion-preguntas
-feature/orden-merito
-feature/autenticacion
-```
-
-## Fixes
-
-```text
-fix/login
-fix/exportacion-csv
-```
-
----
-
-# Variables de Entorno
+Las carpetas vacías contienen `.gitkeep` para que Git las conserve. No se han creado todavía `Dockerfile`, `docker-compose.yml` ni `frontend/package.json`.
 
 ## Backend
 
-Archivo:
+Configuración de Spring Initializr:
 
-```text
-backend/.env
+- Maven, Java, Spring Boot 4.1.3, empaquetado Jar y configuración Properties.
+- Grupo: `com.capitalhumano`; artefacto: `evaluaciones`; paquete: `com.capitalhumano.evaluaciones`.
+- Dependencias: Spring Web, Spring Data JPA, Spring Security, Validation, Lombok y PostgreSQL Driver. El generador añadió también dependencias de prueba.
+
+Para ejecutar desde Windows, una vez configurada la conexión con PostgreSQL:
+
+```powershell
+cd backend
+.\mvnw.cmd spring-boot:run
 ```
 
-Ejemplo:
-
-```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=tpdisenio
-
-DB_USERNAME=postgres
-DB_PASSWORD=postgres
-
-SPRING_PROFILES_ACTIVE=dev
-```
-
----
-
-## Frontend
-
-Archivo:
-
-```text
-frontend/.env.local
-```
-
-```env
-NEXT_PUBLIC_API_URL=http://localhost:8080/api
-```
-
----
-
-# Configuración de PostgreSQL
-
-## Base de Datos
-
-```text
-tpdisenio
-```
-
-## Usuario
-
-```text
-postgres
-```
-
-## Password
-
-```text
-postgres
-```
-
----
-
-# application.properties
-
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/tpdisenio
-spring.datasource.username=postgres
-spring.datasource.password=postgres
-
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-
-spring.jpa.properties.hibernate.format_sql=true
-```
-
----
-
-# Docker
-
-## Base de Datos
-
-```yaml
-services:
-  postgres:
-
-    image: postgres:17
-
-    container_name: tp-postgres
-
-    restart: unless-stopped
-
-    environment:
-      POSTGRES_DB: tpdisenio
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-
-    ports:
-      - "5432:5432"
-
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-
-volumes:
-  postgres-data:
-```
-
----
-
-# Ejecución del Proyecto
-
-## Backend
+En Linux o macOS:
 
 ```bash
 cd backend
-mvn spring-boot:run
+./mvnw spring-boot:run
 ```
 
-La API quedará disponible en:
+Por ahora `application.properties` solo define `spring.application.name=evaluaciones`. Hay que configurar la conexión a la base de datos antes de esperar que arranque la aplicación con Spring Data JPA. Spring Security también protege las rutas por defecto hasta que se defina la autenticación del TP.
 
-```text
-http://localhost:8080
-```
+## Convenciones
 
----
+- Java: nombres de clases en PascalCase, variables y métodos en camelCase; archivos UTF-8.
+- Base de datos: relacional, según el enunciado del TP.
+- El código implementado debe respetar los diagramas y las especificaciones aprobadas.
 
-## Frontend
+## Alcance funcional del TP
 
-```bash
-cd frontend
+Autenticación; importación de candidatos; exportación de resultados; gestión de puestos, competencias, factores, preguntas y opciones; evaluación de candidatos; resolución de cuestionarios; reporte comparativo y orden de mérito.
 
-npm install
-
-npm run dev
-```
-
-Disponible en:
-
-```text
-http://localhost:3000
-```
-
----
-
-# Dependencias Backend
-
-## Spring Initializr
-
-Seleccionar:
-
-- Spring Web
-- Spring Data JPA
-- Spring Security
-- Validation
-- Lombok
-- PostgreSQL Driver
-
----
-
-# Dependencias Frontend
-
-Crear proyecto:
-
-```bash
-npx create-next-app@latest frontend \
-  --typescript \
-  --tailwind \
-  --eslint \
-  --src-dir \
-  --app
-```
-
----
-
-# Compatibilidad de Sistemas Operativos
-
-El proyecto debe funcionar en:
-
-- Windows 11
-- Ubuntu 24.04+
-- Arch Linux
-
-## Reglas
-
-NO hacer:
-
-```java
-"C:\\Users\\Juan\\archivo.txt"
-```
-
-Hacer:
-
-```java
-Paths.get("data", "archivo.txt")
-```
-
----
-
-# Entregables del TP
-
-El sistema debe contemplar las funcionalidades definidas en el enunciado:
-
-- Autenticación
-- Importación de candidatos
-- Exportación de resultados
-- Gestión de puestos
-- Gestión de competencias
-- Gestión de factores
-- Gestión de preguntas
-- Gestión de opciones de respuesta
-- Evaluación de candidatos
-- Completar cuestionarios
-- Reporte comparativo
-- Orden de mérito
+Según la última comunicación de la cátedra, la entrega final unificada es el **27/11/2026** y los coloquios de cierre posteriores son obligatorios. Durante la implementación, cada grupo debe mostrar sus avances de código en los espacios de consulta.
