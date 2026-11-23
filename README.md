@@ -6,7 +6,7 @@ Sistema de gestión de evaluaciones de candidatos para puestos de trabajo. El re
 
 - **Backend:** generado con Spring Initializr. Todavía no hay funcionalidades del TP implementadas.
 - **Frontend:** carpeta creada; proyecto Next.js pendiente.
-- **Base de datos:** carpeta para scripts; configuración y servidor PostgreSQL pendientes.
+- **Base de datos:** Se creo un docker que contiene la base de datos.
 - **Documentación:** diagramas y devoluciones del grupo 30 disponibles en [docs/README.md](docs/README.md).
 
 ## Stack
