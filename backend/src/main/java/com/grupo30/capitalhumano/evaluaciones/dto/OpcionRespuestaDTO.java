@@ -1,4 +1,4 @@
-package com.capitalhumano.evaluaciones.dto;
+package com.grupo30.capitalhumano.evaluaciones.dto;
 
 import java.util.List;
 

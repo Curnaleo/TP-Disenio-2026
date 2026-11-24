@@ -1,7 +1,7 @@
-package com.capitalhumano.evaluaciones.service;
+package com.grupo30.capitalhumano.evaluaciones.service;
 
 import java.util.List;
-import com.capitalhumano.evaluaciones.dto.OpcionRespuestaDTO;
+import com.grupo30.capitalhumano.evaluaciones.dto.OpcionRespuestaDTO;
 
 public interface OpcionRespuestaService {
 
