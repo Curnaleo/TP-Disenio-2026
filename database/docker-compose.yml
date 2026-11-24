@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
 
     environment:
-      POSTGRES_DB: tpdisenio
+      POSTGRES_DB: capital_humano
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
 
