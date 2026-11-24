@@ -1,6 +1,9 @@
 package com.grupo30.capitalhumano.evaluaciones.dto;
 
 import java.util.List;
+import lombok.*;
+
+@AllArgsConstructor
 
 public class OpcionRespuestaDTO{
 
