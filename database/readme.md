@@ -14,8 +14,10 @@ http://localhost:5050
 
 ## PostgreSQL
 
-Host: postgres
-Puerto: 5432
+Desde el backend o desde Windows: `127.0.0.1:5433`
+
+Desde pgAdmin en Docker: `postgres:5432`
+
 Usuario: postgres
 Password: postgres
-Base: tpdisenio
+Base: capital_humano
