@@ -30,5 +30,6 @@ frontend/.next/
 backend/.env
 frontend/.env.local
 .env
+.idea/
 .vscode/
 .sdkmanrc
