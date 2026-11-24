@@ -2,6 +2,9 @@ package com.grupo30.capitalhumano.evaluaciones.dto;
 
 import lombok.*;
 import java.util.List;
+import lombok.*;
+
+@AllArgsConstructor
 
 @Getter 
 @Setter
