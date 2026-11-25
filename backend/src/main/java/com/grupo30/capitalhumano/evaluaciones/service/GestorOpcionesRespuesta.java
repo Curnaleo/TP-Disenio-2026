@@ -10,15 +10,13 @@ import com.grupo30.capitalhumano.evaluaciones.dto.OpcionRespuestaDTO;
 import com.grupo30.capitalhumano.evaluaciones.entity.ItemOpcionRespuesta;
 import com.grupo30.capitalhumano.evaluaciones.entity.OpcionRespuesta;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
-// @RequiredArgsConstructor (EN ESTE CASO SE HIZO EL CONSTRUCTOR MANUAL PARA PRACTICAR :))
+@RequiredArgsConstructor
 public class GestorOpcionesRespuesta{
     
-    private final IOpcionRespuestaDAO repositorio;
-
-    public GestorOpcionesRespuesta(IOpcionRespuestaDAO repositorio) {
-        this.repositorio = repositorio;
-    }
+    private final IOpcionRespuestaDAO repositorio; // No hace falta @Autowired. Lombok genera un constructor que recibe IOpcionRespuestaDAO porque el campo es final
  
 	public List<OpcionRespuestaDTO> buscarOpciones(String nombre){
         List<OpcionRespuestaDTO> lista_salida= new ArrayList<>();
