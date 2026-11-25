@@ -1,0 +1,5 @@
+o CU020 - Gestionar Preguntas
+o CU023 - Dar de alta pregunta
+o CU025 - Evaluar a Candidatos
+o CU026 - Completar cuestionario
+o CU028 - Emitir orden de mérito
