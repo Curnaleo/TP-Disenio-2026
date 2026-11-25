@@ -23,7 +23,7 @@ public class PreguntaDTO {
     private String nombreCompetencia;
     private String codigoCompetencia;
     private String nombreFactor;
-    private Integer idFactor; // codigoFactor
+    private String codigoFactor;
     private Integer idOpcionRespuesta;
     private String nombreOpcionRespuesta;
     private List<OpcionPreguntaDTO> opcionesPregunta;

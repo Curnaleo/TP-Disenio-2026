@@ -9,7 +9,7 @@ public interface IFactorDAO {
 
     List<Factor> buscar(String comp, String nombre);
 
-    Optional<Factor> findById(int id);
+    Optional<Factor> findByCodigo(String codigo);
     
     void guardar(Factor factor);
 

@@ -48,9 +48,14 @@ public class GestorPreguntas {
         }
 
         // El factor debe pertenecer a la competencia seleccionada.
-        Factor factor = factorDAO.findById(preguntaDTO.getIdFactor())
+        String codigoFactor = preguntaDTO.getCodigoFactor();
+        if (codigoFactor == null || codigoFactor.isBlank()) {
+            throw new IllegalArgumentException("Falta el código del factor");
+        }
+
+        Factor factor = factorDAO.findByCodigo(codigoFactor)
             .orElseThrow(() -> new IllegalArgumentException(
-                "No existe el factor con ID " + preguntaDTO.getIdFactor()
+                "No existe el factor con código " + codigoFactor
             ));
 
         Competencia competencia = competenciaDAO.findByCodigo(preguntaDTO.getCodigoCompetencia())
@@ -60,7 +65,7 @@ public class GestorPreguntas {
 
         if (!(competencia.getCodigo().equals(factor.getCompetencia().getCodigo()))) {
             throw new IllegalArgumentException(
-                "El factor con ID " + preguntaDTO.getIdFactor()
+                "El factor con código " + codigoFactor
                     + " no pertenece a la competencia con código " + preguntaDTO.getCodigoCompetencia()
             );
         }
@@ -99,7 +104,7 @@ public class GestorPreguntas {
 
         // El CU22 deja el factor y la competencia en solo lectura.
         Factor factor = pregunta.getFactor();
-        if ((preguntaDTO.getIdFactor() != null && !factor.getId().equals(preguntaDTO.getIdFactor()))
+        if ((preguntaDTO.getCodigoFactor() != null && !factor.getCodigo().equals(preguntaDTO.getCodigoFactor()))
                 || (preguntaDTO.getCodigoCompetencia() != null
                     && !factor.getCompetencia().getCodigo().equals(preguntaDTO.getCodigoCompetencia()))) {
             throw new IllegalArgumentException("No se puede cambiar el factor ni la competencia de la pregunta");
