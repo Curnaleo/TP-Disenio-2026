@@ -1,8 +1,6 @@
 package com.grupo30.capitalhumano.evaluaciones.dto;
 import lombok.*;
 
-import lombok.*;
-
 @Getter 
 @Setter 
 @NoArgsConstructor
