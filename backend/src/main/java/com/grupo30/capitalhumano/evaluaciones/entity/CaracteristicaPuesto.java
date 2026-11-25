@@ -25,8 +25,7 @@ public class CaracteristicaPuesto {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(
-		name = "codigo_puesto",
-		referencedColumnName = "codigo",
+		name = "id_puesto",
 		nullable = false
 		)
 	private Puesto puesto;

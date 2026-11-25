@@ -12,13 +12,13 @@ public interface IPuestoDAO {
 		String empresa
 	);
 
-	Puesto findByCodigo(String codigo);
+	Puesto findById(int puestoId);
 	
 	void guardar(Puesto puesto);
 
 	void actualizar(Puesto puesto);
 
-	void eliminarLogico(String codigo);
+	void eliminarLogico(int puestoId);
 
-	boolean validarEnUso(String codigo);
+	boolean validarEnUso(int puestoId);
 }

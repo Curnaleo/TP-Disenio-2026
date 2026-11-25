@@ -24,20 +24,12 @@ public class PuestoRepository implements IPuestoDAO {
     }
 
     @Override
-    public Puesto findByCodigo(String codigo) {
-	List<Puesto> resultados =
-		entityManager.createQuery(
-			"SELECT p " +
-			"FROM Puesto p " +
-			"WHERE p.codigo = :codigo " +
-			"AND p.activo = true",
-			Puesto.class)
-		.setParameter("codigo", codigo)
-		.getResultList();
-
-	return resultados.isEmpty()
-		? null
-		: resultados.getFirst();
+    public Puesto findById(int puestoId) {
+        Puesto puesto = entityManager.find(Puesto.class, puestoId);
+        if (puesto == null || !Boolean.TRUE.equals(puesto.getActivo())) {
+            return null;
+        }
+        return puesto;
     }
 
     @Override
@@ -53,8 +45,8 @@ public class PuestoRepository implements IPuestoDAO {
     }
 
     @Override
-    public void eliminarLogico(String codigo) {
-        Puesto puesto = findByCodigo(codigo);
+    public void eliminarLogico(int puestoId) {
+        Puesto puesto = findById(puestoId);
 
         if (puesto != null) {
 	        puesto.setActivo(false);
@@ -62,7 +54,7 @@ public class PuestoRepository implements IPuestoDAO {
     }
 
     @Override
-    public boolean validarEnUso(String codigo) {
+    public boolean validarEnUso(int puestoId) {
         throw new UnsupportedOperationException("Validación de uso del puesto pendiente");
     }
 

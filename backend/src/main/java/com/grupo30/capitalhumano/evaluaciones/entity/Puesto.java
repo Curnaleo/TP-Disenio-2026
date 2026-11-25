@@ -19,7 +19,11 @@ import java.util.List;
 public class Puesto {
 
 	@Id
-	@Column(nullable = false, length = 20)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id_puesto")
+	private Integer puestoId;
+
+	@Column(nullable = false, unique = true, length = 20)
 	private String codigo;
 
 	@Column(nullable = false, unique = true, length = 100)
