@@ -25,8 +25,10 @@ public class GestorPreguntas {
 
         // findById(idOpcionRespuesta): Recupera la escala elegida para comprobar que siga activa 
         // y que el formulario haya enviado un peso para cada ítem.
-        OpcionRespuesta opcionRespuesta = opcionRespuestaDAO.findById(preguntaDTO.getIdOpcionRespuesta());
-        // VALIDAR QUE EXISTE?
+        OpcionRespuesta opcionRespuesta = opcionRespuestaDAO.findById(preguntaDTO.getIdOpcionRespuesta())
+            .orElseThrow(() -> new IllegalArgumentException(
+                "No existe la opción de respuesta con ID " + preguntaDTO.getIdOpcionRespuesta()
+            ));
 
         
 

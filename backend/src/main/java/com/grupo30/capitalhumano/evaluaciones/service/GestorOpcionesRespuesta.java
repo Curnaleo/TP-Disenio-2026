@@ -45,4 +45,59 @@ public class GestorOpcionesRespuesta{
         return lista_salida;
     }
 
+    public void altaOpcion(OpcionRespuestaDTO opcionDTO) {
+        
+        OpcionRespuesta opcion = new OpcionRespuesta(
+            opcionDTO.getId(), 
+            opcionDTO.getNombre(), 
+            opcionDTO.getDescripcion(), 
+            opcionDTO.getActivo(), 
+            null
+        );
+        
+        List<ItemOpcionRespuesta> listaI = new ArrayList<>();
+        for (ItemOpcionRespuestaDTO itemDTO : opcionDTO.getItems()) {
+            listaI.add(new ItemOpcionRespuesta(
+                null, 
+                itemDTO.getOrden(), 
+                itemDTO.getDescripcion(), 
+                opcion
+            ));
+        }
+        
+        opcion.setItems(listaI);
+
+        repositorio.guardar(opcion);
+    }
+    
+    public void modificarOpcion(OpcionRespuestaDTO opcionDTO){
+        OpcionRespuesta opcion = repositorio.findById(opcionDTO.getId())
+        .orElseThrow(() -> new IllegalArgumentException(
+            "No existe la opción con ID " + opcionDTO.getId()
+        ));
+
+        opcion.setNombre(opcionDTO.getNombre());
+        opcion.setDescripcion(opcionDTO.getDescripcion());
+        opcion.setActivo(opcionDTO.getActivo());
+
+        repositorio.actualizar(opcion);
+    }
+
+    public void bajaOpcion(Integer id){
+        OpcionRespuesta opcion = repositorio.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException(
+            "No existe la opción con ID " + id
+        ));
+
+        repositorio.eliminarLogico(id); // Ya se checkeo que exista
+    }
+
+    public boolean validarOpcionEnUso(Integer id){
+        OpcionRespuesta opcion = repositorio.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException(
+            "No existe la opción con ID " + id
+        ));
+
+        return opcion.getActivo();
+    }
 }
