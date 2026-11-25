@@ -12,12 +12,11 @@ public interface IOpcionRespuestaDAO extends JpaRepository<OpcionRespuesta, Inte
 		return findByNombreContainingIgnoreCase(nombre);
 	}
 
-
-	// OpcionRespuesta findById(Integer id);
-	// void guardar(OpcionRespuestaDTO dto);
-	// void actualizar(Integer id, OpcionRespuestaDTO dto);
-	// void eliminarLogico(Integer id);
-	// boolean validarEnUso(Integer id);
+	OpcionRespuesta findByID(Integer id); // Con la ID en mayuscula sino choca con libreria!
+	void guardar(OpcionRespuesta op);
+	void actualizar(OpcionRespuesta op);
+	void eliminarLogico(Integer id);
+	boolean validarEnUso(Integer id);
 
 
 	@EntityGraph(attributePaths = "items")
