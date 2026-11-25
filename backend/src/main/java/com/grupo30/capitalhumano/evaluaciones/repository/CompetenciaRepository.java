@@ -1,16 +1,15 @@
 package com.grupo30.capitalhumano.evaluaciones.repository;
 
-import com.grupo30.capitalhumano.evaluaciones.dao.ICompetenciaDAO;
-import com.grupo30.capitalhumano.evaluaciones.entity.Competencia;
-
-import jakarta.persistence.EntityManager;
-
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import com.grupo30.capitalhumano.evaluaciones.dao.ICompetenciaDAO;
+import com.grupo30.capitalhumano.evaluaciones.entity.Competencia;
+
+import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 
 @Repository
 @Transactional
