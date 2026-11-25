@@ -1,8 +1,13 @@
-package com.grupo30.capitalhumano.evaluaciones.controller;
+package com.grupo30.capitalhumano.evaluaciones.autenticacion.controller;
 
-import com.grupo30.capitalhumano.evaluaciones.dto.*;
-import com.grupo30.capitalhumano.evaluaciones.security.JwtTokenProvider;
-import com.grupo30.capitalhumano.evaluaciones.service.AutenticacionService;
+import com.grupo30.capitalhumano.evaluaciones.autenticacion.dto.AuthResponseDTO;
+import com.grupo30.capitalhumano.evaluaciones.autenticacion.dto.LoginCandidatoRequest;
+import com.grupo30.capitalhumano.evaluaciones.autenticacion.dto.LoginConsultorRequest;
+import com.grupo30.capitalhumano.evaluaciones.autenticacion.security.JwtTokenProvider;
+import com.grupo30.capitalhumano.evaluaciones.autenticacion.service.AutenticacionService;
+
+import com.grupo30.capitalhumano.evaluaciones.dto.CandidatoCuestionarioDTO;
+import com.grupo30.capitalhumano.evaluaciones.dto.UsuarioDTO;
 
 import jakarta.validation.Valid;
 

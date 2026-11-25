@@ -1,4 +1,4 @@
-package com.grupo30.capitalhumano.evaluaciones.security;
+package com.grupo30.capitalhumano.evaluaciones.autenticacion.security;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import tools.jackson.core.type.TypeReference;

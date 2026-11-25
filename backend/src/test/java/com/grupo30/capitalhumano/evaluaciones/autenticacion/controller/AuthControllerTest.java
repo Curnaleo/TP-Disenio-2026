@@ -1,13 +1,14 @@
-package com.grupo30.capitalhumano.evaluaciones.controller;
+package com.grupo30.capitalhumano.evaluaciones.autenticacion.controller;
+
+import com.grupo30.capitalhumano.evaluaciones.autenticacion.exception.AutenticacionException;
+import com.grupo30.capitalhumano.evaluaciones.autenticacion.security.JwtTokenProvider;
+import com.grupo30.capitalhumano.evaluaciones.autenticacion.service.AutenticacionService;
 
 import com.grupo30.capitalhumano.evaluaciones.dto.CandidatoCuestionarioDTO;
 import com.grupo30.capitalhumano.evaluaciones.dto.UsuarioDTO;
 import com.grupo30.capitalhumano.evaluaciones.entity.EstadoCuestionario;
 import com.grupo30.capitalhumano.evaluaciones.entity.TipoDocumento;
-import com.grupo30.capitalhumano.evaluaciones.exception.AutenticacionException;
 import com.grupo30.capitalhumano.evaluaciones.exception.GlobalExceptionHandler;
-import com.grupo30.capitalhumano.evaluaciones.security.JwtTokenProvider;
-import com.grupo30.capitalhumano.evaluaciones.service.AutenticacionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,4 +1,4 @@
-package com.grupo30.capitalhumano.evaluaciones.service;
+package com.grupo30.capitalhumano.evaluaciones.autenticacion.service;
 import com.grupo30.capitalhumano.evaluaciones.dto.CandidatoCuestionarioDTO;
 import com.grupo30.capitalhumano.evaluaciones.dto.UsuarioDTO;
 import com.grupo30.capitalhumano.evaluaciones.entity.TipoDocumento;

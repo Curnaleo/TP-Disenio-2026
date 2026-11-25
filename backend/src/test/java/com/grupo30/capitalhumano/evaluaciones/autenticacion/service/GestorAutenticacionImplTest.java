@@ -1,4 +1,7 @@
-package com.grupo30.capitalhumano.evaluaciones.service.impl;
+package com.grupo30.capitalhumano.evaluaciones.autenticacion.service;
+
+import com.grupo30.capitalhumano.evaluaciones.autenticacion.exception.AutenticacionException;
+import com.grupo30.capitalhumano.evaluaciones.autenticacion.ldap.LdapAuthService;
 
 import com.grupo30.capitalhumano.evaluaciones.dto.CandidatoCuestionarioDTO;
 import com.grupo30.capitalhumano.evaluaciones.dto.UsuarioDTO;
@@ -7,11 +10,9 @@ import com.grupo30.capitalhumano.evaluaciones.entity.Cuestionario;
 import com.grupo30.capitalhumano.evaluaciones.entity.EstadoCuestionario;
 import com.grupo30.capitalhumano.evaluaciones.entity.TipoDocumento;
 import com.grupo30.capitalhumano.evaluaciones.entity.Usuario;
-import com.grupo30.capitalhumano.evaluaciones.exception.AutenticacionException;
 import com.grupo30.capitalhumano.evaluaciones.repository.CandidatoRepository;
 import com.grupo30.capitalhumano.evaluaciones.repository.CuestionarioRepository;
 import com.grupo30.capitalhumano.evaluaciones.repository.UsuarioRepository;
-import com.grupo30.capitalhumano.evaluaciones.security.LdapAuthService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,5 +1,6 @@
-package com.grupo30.capitalhumano.evaluaciones.config;
-import com.grupo30.capitalhumano.evaluaciones.security.JwtAuthenticationFilter;
+package com.grupo30.capitalhumano.evaluaciones.autenticacion.config;
+
+import com.grupo30.capitalhumano.evaluaciones.autenticacion.security.JwtAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

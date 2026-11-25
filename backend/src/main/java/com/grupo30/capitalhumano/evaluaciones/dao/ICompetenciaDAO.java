@@ -1,8 +1,8 @@
 package com.grupo30.capitalhumano.evaluaciones.dao;
 
-import com.grupo30.capitalhumano.evaluaciones.entity.Competencia;
-
 import java.util.List;
+
+import com.grupo30.capitalhumano.evaluaciones.entity.Competencia;
 
 public interface ICompetenciaDAO {
 

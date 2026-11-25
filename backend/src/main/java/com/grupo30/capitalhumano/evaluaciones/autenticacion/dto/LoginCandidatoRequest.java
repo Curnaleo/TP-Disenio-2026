@@ -1,4 +1,4 @@
-package com.grupo30.capitalhumano.evaluaciones.dto;
+package com.grupo30.capitalhumano.evaluaciones.autenticacion.dto;
 import com.grupo30.capitalhumano.evaluaciones.entity.TipoDocumento;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

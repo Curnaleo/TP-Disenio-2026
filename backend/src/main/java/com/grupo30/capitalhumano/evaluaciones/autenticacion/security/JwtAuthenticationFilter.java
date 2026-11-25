@@ -1,4 +1,4 @@
-package com.grupo30.capitalhumano.evaluaciones.security;
+package com.grupo30.capitalhumano.evaluaciones.autenticacion.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

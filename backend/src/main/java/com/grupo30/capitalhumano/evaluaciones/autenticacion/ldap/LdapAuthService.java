@@ -1,4 +1,4 @@
-package com.grupo30.capitalhumano.evaluaciones.security;
+package com.grupo30.capitalhumano.evaluaciones.autenticacion.ldap;
 
 import lombok.extern.slf4j.Slf4j;
 

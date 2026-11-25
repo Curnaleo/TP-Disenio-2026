@@ -1,4 +1,4 @@
-package com.grupo30.capitalhumano.evaluaciones.security;
+package com.grupo30.capitalhumano.evaluaciones.autenticacion.security;
 
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.ObjectMapper;

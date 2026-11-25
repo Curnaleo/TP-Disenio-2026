@@ -1,4 +1,4 @@
-package com.grupo30.capitalhumano.evaluaciones.dto;
+package com.grupo30.capitalhumano.evaluaciones.autenticacion.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;

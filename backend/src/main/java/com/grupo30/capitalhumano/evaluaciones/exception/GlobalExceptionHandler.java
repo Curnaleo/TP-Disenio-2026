@@ -1,5 +1,7 @@
 package com.grupo30.capitalhumano.evaluaciones.exception;
 
+import com.grupo30.capitalhumano.evaluaciones.autenticacion.exception.AutenticacionException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
