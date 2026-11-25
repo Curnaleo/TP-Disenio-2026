@@ -25,22 +25,40 @@ public class PuestoRepository implements IPuestoDAO {
 
     @Override
     public Puesto findByCodigo(String codigo) {
-        throw new UnsupportedOperationException("Búsqueda de puesto por código pendiente");
+	List<Puesto> resultados =
+		entityManager.createQuery(
+			"SELECT p " +
+			"FROM Puesto p " +
+			"WHERE p.codigo = :codigo " +
+			"AND p.activo = true",
+			Puesto.class)
+		.setParameter("codigo", codigo)
+		.getResultList();
+
+	return resultados.isEmpty()
+		? null
+		: resultados.getFirst();
     }
 
     @Override
     public void guardar(Puesto puesto) {
-        // TODO: implementar el alta.
+        
+	entityManager.persist(puesto);
     }
 
     @Override
     public void actualizar(Puesto puesto) {
-        // TODO: implementar la actualización.
+        
+	    entityManager.merge(puesto);
     }
 
     @Override
     public void eliminarLogico(String codigo) {
-        // TODO: implementar la baja lógica.
+        Puesto puesto = findByCodigo(codigo);
+
+        if (puesto != null) {
+	        puesto.setActivo(false);
+	}
     }
 
     @Override
