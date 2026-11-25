@@ -33,11 +33,7 @@ public class CompetenciaRepository implements ICompetenciaDAO {
 
 	@Override
 	public void eliminarLogico(String codigo) {
-
-		Competencia competencia = findByCodigo(codigo);
-		
-		if(competencia != null)
-			competencia.setActivo(false);
+		findByCodigo(codigo).ifPresent(competencia -> competencia.setActivo(false));
 	}
 
 	@Override
@@ -79,8 +75,8 @@ public class CompetenciaRepository implements ICompetenciaDAO {
 		.getResultList();
 	        
 		return resultados.isEmpty()
-			? null
-			: resultados.getFirst();
+			? Optional.empty()
+			: Optional.of(resultados.getFirst());
 	}
 
 	@Override

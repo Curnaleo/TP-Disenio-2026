@@ -172,7 +172,7 @@ public class GestorPreguntas {
                 continue;
             }
 
-            if (factor.getId().equals(existente.getFactor().getId())
+            if (factor.getCodigo().equals(existente.getFactor().getCodigo())
                     && (existente.getNombre().equalsIgnoreCase(preguntaDTO.getNombre())
                         || existente.getTextoPregunta().equalsIgnoreCase(preguntaDTO.getTextoPregunta()))) {
                 throw new PreguntaDuplicadaException();
