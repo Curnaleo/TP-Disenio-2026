@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 // Implementación de {@link AutenticacionService} (GestorAutenticacion en el diagrama de clases).
 // Implementa el CU001 - Autenticar usuario para Consultores (LDAP) y Candidatos (Doc + Clave).
 
+@Service
+@RequiredArgsConstructor
 public class GestorAutenticacionImpl implements AutenticacionService {
 
     private static final int MAX_LEN_USUARIO = 15;

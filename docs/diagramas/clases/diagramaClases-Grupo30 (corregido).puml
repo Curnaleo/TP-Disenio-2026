@@ -180,9 +180,11 @@ class CandidatoGestionDTO <<dto>> {
 }
 
 class CandidatoCuestionarioDTO <<dto>> {
+  - idCuestionario : int
   - nroCandidato : int
   - apellido : String
   - nombre : String
+  - estado : EstadoCuestionario
 }
 
 class CandidatoOrdenMeritoDTO <<dto>> {
@@ -480,8 +482,7 @@ class FinalizarCuestionarios <<service>> {
 
 class CandidatoCSVAdapter <<service>> implements ICandidatoImportador {
   + importar(archivo: String) : List<Candidato>
-  - parsearCSV(archivo: String) : List<Map>
-  - mapearCandidato(fila: Map) : Candidato
+  - parsearCSV(archivo: String) : List  - mapearCandidato(fila: Map) : Candidato
 }
 
 class ExportadorResultadosCSV <<service>> {
@@ -745,6 +746,8 @@ UICompletarCuestionario ..> PreguntaExamenDTO : <<muestra>>
 UICompletarCuestionario ..> RespuestaCandidatoDTO : <<envia>>
 
 UIReportes ..> GestorReportes : <<usa>>
+UIReportes ..> GestorPuestos : <<usa>>
+UIReportes ..> PuestoDTO : <<muestra>>
 UIReportes ..> EvaluacionDTO : <<muestra>>
 UIReportes ..> ResultadoComparativoDTO : <<renderiza grafico>>
 UIReportes ..> CandidatoOrdenMeritoDTO : <<muestra grilla>>
@@ -760,6 +763,7 @@ Cuestionario ..> EstadoCuestionario : <<usa>>
 Candidato ..> TipoDocumento : <<usa>>
 Candidato ..> Genero : <<usa>>
 
+CandidatoCuestionarioDTO ..> EstadoCuestionario : <<usa>>
 CandidatoOrdenMeritoDTO ..> EstadoCuestionario : <<usa>>
 CandidatoGestionDTO ..> TipoDocumento : <<usa>>
 

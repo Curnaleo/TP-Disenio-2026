@@ -42,16 +42,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (jwtTokenProvider.validarToken(token)
                     && SecurityContextHolder.getContext().getAuthentication() == null) {
                 Map<String, Object> claims = jwtTokenProvider.extraerClaims(token);
-                String subject = String.valueOf(claims.get("sub"));
-                String role = String.valueOf(claims.get("role"));
-                UserDetails userDetails = User.withUsername(subject)
-                        .password("")
-                        .authorities(List.of(new SimpleGrantedAuthority("ROLE_" + role)))
-                        .build();
-                UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(userDetails, claims, userDetails.getAuthorities());
-                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                Object subObj = claims.get("sub");
+                Object roleObj = claims.get("role");
+                if (subObj != null && roleObj != null) {
+                    String subject = String.valueOf(subObj);
+                    String role = String.valueOf(roleObj);
+                    UserDetails userDetails = User.withUsername(subject)
+                            .password("")
+                            .authorities(List.of(new SimpleGrantedAuthority("ROLE_" + role)))
+                            .build();
+                    UsernamePasswordAuthenticationToken auth =
+                            new UsernamePasswordAuthenticationToken(userDetails, claims, userDetails.getAuthorities());
+                    auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                }
             }
         }
         filterChain.doFilter(request, response);
