@@ -1,31 +1,81 @@
 package com.grupo30.capitalhumano.evaluaciones.config;
-
+import com.grupo30.capitalhumano.evaluaciones.security.JwtAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
+import java.util.List;
 /**
- * Configuración de Spring Security para la aplicación.
- * Por ahora permite acceso a los endpoints de la API sin autenticación para facilitar
- * el desarrollo y las pruebas. Deberá actualizarse con JWT/LDAP cuando se implemente
- * el CU001 (Autenticar usuario).
+ * Configuración de Spring Security para la aplicación (CU001 - Autenticar usuario).
+ * Utiliza autenticación stateless mediante JWT con separación de roles CONSULTOR y CANDIDATO.
  */
-
-@Configuration 
-@EnableWebSecurity 
+@Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
 
 public class SecurityConfig {
 
-    @Bean // Configura la cadena de filtros de seguridad para la aplicación.
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception { // Configura la seguridad HTTP para la aplicación.
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @Value("${app.cors.allowed-origins:http://localhost:3000}")
+    private String allowedOrigins;
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Desactiva la protección CSRF (Cross-Site Request Forgery) para simplificar el desarrollo y las pruebas.
-            .authorizeHttpRequests(auth -> auth // Configura las reglas de autorización para las solicitudes HTTP.
-                .requestMatchers("/api/**").permitAll() // Permite el acceso a todos los endpoints de la API sin autenticación.
-                .anyRequest().authenticated() // Requiere autenticación para cualquier otra solicitud que no coincida con los patrones anteriores.
-            );
+            .cors(Customizer.withDefaults())
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                    response.getWriter().write("{\"status\":401,\"error\":\"Unauthorized\",\"mensaje\":\"Autenticación requerida.\"}");
+                })
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                    response.getWriter().write("{\"status\":403,\"error\":\"Forbidden\",\"mensaje\":\"No posee permisos para acceder a este recurso.\"}");
+                })
+            )
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/auth/consultor", "/api/auth/candidato", "/api/auth/logout").permitAll()
+                .requestMatchers("/api/auth/me").authenticated()
+                .requestMatchers("/api/cuestionario/**", "/api/cuestionarios/**").hasRole("CANDIDATO")
+                .requestMatchers("/api/**").hasRole("CONSULTOR")
+                .anyRequest().authenticated()
+            )
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        List<String> origins = Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList();
+        configuration.setAllowedOrigins(origins);
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/api/**", configuration);
+        return source;
     }
 }
