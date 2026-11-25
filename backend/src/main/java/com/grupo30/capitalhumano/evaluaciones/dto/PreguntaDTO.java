@@ -21,9 +21,9 @@ public class PreguntaDTO {
     private String descripcion;
     private Boolean activo;
     private String nombreCompetencia;
-    private Integer idCompetencia;
+    private String codigoCompetencia;
     private String nombreFactor;
-    private Integer idFactor;
+    private String codigoFactor;
     private Integer idOpcionRespuesta;
     private String nombreOpcionRespuesta;
     private List<OpcionPreguntaDTO> opcionesPregunta;

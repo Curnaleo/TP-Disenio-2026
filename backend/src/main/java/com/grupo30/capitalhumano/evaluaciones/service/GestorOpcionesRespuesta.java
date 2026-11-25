@@ -10,6 +10,7 @@ import com.grupo30.capitalhumano.evaluaciones.dto.OpcionRespuestaDTO;
 import com.grupo30.capitalhumano.evaluaciones.entity.ItemOpcionRespuesta;
 import com.grupo30.capitalhumano.evaluaciones.entity.OpcionRespuesta;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -46,6 +47,9 @@ public class GestorOpcionesRespuesta{
     }
 
     public void altaOpcion(OpcionRespuestaDTO opcionDTO) {
+        if (opcionDTO.getItems() == null) {
+            throw new IllegalArgumentException("La escala debe tener al menos dos ítems");
+        }
         
         OpcionRespuesta opcion = new OpcionRespuesta(
             opcionDTO.getId(), 
@@ -57,6 +61,9 @@ public class GestorOpcionesRespuesta{
         
         List<ItemOpcionRespuesta> listaI = new ArrayList<>();
         for (ItemOpcionRespuestaDTO itemDTO : opcionDTO.getItems()) {
+            if (itemDTO == null) {
+                throw new IllegalArgumentException("Cada ítem de la escala debe tener un orden");
+            }
             listaI.add(new ItemOpcionRespuesta(
                 null, 
                 itemDTO.getOrden(), 
@@ -65,16 +72,21 @@ public class GestorOpcionesRespuesta{
             ));
         }
         
+        validarItems(listaI);
         opcion.setItems(listaI);
 
         repositorio.guardar(opcion);
     }
     
+    @Transactional
     public void modificarOpcion(OpcionRespuestaDTO opcionDTO){
         OpcionRespuesta opcion = repositorio.findById(opcionDTO.getId())
         .orElseThrow(() -> new IllegalArgumentException(
             "No existe la opción con ID " + opcionDTO.getId()
         ));
+
+        // La modificación conserva los ítems existentes de la escala.
+        validarItems(opcion.getItems());
 
         opcion.setNombre(opcionDTO.getNombre());
         opcion.setDescripcion(opcionDTO.getDescripcion());
@@ -99,5 +111,25 @@ public class GestorOpcionesRespuesta{
         ));
 
         return opcion.getActivo();
+    }
+
+    // Funciones auxiliares
+    private void validarItems(List<ItemOpcionRespuesta> items) {
+        // Una escala debe tener al menos dos ítems.
+        if (items == null || items.size() < 2) {
+            throw new IllegalArgumentException("La escala debe tener al menos dos ítems");
+        }
+
+        // Cada ítem debe tener un orden distinto dentro de la escala.
+        List<Integer> ordenes = new ArrayList<>();
+        for (ItemOpcionRespuesta item : items) {
+            if (item == null || item.getOrden() == null) {
+                throw new IllegalArgumentException("Cada ítem de la escala debe tener un orden");
+            }
+            if (ordenes.contains(item.getOrden())) {
+                throw new IllegalArgumentException("El orden " + item.getOrden() + " está repetido en la escala");
+            }
+            ordenes.add(item.getOrden());
+        }
     }
 }

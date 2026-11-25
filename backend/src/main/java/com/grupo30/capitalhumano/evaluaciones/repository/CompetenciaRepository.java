@@ -1,6 +1,7 @@
 package com.grupo30.capitalhumano.evaluaciones.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,7 +66,7 @@ public class CompetenciaRepository implements ICompetenciaDAO {
 	}
 
 	@Override
-	public Competencia findByCodigo(String codigo) {
+	public Optional<Competencia> findByCodigo(String codigo) {
 
 		List<Competencia> resultados =
 		entityManager.createQuery(

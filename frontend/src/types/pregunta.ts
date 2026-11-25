@@ -9,7 +9,7 @@ export interface PreguntaDTO{
     nombreCompetencia: string;
     idCompetencia: number;
     nombreFactor: string;
-    idFactor: number;
+    codigoFactor: string;
     idOpcionRespuesta: number;
     nombreOpcionRespuesta: string;
     opcionesPregunta: OpcionPreguntaDTO[];
