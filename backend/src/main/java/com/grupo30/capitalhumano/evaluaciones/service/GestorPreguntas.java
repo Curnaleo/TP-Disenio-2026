@@ -7,11 +7,13 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
+import com.grupo30.capitalhumano.evaluaciones.dao.ICompetenciaDAO;
 import com.grupo30.capitalhumano.evaluaciones.dao.IFactorDAO;
 import com.grupo30.capitalhumano.evaluaciones.dao.IOpcionRespuestaDAO;
 import com.grupo30.capitalhumano.evaluaciones.dao.IPreguntaDAO;
 import com.grupo30.capitalhumano.evaluaciones.dto.OpcionPreguntaDTO;
 import com.grupo30.capitalhumano.evaluaciones.dto.PreguntaDTO;
+import com.grupo30.capitalhumano.evaluaciones.entity.Competencia;
 import com.grupo30.capitalhumano.evaluaciones.entity.Factor;
 import com.grupo30.capitalhumano.evaluaciones.entity.ItemOpcionRespuesta;
 import com.grupo30.capitalhumano.evaluaciones.entity.OpcionPregunta;
@@ -27,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class GestorPreguntas {
     private final IPreguntaDAO repositorio;
     private final IFactorDAO factorDAO;
+    private final ICompetenciaDAO competenciaDAO;
     private final IOpcionRespuestaDAO opcionRespuestaDAO;
     
     // public List<PreguntaDTO> buscarPreguntas(String competencia, String factor, String nombre){
@@ -67,10 +70,17 @@ public class GestorPreguntas {
 
         // Crea pregunta y la vincula a la escala
         
+        // VERIFICO QUE EL FACTOR EXISTA
         Factor factor= factorDAO.findById(preguntaDTO.getIdFactor())
             .orElseThrow(() -> new IllegalArgumentException(
                 "No existe el factor con ID " + preguntaDTO.getIdFactor()
         ));
+        // VERIFICO QUE CORRESPONDA CON LA COMPETENCIA SELECCIONADA
+        Competencia competencia= competenciaDAO.findByCodigo(preguntaDTO.getCodigoCompetencia())
+            .orElseThrow(() -> new IllegalArgumentException(
+                "No existe la competencia con código " + preguntaDTO.getCodigoCompetencia()
+        ));
+
 
         Pregunta nuevaPregunta= new Pregunta(
             null, // Segun el chat se lo asigna la BDD 
@@ -127,9 +137,69 @@ public class GestorPreguntas {
         repositorio.guardar(nuevaPregunta);
     }
     
-    // public void modificarPregunta(PreguntaDTO preguntaDTO)
+    public void modificarPregunta(PreguntaDTO preguntaDTO){
+
+        // Buscamos pregunta por ID (debe existir)
+        Pregunta pregunta = repositorio.findById(preguntaDTO.getIdPregunta())
+            .orElseThrow(() -> new IllegalArgumentException(
+                "No existe la pregunta con ID " + preguntaDTO.getIdPregunta()
+        ));
+
+        pregunta.setId(null);
+        pregunta.setNombre(preguntaDTO.getNombre());
+        pregunta.setTextoPregunta(preguntaDTO.getTextoPregunta());
+        pregunta.setDescripcion(preguntaDTO.getDescripcion());
+        pregunta.setActivo(preguntaDTO.getActivo());
+
+        Factor factor = factorDAO.findById(preguntaDTO.getIdFactor())
+        .orElseThrow(() -> new IllegalArgumentException(
+            "No existe el factor con ID " + preguntaDTO.getIdFactor()
+        ));
+
+        OpcionRespuesta opcionRespuesta= opcionRespuestaDAO.findById(preguntaDTO.getIdOpcionRespuesta())
+        .orElseThrow(() -> new IllegalArgumentException(
+            "No existe la opción de respuesta con ID " + preguntaDTO.getIdOpcionRespuesta()
+        ));
+
+        List<OpcionPregunta> opcionesPregunta = new ArrayList<>();
+        for (OpcionPreguntaDTO opDTO : preguntaDTO.getOpcionesPregunta()) {
+            Integer orden = opDTO.getOrden();
+
+            if (orden == null) {
+                throw new IllegalArgumentException("Falta el orden del ítem");
+            }
+
+            ItemOpcionRespuesta item = opcionRespuesta.getItems().stream() // GRACIAS POR TANTO CHAT <3
+                .filter(itemEscala -> orden.equals(itemEscala.getOrden()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                    "El ítem con orden " + orden + " no pertenece a la escala seleccionada"
+                ));
+            
+            opcionesPregunta.add(new OpcionPregunta(
+            opDTO.getIdOpcionPregunta(), 
+            opDTO.getPonderacion(), 
+            pregunta, 
+            item));
+        }
+
+        pregunta.setFactor(factor); 
+        pregunta.setOpcionRespuesta(opcionRespuesta);
+        pregunta.setOpcionesPregunta(opcionesPregunta);
+
+        repositorio.actualizar(pregunta);
+    }
     
-    // public void bajaPregunta(Integer id)
+    public void bajaPregunta(Integer id){
+        // Buscamos pregunta por ID (debe existir)
+        repositorio.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException(
+                "No existe la pregunta con ID " + id
+        ));
+
+        repositorio.eliminarLogico(id);
+
+    }
     
     // public PreguntaDTO generarConIA(CompetenciaDTO compDTO, FactorDTO factDTO) 
 
