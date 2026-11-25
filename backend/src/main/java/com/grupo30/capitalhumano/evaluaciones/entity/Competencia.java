@@ -17,10 +17,6 @@ import java.util.List;
 public class Competencia {
 
     @Id 
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
-    @Column(name = "id_competencia")
-    private Integer id;
-
     @Column(nullable = false, unique = true, length = 20)
     private String codigo;
 

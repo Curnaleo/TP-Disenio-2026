@@ -31,7 +31,9 @@ public class Pregunta {
     private Boolean activo = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_factor", nullable = false)
+    @JoinColumn(name = "codigo_factor", 
+    	referencedColumnName = "codigo", 
+	nullable = false)
     private Factor factor;
 
     @ManyToOne(fetch = FetchType.LAZY)

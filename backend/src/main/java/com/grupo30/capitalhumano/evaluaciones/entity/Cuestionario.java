@@ -50,4 +50,11 @@ public class Cuestionario {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nro_candidato", nullable = false)
     private Candidato candidato;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(
+	        name = "id_evaluacion",
+		        nullable = false
+		   )
+	private Evaluacion evaluacion;
 }

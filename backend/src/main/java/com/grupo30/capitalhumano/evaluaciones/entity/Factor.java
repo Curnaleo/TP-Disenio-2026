@@ -16,10 +16,6 @@ import lombok.*;
 public class Factor {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_factor")
-    private Integer id;
-
     @Column(nullable = false, unique = true, length = 20)
     private String codigo;
 
@@ -36,7 +32,7 @@ public class Factor {
     private Boolean activo = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_competencia", nullable = false)
+    @JoinColumn(name = "codigo_competencia", referencedColumnName = "codigo", nullable = false)
     private Competencia competencia;
 
     @OneToMany(mappedBy = "factor", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -47,5 +47,20 @@ public class Evaluacion {
 		nullable = false
 	)
 	private Puesto puesto;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(
+		name = "id_usuario",
+		referencedColumnName = "id_usuario",
+		nullable = false
+	)
+	private Usuario usuario;
 
+	@OneToMany(
+		mappedBy = "evaluacion",
+		cascade = CascadeType.ALL,
+		orphanRemoval = true
+	)
+	private List<Cuestionario> cuestionarios =
+		new ArrayList<>();
 }
