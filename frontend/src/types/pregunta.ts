@@ -5,9 +5,9 @@ export interface PreguntaDTO{
     nombre: string;
     textoPregunta: string;
     descripcion: string | null;
-    activo: boolean;
+    activo: boolean | null;
     nombreCompetencia: string;
-    idCompetencia: number;
+    codigoCompetencia: string;
     nombreFactor: string;
     codigoFactor: string;
     idOpcionRespuesta: number;
