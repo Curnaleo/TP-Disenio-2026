@@ -2,6 +2,7 @@ package com.grupo30.capitalhumano.evaluaciones.service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import com.grupo30.capitalhumano.evaluaciones.dao.IBloquePreguntasDAO;
 import com.grupo30.capitalhumano.evaluaciones.dao.IConfiguracionSistemaDAO;
 import com.grupo30.capitalhumano.evaluaciones.dao.ICuestionarioDAO;
 import com.grupo30.capitalhumano.evaluaciones.dao.IPreguntaCuestionarioDAO;
+import com.grupo30.capitalhumano.evaluaciones.dto.OpcionPreguntaDTO;
 import com.grupo30.capitalhumano.evaluaciones.dto.PreguntaExamenDTO;
 import com.grupo30.capitalhumano.evaluaciones.dto.RespuestaCandidatoDTO;
 import com.grupo30.capitalhumano.evaluaciones.entity.BloquePreguntas;
@@ -18,6 +20,9 @@ import com.grupo30.capitalhumano.evaluaciones.entity.CaracteristicaPuesto;
 import com.grupo30.capitalhumano.evaluaciones.entity.Competencia;
 import com.grupo30.capitalhumano.evaluaciones.entity.Cuestionario;
 import com.grupo30.capitalhumano.evaluaciones.entity.EstadoCuestionario;
+import com.grupo30.capitalhumano.evaluaciones.entity.Factor;
+import com.grupo30.capitalhumano.evaluaciones.entity.ItemOpcionRespuesta;
+import com.grupo30.capitalhumano.evaluaciones.entity.OpcionPregunta;
 import com.grupo30.capitalhumano.evaluaciones.entity.Pregunta;
 import com.grupo30.capitalhumano.evaluaciones.entity.PreguntaCuestionario;
 import com.grupo30.capitalhumano.evaluaciones.entity.Puesto;
@@ -34,7 +39,7 @@ public class GestorCuestionario {
     private final IConfiguracionSistemaDAO configuracionSistemaDAO;
 
     @Transactional(noRollbackFor = PlazoInicioVencidoException.class)
-    public void iniciarCuestionario(int cuestionarioId) {
+    public int iniciarCuestionario(int cuestionarioId) {
         Cuestionario cuestionario = cuestionarioDAO.findById(cuestionarioId)
         .orElseThrow(() -> new IllegalArgumentException(
                 "No existe cuestionario con ID " + cuestionarioId
@@ -54,22 +59,27 @@ public class GestorCuestionario {
             case EN_PROCESO -> {
                 verificarTiempoParaCompletar(cuestionario);
 
-                // Ya tiene sus preguntas asignadas. El flujo retoma el bloque pendiente.
-
                 // 1.C El actor ya había ingresado a completar el cuestionario previamente
-
-                /*
-                    1.A.1 El sistema recupera de la base de datos el cuestionario que está en proceso
-                    de llenado por parte del usuario y se posiciona en el bloque que aún no ha sido respondido.
-                    1.A.2 El CU continúa por el paso 5.
-                */
+                return primerBloquePendiente(cuestionario);
             }
             case ACTIVO -> {
                 verificarPlazoParaIniciar(cuestionario);
                 prepararCuestionario(cuestionario);
+                return 0; // Arranca desde el primer bloque
             }
         }
+        return 0; // CAMBIAR
+    }
 
+    private int primerBloquePendiente(Cuestionario cuestionario) {
+        List<BloquePreguntas> bloques = bloquePreguntasDAO
+            .recuperarBloquesPorCuestionario(cuestionario.getIdCuestionario());
+
+        return bloques.stream()
+            .filter(b -> Boolean.FALSE.equals(b.getCompletado()))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("No hay bloques pendientes"))
+            .getNroBloque();
     }
 
     private void verificarPlazoParaIniciar(Cuestionario cuestionario) {
@@ -164,17 +174,54 @@ public class GestorCuestionario {
         cuestionario.setFechaHoraInicio(LocalDateTime.now());
         cuestionario.setEstado(EstadoCuestionario.EN_PROCESO);
 
-        cuestionarioDAO.guardar(cuestionario);
+        cuestionarioDAO.actualizar(cuestionario);
     }
 
     public List<PreguntaExamenDTO> recuperarBloque(int cuestionarioId, int nroBloque) {
-        throw new UnsupportedOperationException("Pendiente de implementar");
+        List<BloquePreguntas> bloques= bloquePreguntasDAO.recuperarBloquesPorCuestionario(cuestionarioId);
+        
+        BloquePreguntas bloque= bloques.stream()
+            .filter(b -> b.getNroBloque().equals(nroBloque))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("No existe ese bloque con nro" + nroBloque)
+        );
+
+        // obtengo preguntas de bloque..
+        List<PreguntaCuestionario> preguntasBloque= preguntaCuestionarioDAO.recuperarPorBloque(bloque.getIdBloque());
+        
+        List<PreguntaExamenDTO> resultado = new ArrayList<>();
+
+        for (PreguntaCuestionario asignada : preguntasBloque) {
+            Pregunta pregunta = asignada.getPregunta();
+            List<OpcionPreguntaDTO> opciones = new ArrayList<>();
+
+            for (OpcionPregunta opcion : pregunta.getOpcionesPregunta()) {
+                ItemOpcionRespuesta item = opcion.getItemOpcionRespuesta();
+
+                opciones.add(OpcionPreguntaDTO.builder()
+                    .idOpcionPregunta(opcion.getId())
+                    .orden(item.getOrden())
+                    .descripcion(item.getDescripcion())
+                    .build()
+                );
+            }
+
+            resultado.add(PreguntaExamenDTO.builder()
+                .idPregCuest(asignada.getIdPregCuest())
+                .nroOrden(asignada.getNroOrden())
+                .textoPregunta(pregunta.getTextoPregunta())
+                .descripcion(pregunta.getDescripcion())
+                .opciones(opciones)
+                .build());
+        }
+
+        return resultado;
     }
 
     public void guardarBloque(int cuestionarioId, List<RespuestaCandidatoDTO> respuestas) {
         throw new UnsupportedOperationException("Pendiente de implementar");
     }
-
+    
     public void calcularPuntaje(int cuestionarioId) {
         throw new UnsupportedOperationException("Pendiente de implementar");
     }
@@ -192,6 +239,23 @@ public class GestorCuestionario {
     }
 
     private List<Pregunta> seleccionarPreguntasAleatorias(List<Competencia> competencias) {
-        throw new UnsupportedOperationException("Pendiente de implementar");
+
+        List<Pregunta> seleccionadas = new ArrayList<>();
+
+        for (Competencia comp : competencias) {
+            for(Factor fact : comp.getFactores()){
+                List<Pregunta> activas = fact.getPreguntas().stream()
+                .filter(p -> Boolean.TRUE.equals(p.getActivo())).toList();
+                
+                if(activas.size() >= 2){
+                    Collections.shuffle(activas);
+                    seleccionadas.add(activas.get(0));
+                    seleccionadas.add(activas.get(1));
+                }
+            }
+        }
+
+        Collections.shuffle(seleccionadas);
+        return seleccionadas;
     }
 }
