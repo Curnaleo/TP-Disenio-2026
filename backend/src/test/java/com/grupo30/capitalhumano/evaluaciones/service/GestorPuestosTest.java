@@ -2,6 +2,7 @@ package com.grupo30.capitalhumano.evaluaciones.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -63,6 +64,14 @@ class GestorPuestosTest {
 		assertThat(dto.getCantidadCandidatos()).isEqualTo(3);
 		assertThat(dto.getEvaluacionesCompletas()).isEqualTo(2);
 		assertThat(dto.getCaracteristicas()).hasSize(1);
+	}
+
+	@Test
+	void cu008_busquedaConCriteriosSinCoincidenciasDevuelveListaVacia() {
+		when(puestoDAO.buscar("P999", null, "EMPRESA")).thenReturn(List.of());
+
+		assertThat(gestorPuestos.buscarPuestos("P999", null, "EMPRESA")).isEmpty();
+		verifyNoInteractions(cuestionarioDAO);
 	}
 
 	@Test

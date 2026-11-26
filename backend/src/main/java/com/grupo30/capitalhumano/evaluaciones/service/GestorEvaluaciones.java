@@ -76,27 +76,4 @@ public class GestorEvaluaciones {
 		return candidatosConCuestionario;
 	}
 
-	@Transactional(readOnly = true)
-	public List<CandidatoGestionDTO> 
-		validarCandidatosActivos(
-		List<CandidatoGestionDTO> candidatos) {
-
-		List<CandidatoGestionDTO> 
-			candidatosConCuestionario = 
-			new ArrayList<>();
-
-		for (CandidatoGestionDTO candidato : candidatos) {
-
-		Optional<Cuestionario> cuestionario =
-			cuestionarioDAO.buscarActivoPorCandidato(
-				candidato.getNroCandidato()
-			);
-
-		if (cuestionario.isPresent()) {
-			candidatosConCuestionario.add(candidato);
-			}
-		}
-
-		return candidatosConCuestionario;
-	}
 }

@@ -71,8 +71,19 @@ class GestorAutenticacionImplTest {
     }
 
     @Test
+    void cu001_consultorConLongitudesMaximasPuedeAutenticarse() {
+        String usuario = "A".repeat(15);
+        String clave = "X".repeat(20);
+        when(ldapAuthService.autenticar(usuario, clave)).thenReturn(true);
+        when(usuarioRepository.buscarPorUser(usuario)).thenReturn(Optional.of(
+                Usuario.builder().idUsuario(1).nombre(usuario).activo(true).build()));
+
+        assertThat(gestorAutenticacion.autenticarConsultor(usuario, clave).getNombre()).isEqualTo(usuario);
+    }
+
+    @Test
     void autenticarConsultor_conUsuarioMayorA15Caracteres_lanzaExcepcion() {
-        assertThatThrownBy(() -> gestorAutenticacion.autenticarConsultor("USUARIO_MUY_LARGO_16", "admin123"))
+        assertThatThrownBy(() -> gestorAutenticacion.autenticarConsultor("A".repeat(16), "admin123"))
                 .isInstanceOf(AutenticacionException.class)
                 .hasMessage("El usuario o la contraseña no son válidos");
 
