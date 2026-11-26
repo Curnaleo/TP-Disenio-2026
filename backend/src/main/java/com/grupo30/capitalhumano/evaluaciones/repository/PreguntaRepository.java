@@ -140,4 +140,25 @@ public class PreguntaRepository implements IPreguntaDAO {
 
 		return preguntas;
 	}
+
+	@Override
+	public List<Pregunta> buscarActivasPorFactor(
+        String codigoFactor) {
+
+	    return entityManager.createQuery(
+	            """
+	            SELECT p
+	            FROM Pregunta p
+	            WHERE p.activo = true
+	            AND p.factor.codigo = :codigoFactor
+	            ORDER BY p.nombre
+	            """,
+	            Pregunta.class
+	    )
+	    .setParameter(
+	            "codigoFactor",
+	            codigoFactor
+	    )
+	    .getResultList();
+	}
 }
