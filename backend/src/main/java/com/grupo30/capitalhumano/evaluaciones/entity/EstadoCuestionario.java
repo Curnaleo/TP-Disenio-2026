@@ -5,5 +5,5 @@ public enum EstadoCuestionario {
     EN_PROCESO,
     COMPLETO,
     INCOMPLETO,
-    SIN_COMPLETAR
+    SIN_CONTESTAR
 }

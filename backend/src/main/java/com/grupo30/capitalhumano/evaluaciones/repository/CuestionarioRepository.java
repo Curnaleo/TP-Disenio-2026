@@ -93,7 +93,27 @@ public class CuestionarioRepository implements ICuestionarioDAO {
 
 	@Override
 	public List<Cuestionario> listarPorPuestoYEvaluacion(Integer idPuesto, Integer idEvaluacion) {
+		StringBuilder jpql = new StringBuilder("""
+			SELECT q
+			FROM Cuestionario q
+			JOIN FETCH q.candidato c
+			JOIN FETCH q.evaluacion e
+			WHERE e.puesto.puestoId = :idPuesto
+			AND e.activo = true
+			AND c.eliminado = false
+			""");
 
-		throw new UnsupportedOperationException();
+		if (idEvaluacion != null) { // Acepta null para listar todos los cuestionarios de un puesto
+			jpql.append("AND e.id = :idEvaluacion ");
+		}
+
+		var query = entityManager.createQuery(jpql.toString(), Cuestionario.class)
+			.setParameter("idPuesto", idPuesto);
+
+		if (idEvaluacion != null) {
+			query.setParameter("idEvaluacion", idEvaluacion);
+		}
+
+		return query.getResultList();
 	}
 }
