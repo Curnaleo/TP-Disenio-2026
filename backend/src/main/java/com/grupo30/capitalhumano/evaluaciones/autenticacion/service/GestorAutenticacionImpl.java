@@ -9,9 +9,9 @@ import com.grupo30.capitalhumano.evaluaciones.entity.Candidato;
 import com.grupo30.capitalhumano.evaluaciones.entity.Cuestionario;
 import com.grupo30.capitalhumano.evaluaciones.entity.TipoDocumento;
 import com.grupo30.capitalhumano.evaluaciones.entity.Usuario;
-import com.grupo30.capitalhumano.evaluaciones.repository.CandidatoRepository;
-import com.grupo30.capitalhumano.evaluaciones.repository.CuestionarioRepository;
-import com.grupo30.capitalhumano.evaluaciones.repository.UsuarioRepository;
+import com.grupo30.capitalhumano.evaluaciones.dao.ICandidatoDAO;
+import com.grupo30.capitalhumano.evaluaciones.dao.ICuestionarioDAO;
+import com.grupo30.capitalhumano.evaluaciones.dao.IUsuarioDAO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,9 +31,9 @@ public class GestorAutenticacionImpl implements AutenticacionService {
     private static final String MSG_ERROR_CONSULTOR = "El usuario o la contraseña no son válidos";
     private static final String MSG_ERROR_CANDIDATO = "Los datos ingresados no son válidos o no existe un cuestionario para el Candidato";
     
-    private final UsuarioRepository usuarioRepository;
-    private final CandidatoRepository candidatoRepository;
-    private final CuestionarioRepository cuestionarioRepository;
+    private final IUsuarioDAO usuarioRepository;
+    private final ICandidatoDAO candidatoRepository;
+    private final ICuestionarioDAO cuestionarioRepository;
     private final LdapAuthService ldapAuthService;
 
     @Override

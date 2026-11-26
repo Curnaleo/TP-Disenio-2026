@@ -1,18 +1,49 @@
 package com.grupo30.capitalhumano.evaluaciones.repository;
 
-import com.grupo30.capitalhumano.evaluaciones.entity.Usuario;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
-
+import java.util.List;
 import java.util.Optional;
 
-// Repositorio para Usuario (corresponde a IUsuarioDAO del diagrama de clases).
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.grupo30.capitalhumano.evaluaciones.dao.IUsuarioDAO;
+import com.grupo30.capitalhumano.evaluaciones.entity.Usuario;
+
+import jakarta.persistence.EntityManager;
+
+import lombok.RequiredArgsConstructor;
 
 @Repository
-public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
-    @Query("SELECT u FROM Usuario u WHERE UPPER(u.nombre) = UPPER(:user)")
-    Optional<Usuario> buscarPorUser(@Param("user") String user);
+@Transactional
+@RequiredArgsConstructor
+public class UsuarioRepository implements IUsuarioDAO {
+
+	private final EntityManager entityManager;
+
+	@Override
+	public Optional<Usuario> buscarPorUser(String user) {
+
+		List<Usuario> resultados =
+			entityManager.createQuery(
+				"SELECT u " +
+				"FROM Usuario u " +
+				"WHERE UPPER(u.nombre) = UPPER(:user) " +
+				"AND u.activo = true",
+				Usuario.class)
+			.setParameter("user", user)
+			.getResultList();
+
+		return resultados.isEmpty()
+			? Optional.empty()
+			: Optional.of(resultados.getFirst());
+	}
+
+	@Override
+	public Optional<Usuario> findById(Integer id) {
+
+		Usuario usuario =
+			entityManager.find(Usuario.class, id);
+
+		return Optional.ofNullable(usuario);
+	}
 }
