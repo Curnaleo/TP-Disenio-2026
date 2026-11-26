@@ -18,41 +18,89 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OpcionRespuestaRepository implements IOpcionRespuestaDAO {
 
-	    private final EntityManager entityManager;
+	private final EntityManager entityManager;
 
-	        @Override
-		    public List<OpcionRespuesta> buscarOpciones(String nombre) {
-			            throw new UnsupportedOperationException(
-						                    "Busqueda de opciones pendiente");
-				        }
+	@Override
+	public List<OpcionRespuesta> buscarOpciones(String nombre) {
 
-		    @Override
-		        public Optional<OpcionRespuesta> findById(Integer id) {
-				        throw new UnsupportedOperationException(
-							                "Busqueda por id pendiente");
-					    }
+		if (nombre == null || nombre.isBlank()) {
 
-		        @Override
-			    public void guardar(OpcionRespuesta opcion) {
-				            throw new UnsupportedOperationException(
-							                    "Alta de opcion pendiente");
-					        }
+			return entityManager.createQuery(
+				"SELECT o " +
+				"FROM OpcionRespuesta o " +
+				"WHERE o.activo = true " +
+				"ORDER BY o.nombre",
+				OpcionRespuesta.class)
+			.getResultList();
+		}
 
-			    @Override
-			        public void actualizar(OpcionRespuesta opcion) {
-					        throw new UnsupportedOperationException(
-								                "Modificacion de opcion pendiente");
-						    }
+		return entityManager.createQuery(
+			"SELECT o " +
+			"FROM OpcionRespuesta o " +
+			"WHERE o.activo = true " +
+			"AND UPPER(o.nombre) " +
+			"LIKE UPPER(:nombre) " +
+			"ORDER BY o.nombre",
+			OpcionRespuesta.class)
+		.setParameter(
+			"nombre",
+			"%" + nombre + "%")
+		.getResultList();
+	}
 
-			        @Override
-				    public void eliminarLogico(Integer id) {
-					            throw new UnsupportedOperationException(
-								                    "Baja logica pendiente");
-						        }
+	@Override
+	public Optional<OpcionRespuesta> findById(Integer id) {
 
-				    @Override
-				        public boolean validarEnUso(Integer id) {
-						        throw new UnsupportedOperationException(
-									                "Validacion de uso pendiente");
-							    }
+		OpcionRespuesta opcion =
+			entityManager.find(
+				OpcionRespuesta.class,
+				id
+			);
+
+		if (opcion == null || !Boolean.TRUE.equals( opcion.getActivo())) {
+			
+			return Optional.empty();
+		}
+
+		return Optional.of(opcion);
+	}
+		    
+
+	@Override
+	public void guardar(OpcionRespuesta opcion) {
+
+		    entityManager.persist(opcion);
+	}
+
+	@Override
+	public void actualizar(OpcionRespuesta opcion) {
+
+		    entityManager.merge(opcion);
+	}
+
+	@Override
+	public void eliminarLogico(Integer id) {
+
+		findById(id)
+		.ifPresent(
+			opcion -> opcion.setActivo(false)
+		);
+	}
+
+	@Override
+	public boolean validarEnUso(Integer id) {
+
+		Long cantidad =
+			entityManager.createQuery(
+				"SELECT COUNT(p) " +
+				"FROM Pregunta p " +
+				"WHERE p.opcionRespuesta.id = :id " +
+				"AND p.activo = true",
+				Long.class)
+			.setParameter("id", id)
+			.getSingleResult();
+
+		return cantidad > 0;
+	}
+
 }
