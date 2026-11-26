@@ -23,6 +23,7 @@ const OPCIONES_CONSULTOR: OpcionMenu[] = [
   {
     titulo: "Orden de mérito",
     descripcion: "Emitir el orden de mérito de un puesto (CU028)",
+    href: "/consultores/orden-merito",
   },
 ];
 
