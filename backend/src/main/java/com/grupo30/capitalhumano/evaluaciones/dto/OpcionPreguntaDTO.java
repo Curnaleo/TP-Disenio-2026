@@ -17,5 +17,4 @@ public class OpcionPreguntaDTO {
     private Integer orden;
     private String descripcion;
     private Double ponderacion;
-    private ItemOpcionRespuestaDTO referenciaTexto;
 }
