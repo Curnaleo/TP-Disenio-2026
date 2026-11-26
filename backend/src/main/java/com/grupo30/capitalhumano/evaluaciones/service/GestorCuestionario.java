@@ -1,6 +1,7 @@
 package com.grupo30.capitalhumano.evaluaciones.service;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -13,10 +14,13 @@ import com.grupo30.capitalhumano.evaluaciones.dao.IPreguntaCuestionarioDAO;
 import com.grupo30.capitalhumano.evaluaciones.dto.PreguntaExamenDTO;
 import com.grupo30.capitalhumano.evaluaciones.dto.RespuestaCandidatoDTO;
 import com.grupo30.capitalhumano.evaluaciones.entity.BloquePreguntas;
+import com.grupo30.capitalhumano.evaluaciones.entity.CaracteristicaPuesto;
 import com.grupo30.capitalhumano.evaluaciones.entity.Competencia;
 import com.grupo30.capitalhumano.evaluaciones.entity.Cuestionario;
 import com.grupo30.capitalhumano.evaluaciones.entity.EstadoCuestionario;
 import com.grupo30.capitalhumano.evaluaciones.entity.Pregunta;
+import com.grupo30.capitalhumano.evaluaciones.entity.PreguntaCuestionario;
+import com.grupo30.capitalhumano.evaluaciones.entity.Puesto;
 import com.grupo30.capitalhumano.evaluaciones.exception.PlazoInicioVencidoException;
 
 import lombok.RequiredArgsConstructor;
@@ -116,9 +120,51 @@ public class GestorCuestionario {
     }
 
     private void prepararCuestionario(Cuestionario cuestionario) {
-        List<BloquePreguntas> bloques= bloquePreguntasDAO.recuperarBloquesPorCuestionario(cuestionario.getIdCuestionario());
+        /*
+        El sistema recupera el cuestionario y recupera las competencias que serán
+        evaluadas. Por cada competencia recupera los factores asociados a las
+        mismas y por cada factor (que disponga de al menos 2 preguntas),
+        recupera las preguntas, con sus respectivas opciones de respuestas.
+        */
 
+        Puesto puesto = cuestionario.getEvaluacion().getPuesto();
+        List<Competencia> competencias = new ArrayList<>();
 
+        for (CaracteristicaPuesto caracteristica : puesto.getCaracteristicas()) {
+            competencias.add(caracteristica.getCompetencia());
+        }
+
+        List<Pregunta> preguntas = seleccionarPreguntasAleatorias(competencias);
+        
+        int preguntasPorBloque = 2; // Recuperar de la BDD
+        int nroBloque = 1;
+
+        for (int inicio = 0; inicio < preguntas.size(); inicio += preguntasPorBloque) {
+            int fin = Math.min(inicio + preguntasPorBloque, preguntas.size());
+
+            BloquePreguntas bloque = BloquePreguntas.builder()
+                .cuestionario(cuestionario)
+                .nroBloque(nroBloque)
+                .build();
+
+            bloquePreguntasDAO.guardar(bloque);
+
+            for (int i = inicio; i < fin; i++) {
+                PreguntaCuestionario preguntaCuestionario = PreguntaCuestionario.builder()
+                    .bloque(bloque)
+                    .pregunta(preguntas.get(i))
+                    .nroOrden(i + 1)
+                    .build();
+
+                preguntaCuestionarioDAO.guardar(preguntaCuestionario);
+            }
+
+            nroBloque++;
+        }  
+        cuestionario.setFechaHoraInicio(LocalDateTime.now());
+        cuestionario.setEstado(EstadoCuestionario.EN_PROCESO);
+
+        cuestionarioDAO.guardar(cuestionario);
     }
 
     public List<PreguntaExamenDTO> recuperarBloque(int cuestionarioId, int nroBloque) {
