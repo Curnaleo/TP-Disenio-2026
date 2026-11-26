@@ -33,44 +33,81 @@ public class GestorPreguntas {
     private final IOpcionRespuestaDAO opcionRespuestaDAO;
     private final AuditoriaBajas auditoria;
     
-    @Transactional
-    public List<PreguntaDTO> buscarPreguntas(String competencia, String factor, String nombre) {
-        // El CU020 requiere al menos un criterio para buscar.
-        if (!StringUtils.hasText(competencia) && !StringUtils.hasText(factor) && !StringUtils.hasText(nombre)) {
-            throw new IllegalArgumentException("Ingresá al menos un criterio de búsqueda");
-        }
+    @Transactional(readOnly = true)
+    public List<PreguntaDTO> buscarPreguntas(
+			String competencia,
+			String factor,
+			String nombre) {
 
-        List<Pregunta> preguntas = repositorio.buscarPreguntas(competencia, factor, nombre);
+	        List<Pregunta> preguntas =
+			repositorio.buscarPreguntas(
+				competencia,
+				factor,
+				nombre);
 
-        List<PreguntaDTO> preguntasDTO = new ArrayList<>();
-        for (Pregunta p : preguntas) {
-            preguntasDTO.add(new PreguntaDTO(
-                p.getId(),
-                p.getNombre(),
-                p.getTextoPregunta(),
-                p.getDescripcion(),
-                p.getActivo(),
-                p.getFactor().getCompetencia().getNombre(),
-                p.getFactor().getCompetencia().getCodigo(),
-                p.getFactor().getNombre(),
-                p.getFactor().getCodigo(),
-                p.getOpcionRespuesta().getId(),
-                p.getOpcionRespuesta().getNombre(),
-                p.getOpcionesPregunta().stream()
-                    .map(op -> new OpcionPreguntaDTO(
-                        op.getId(),
-                        op.getItemOpcionRespuesta().getOrden(),
-                        op.getItemOpcionRespuesta().getDescripcion(),
-                        op.getPonderacion()
-                    ))
-                    .sorted(Comparator.comparing(OpcionPreguntaDTO::getOrden))
-                    .toList()
-            ));
-        }
+		List<PreguntaDTO> resultado = new ArrayList<>();
 
-        return preguntasDTO;
+		for (Pregunta pregunta : preguntas) {
+			resultado.add(mapToDTO(pregunta));
+		}
+
+		return resultado;
+	}
+
+	private PreguntaDTO mapToDTO(Pregunta pregunta) {
+
+		List<OpcionPreguntaDTO> opcionesDTO = new ArrayList<>();
+
+		if (pregunta.getOpcionesPregunta() != null) {
+
+			for (OpcionPregunta opcion : pregunta.getOpcionesPregunta()) {
+
+				opcionesDTO.add(
+					OpcionPreguntaDTO.builder()
+				        	.idOpcionPregunta(opcion.getId())
+				.orden(opcion.getItemOpcionRespuesta().getOrden())
+				.descripcion(
+					opcion.getItemOpcionRespuesta()
+					.getDescripcion()
+					)
+				.ponderacion(opcion.getPonderacion())
+				.build()
+				);
+			}
+		}
+
+		return PreguntaDTO.builder()
+			.idPregunta(pregunta.getId())
+			.nombre(pregunta.getNombre())
+			.textoPregunta(pregunta.getTextoPregunta())
+			.descripcion(pregunta.getDescripcion())
+			.activo(pregunta.getActivo())
+			.codigoFactor(
+				pregunta.getFactor().getCodigo()
+			)
+			.nombreFactor(
+				pregunta.getFactor().getNombre()
+			)
+			.codigoCompetencia(
+				pregunta.getFactor()
+				.getCompetencia()
+				.getCodigo()
+			)
+			.nombreCompetencia(
+				pregunta.getFactor()
+				.getCompetencia()
+				.getNombre()
+			)
+			.idOpcionRespuesta(
+				pregunta.getOpcionRespuesta().getId()
+			)
+			.nombreOpcionRespuesta(
+				pregunta.getOpcionRespuesta().getNombre()
+			)
+			.opcionesPregunta(opcionesDTO)
+			.build();
     }
-    
+        
     @Transactional
     public void altaPregunta(PreguntaDTO preguntaDTO) throws PreguntaDuplicadaException {
         validarDatosPregunta(preguntaDTO, true);

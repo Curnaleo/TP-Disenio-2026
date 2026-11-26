@@ -108,4 +108,24 @@ public class FactorRepository implements IFactorDAO {
 			factor -> factor.setActivo(false)
 		);
 	}
+
+	@Override
+	public List<Factor> buscarPorCompetencia(
+		String codigoCompetencia) {
+
+		return entityManager.createQuery(
+			"""
+			SELECT f
+			FROM Factor f
+			WHERE f.activo = true
+			AND f.competencia.codigo = :codigoCompetencia
+			ORDER BY f.nroOrden
+			""",
+			Factor.class)
+			.setParameter(
+				"codigoCompetencia",
+				codigoCompetencia
+				)
+			.getResultList();
+	}
 }

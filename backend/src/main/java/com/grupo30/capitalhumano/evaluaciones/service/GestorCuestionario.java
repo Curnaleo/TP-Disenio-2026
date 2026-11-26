@@ -53,7 +53,7 @@ public class GestorCuestionario {
             case EstadoCuestionario.INCOMPLETO -> {
                 throw new IllegalStateException("El cuestionario quedó incompleto y ya no se puede continuar");
             }
-            case EstadoCuestionario.SIN_COMPLETAR -> {
+            case EstadoCuestionario.SIN_CONTESTAR -> {
                 throw new PlazoInicioVencidoException();
             }
             case EN_PROCESO -> {
@@ -105,7 +105,7 @@ public class GestorCuestionario {
             .atStartOfDay();
         LocalDateTime ahora = LocalDateTime.now();
         if (!ahora.isBefore(vencimiento)) {
-            cuestionario.setEstado(EstadoCuestionario.SIN_COMPLETAR);
+            cuestionario.setEstado(EstadoCuestionario.SIN_CONTESTAR);
             cuestionario.setFechaHoraFin(ahora);
             cuestionarioDAO.actualizar(cuestionario);
             throw new PlazoInicioVencidoException();

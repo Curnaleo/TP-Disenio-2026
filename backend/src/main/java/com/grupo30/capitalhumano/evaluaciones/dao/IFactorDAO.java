@@ -16,4 +16,6 @@ public interface IFactorDAO {
     void actualizar(Factor factor);
 
     void eliminarLogico(String codigo);
+
+    List<Factor> buscarPorCompetencia(String codigoCompetencia);
 }
