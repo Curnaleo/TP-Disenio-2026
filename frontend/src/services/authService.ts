@@ -11,6 +11,7 @@ export async function loginConsultor(req: LoginConsultorRequest): Promise<AuthRe
         method: "POST",
         body: JSON.stringify(req),
     });
+
     guardarToken(resp.token);
     return resp;
 }
@@ -20,6 +21,7 @@ export async function loginCandidato(req: LoginCandidatoRequest): Promise<AuthRe
         method: "POST",
         body: JSON.stringify(req),
     });
+
     guardarToken(resp.token);
     return resp;
 }
@@ -27,7 +29,9 @@ export async function loginCandidato(req: LoginCandidatoRequest): Promise<AuthRe
 export async function cerrarSesion(): Promise<void> {
     try {
         await apiFetch<void>("/auth/logout", { method: "POST" });
+
     } finally {
         borrarToken(); // aunque falle el back, se cierra la sesión en el front
+
     }
 }
