@@ -11,5 +11,6 @@ public class ItemOpcionRespuestaDTO {
 
 	private Integer orden;
 	private String descripcion;
+	private Integer ordenOriginal;
 
 }
