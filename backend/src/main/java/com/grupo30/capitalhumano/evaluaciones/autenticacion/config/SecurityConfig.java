@@ -52,8 +52,17 @@ public class SecurityConfig {
                     response.getWriter().write("{\"status\":403,\"error\":\"Forbidden\",\"mensaje\":\"No posee permisos para acceder a este recurso.\"}");
                 })
             )
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/consultor", "/api/auth/candidato", "/api/auth/logout").permitAll()
+	.authorizeHttpRequests(auth -> auth
+        .requestMatchers(
+		"/api/auth/consultor", 
+		"/api/auth/candidato", 
+		"/api/auth/logout", 
+		"/swagger-ui.html",
+		"/swagger-ui/**",
+		"/v3/api-docs/**",
+		"/v3/api-docs.yaml"
+		)
+	.permitAll()
                 .requestMatchers("/api/auth/me").authenticated()
                 .requestMatchers("/api/cuestionario/**", "/api/cuestionarios/**").hasRole("CANDIDATO")
                 .requestMatchers("/api/**").hasRole("CONSULTOR")
