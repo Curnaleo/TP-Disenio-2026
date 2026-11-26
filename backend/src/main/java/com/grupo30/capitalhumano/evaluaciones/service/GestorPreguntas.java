@@ -1,9 +1,12 @@
 package com.grupo30.capitalhumano.evaluaciones.service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.grupo30.capitalhumano.evaluaciones.dao.ICompetenciaDAO;
 import com.grupo30.capitalhumano.evaluaciones.dao.IFactorDAO;
@@ -19,7 +22,6 @@ import com.grupo30.capitalhumano.evaluaciones.entity.OpcionRespuesta;
 import com.grupo30.capitalhumano.evaluaciones.entity.Pregunta;
 import com.grupo30.capitalhumano.evaluaciones.exception.PreguntaDuplicadaException;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service 
@@ -29,14 +31,50 @@ public class GestorPreguntas {
     private final IFactorDAO factorDAO;
     private final ICompetenciaDAO competenciaDAO;
     private final IOpcionRespuestaDAO opcionRespuestaDAO;
+    private final AuditoriaBajas auditoria;
     
-    // public List<PreguntaDTO> buscarPreguntas(String competencia, String factor, String nombre){
+    @Transactional
+    public List<PreguntaDTO> buscarPreguntas(String competencia, String factor, String nombre) {
+        // El CU020 requiere al menos un criterio para buscar.
+        if (!StringUtils.hasText(competencia) && !StringUtils.hasText(factor) && !StringUtils.hasText(nombre)) {
+            throw new IllegalArgumentException("Ingresá al menos un criterio de búsqueda");
+        }
 
-    //     return null;
-    // } 
+        List<Pregunta> preguntas = repositorio.buscarPreguntas(competencia, factor, nombre);
+
+        List<PreguntaDTO> preguntasDTO = new ArrayList<>();
+        for (Pregunta p : preguntas) {
+            preguntasDTO.add(new PreguntaDTO(
+                p.getId(),
+                p.getNombre(),
+                p.getTextoPregunta(),
+                p.getDescripcion(),
+                p.getActivo(),
+                p.getFactor().getCompetencia().getNombre(),
+                p.getFactor().getCompetencia().getCodigo(),
+                p.getFactor().getNombre(),
+                p.getFactor().getCodigo(),
+                p.getOpcionRespuesta().getId(),
+                p.getOpcionRespuesta().getNombre(),
+                p.getOpcionesPregunta().stream()
+                    .map(op -> new OpcionPreguntaDTO(
+                        op.getId(),
+                        op.getItemOpcionRespuesta().getOrden(),
+                        op.getItemOpcionRespuesta().getDescripcion(),
+                        op.getPonderacion()
+                    ))
+                    .sorted(Comparator.comparing(OpcionPreguntaDTO::getOrden))
+                    .toList()
+            ));
+        }
+
+        return preguntasDTO;
+    }
     
     @Transactional
     public void altaPregunta(PreguntaDTO preguntaDTO) throws PreguntaDuplicadaException {
+        validarDatosPregunta(preguntaDTO, true);
+
         // La escala seleccionada debe existir y estar activa.
         OpcionRespuesta opcionRespuesta = opcionRespuestaDAO.findById(preguntaDTO.getIdOpcionRespuesta())
             .orElseThrow(() -> new IllegalArgumentException(
@@ -49,16 +87,13 @@ public class GestorPreguntas {
 
         // El factor debe pertenecer a la competencia seleccionada.
         String codigoFactor = preguntaDTO.getCodigoFactor();
-        if (codigoFactor == null || codigoFactor.isBlank()) {
-            throw new IllegalArgumentException("Falta el código del factor");
-        }
-
         Factor factor = factorDAO.findByCodigo(codigoFactor)
             .orElseThrow(() -> new IllegalArgumentException(
                 "No existe el factor con código " + codigoFactor
             ));
 
-        Competencia competencia = competenciaDAO.findByCodigo(preguntaDTO.getCodigoCompetencia())
+        String codigoCompetencia = preguntaDTO.getCodigoCompetencia();
+        Competencia competencia = competenciaDAO.findByCodigo(codigoCompetencia)
             .orElseThrow(() -> new IllegalArgumentException(
                 "No existe la competencia con código " + preguntaDTO.getCodigoCompetencia()
             ));
@@ -78,7 +113,7 @@ public class GestorPreguntas {
             preguntaDTO.getNombre(),
             preguntaDTO.getTextoPregunta(),
             preguntaDTO.getDescripcion(),
-            preguntaDTO.getActivo(),
+            preguntaDTO.getActivo() == null ? true : preguntaDTO.getActivo(),
             factor,
             opcionRespuesta,
             null
@@ -92,11 +127,9 @@ public class GestorPreguntas {
 
     @Transactional
     public void modificarPregunta(PreguntaDTO preguntaDTO) {
-        // Verifica que la pregunta a modificar tenga ID y exista.
-        if (preguntaDTO == null || preguntaDTO.getIdPregunta() == null) {
-            throw new IllegalArgumentException("Falta el ID de la pregunta");
-        }
+        validarDatosPregunta(preguntaDTO, false);
 
+        // La pregunta a modificar debe existir.
         Pregunta pregunta = repositorio.findById(preguntaDTO.getIdPregunta())
             .orElseThrow(() -> new IllegalArgumentException(
                 "No existe la pregunta con ID " + preguntaDTO.getIdPregunta()
@@ -111,10 +144,6 @@ public class GestorPreguntas {
         }
 
         // Verifica que la escala seleccionada exista y esté activa.
-        if (preguntaDTO.getIdOpcionRespuesta() == null) {
-            throw new IllegalArgumentException("Falta seleccionar una escala de respuesta");
-        }
-
         OpcionRespuesta opcionRespuesta = opcionRespuestaDAO.findById(preguntaDTO.getIdOpcionRespuesta())
             .orElseThrow(() -> new IllegalArgumentException(
                 "No existe la opción de respuesta con ID " + preguntaDTO.getIdOpcionRespuesta()
@@ -134,9 +163,6 @@ public class GestorPreguntas {
         pregunta.setNombre(preguntaDTO.getNombre());
         pregunta.setTextoPregunta(preguntaDTO.getTextoPregunta());
         pregunta.setDescripcion(preguntaDTO.getDescripcion());
-        if (preguntaDTO.getActivo() != null) {
-            pregunta.setActivo(preguntaDTO.getActivo());
-        }
         pregunta.setOpcionRespuesta(opcionRespuesta);
 
         actualizarOpciones(pregunta.getOpcionesPregunta(), opcionesValidadas);
@@ -144,20 +170,64 @@ public class GestorPreguntas {
         repositorio.actualizar(pregunta);
     }
 
-    public void bajaPregunta(Integer id){
-        // Buscamos pregunta por ID (debe existir)
+    @Transactional
+    public void bajaPregunta(Integer id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Falta el ID de la pregunta");
+        }
+
+        // La pregunta debe existir y seguir activa cuando se realiza la baja.
         repositorio.findById(id)
             .orElseThrow(() -> new IllegalArgumentException(
                 "No existe la pregunta con ID " + id
         ));
 
         repositorio.eliminarLogico(id);
-
+        auditoria.registrar("Pregunta", id);
     }
 
     // public PreguntaDTO generarConIA(CompetenciaDTO compDTO, FactorDTO factDTO)
 
     // Funciones auxiliares
+    private void validarDatosPregunta(PreguntaDTO pregunta, boolean alta) {
+        if (pregunta == null) {
+            throw new IllegalArgumentException("Faltan los datos de la pregunta");
+        }
+
+        // Reúne los errores de los campos antes de consultar el repositorio.
+        List<String> errores = new ArrayList<>();
+        validarTexto(pregunta.getNombre(), "Nombre de la pregunta", 150, true, errores);
+        validarTexto(pregunta.getTextoPregunta(), "Texto de la pregunta", 500, true, errores);
+        validarTexto(pregunta.getDescripcion(), "Descripción", 255, false, errores);
+
+        // La competencia y el factor se eligen en el alta. En la edición son de solo lectura.
+        validarTexto(pregunta.getCodigoCompetencia(), "Código de competencia", 20, alta, errores);
+        validarTexto(pregunta.getCodigoFactor(), "Código de factor", 20, alta, errores);
+        if (!alta && pregunta.getIdPregunta() == null) {
+            errores.add("Falta el ID de la pregunta");
+        }
+
+        // Las dos operaciones requieren una escala y sus ponderaciones.
+        if (pregunta.getIdOpcionRespuesta() == null) {
+            errores.add("Falta seleccionar una escala de respuesta");
+        }
+        if (pregunta.getOpcionesPregunta() == null || pregunta.getOpcionesPregunta().isEmpty()) {
+            errores.add("Faltan las ponderaciones");
+        }
+
+        if (!errores.isEmpty()) {
+            throw new IllegalArgumentException(String.join(". ", errores));
+        }
+    }
+
+    private void validarTexto(String valor, String campo, int maximo, boolean obligatorio, List<String> errores) {
+        if (obligatorio && (valor == null || valor.isBlank())) {
+            errores.add("Falta completar " + campo);
+        } else if (valor != null && valor.length() > maximo) {
+            errores.add(campo + " admite hasta " + maximo + " caracteres");
+        }
+    }
+
     private void validarDuplicado(PreguntaDTO preguntaDTO, Factor factor, Integer idExcluido) {
         // Sin filtro de nombre para detectar también textos repetidos.
         List<Pregunta> coincidencias = repositorio.buscarPreguntas(
@@ -172,10 +242,14 @@ public class GestorPreguntas {
                 continue;
             }
 
-            if (factor.getCodigo().equals(existente.getFactor().getCodigo())
-                    && (existente.getNombre().equalsIgnoreCase(preguntaDTO.getNombre())
-                        || existente.getTextoPregunta().equalsIgnoreCase(preguntaDTO.getTextoPregunta()))) {
-                throw new PreguntaDuplicadaException();
+            if (!factor.getCodigo().equals(existente.getFactor().getCodigo())) {
+                continue;
+            }
+            if (existente.getNombre().equalsIgnoreCase(preguntaDTO.getNombre())) {
+                throw new PreguntaDuplicadaException("nombre");
+            }
+            if (existente.getTextoPregunta().equalsIgnoreCase(preguntaDTO.getTextoPregunta())) {
+                throw new PreguntaDuplicadaException("texto");
             }
         }
     }
