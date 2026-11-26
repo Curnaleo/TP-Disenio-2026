@@ -2,6 +2,7 @@ package com.grupo30.capitalhumano.evaluaciones.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -141,6 +142,41 @@ class GestorReportesTest {
 		assertThat(orden.get(3).getEstadoCuestionario()).isEqualTo(EstadoCuestionario.INCOMPLETO);
 		assertThat(orden.get(3).getPuntajeObtenido()).isNull();
 		assertThat(orden.get(3).getFechaFin()).isNull();
+	}
+
+	@Test
+	void cu028_puestoSinEvaluacionesDevuelveListaVacia() {
+		Puesto puesto = new Puesto(10, "P001", "ANALISTA", "Desc", "EMPRESA", true, List.of());
+		when(puestoDAO.findById(10)).thenReturn(puesto);
+		when(evaluacionDAO.listarPorPuesto(10)).thenReturn(List.of());
+
+		assertThat(gestorReportes.listarEvaluaciones(10)).isEmpty();
+		verifyNoInteractions(cuestionarioDAO);
+	}
+
+	@Test
+	void cu028_soloIncluyeCuestionariosDeEvaluacionesSeleccionadasYAceptaElMinimoExacto() {
+		Competencia competencia = new Competencia("LID", "LIDERAZGO", "Desc", true, List.of());
+		Puesto puesto = new Puesto(10, "P001", "ANALISTA", "Desc", "EMPRESA", true, List.of());
+		puesto.setCaracteristicas(List.of(new CaracteristicaPuesto(1, 7.0, puesto, competencia)));
+		Candidato candidato = Candidato.builder()
+			.tipoDocumento(TipoDocumento.DNI).nroDocumento("123").apellido("PEREZ").nombre("ANA").build();
+		Cuestionario cuestionario = Cuestionario.builder()
+			.idCuestionario(1).candidato(candidato).estado(EstadoCuestionario.COMPLETO).build();
+		when(puestoDAO.findById(10)).thenReturn(puesto);
+		when(cuestionarioDAO.listarPorPuestoYEvaluacion(10, 100)).thenReturn(List.of(cuestionario));
+		when(cuestionarioDAO.listarPorPuestoYEvaluacion(10, 101)).thenReturn(List.of());
+		when(resultadoCompetenciaDAO.listarPorCuestionarios(List.of(1))).thenReturn(List.of(
+			ResultadoCompetencia.builder().cuestionario(cuestionario).competencia(competencia)
+				.puntajeObtenido(7.0).build()
+		));
+
+		assertThat(gestorReportes.generarOrdenMerito(10, List.of(100, 101, 100)))
+			.singleElement().satisfies(dto -> {
+				assertThat(dto.getNroDocumento()).isEqualTo("123");
+				assertThat(dto.getCumplePonderacionMinima()).isTrue();
+				assertThat(dto.getPuntajeObtenido()).isEqualTo(7.0);
+			});
 	}
 
 	@Test
