@@ -53,8 +53,7 @@ public class GestorOpcionesRespuesta {
         if (nombre != null) {
             nombre = nombre.strip().toUpperCase(Locale.ROOT);
         }
-        validarTexto(nombre, "El nombre de la escala", 100);
-        validarTexto(opcionDTO.getDescripcion(), "La descripción de la escala", 255);
+        validarCampos(nombre, opcionDTO.getDescripcion(), opcionDTO.getItems(), true);
         validarItems(opcionDTO.getItems());
 
         // La búsqueda del repositorio permite detectar nombres repetidos entre las escalas activas.
@@ -93,12 +92,13 @@ public class GestorOpcionesRespuesta {
         }
 
         // La descripción de la escala es obligatoria, incluso cuando solo se edita ese campo.
-        validarTexto(opcionDTO.getDescripcion(), "La descripción de la escala", 255);
         List<ItemOpcionRespuestaDTO> itemsDTO = opcionDTO.getItems();
         if (itemsDTO == null) {
-            validarItems(convertirItems(opcion.getItems()));
-        } else {
-            validarItems(itemsDTO);
+            itemsDTO = convertirItems(opcion.getItems());
+        }
+        validarCampos(null, opcionDTO.getDescripcion(), itemsDTO, false);
+        validarItems(itemsDTO);
+        if (opcionDTO.getItems() != null) {
             actualizarItems(opcion.getItems(), itemsDTO);
         }
 
@@ -129,36 +129,51 @@ public class GestorOpcionesRespuesta {
     private List<ItemOpcionRespuestaDTO> convertirItems(List<ItemOpcionRespuesta> items) {
         List<ItemOpcionRespuestaDTO> itemsDTO = new ArrayList<>();
         for (ItemOpcionRespuesta item : items) {
-            itemsDTO.add(new ItemOpcionRespuestaDTO(item.getOrden(), item.getDescripcion()));
+            itemsDTO.add(new ItemOpcionRespuestaDTO(item.getOrden(), item.getDescripcion(), null));
         }
         itemsDTO.sort(Comparator.comparing(ItemOpcionRespuestaDTO::getOrden));
         return itemsDTO;
     }
 
-    private void validarTexto(String valor, String campo, int maximo) {
-        if (valor == null || valor.isBlank()) {
-            throw new IllegalArgumentException("Campo obligatorio: " + campo);
+    private void validarCampos(String nombre, String descripcion, List<ItemOpcionRespuestaDTO> items, boolean alta) {
+        // Se reúnen los faltantes y los textos demasiado largos en un solo mensaje.
+        List<String> errores = new ArrayList<>();
+        if (alta) {
+            validarTexto(nombre, "Nombre de la escala", 100, errores);
         }
-        if (valor.length() > maximo) {
-            throw new IllegalArgumentException(campo + " admite hasta " + maximo + " caracteres");
+        validarTexto(descripcion, "Descripción de la escala", 255, errores);
+
+        // Se indica la posición de cada ítem para identificar sus campos faltantes.
+        if (items == null || items.size() < 2) {
+            errores.add("La escala debe tener al menos dos ítems");
+        }
+        if (items != null) {
+            for (int i = 0; i < items.size(); i++) {
+                ItemOpcionRespuestaDTO item = items.get(i);
+                String campo = " del ítem " + (i + 1);
+                if (item == null || item.getOrden() == null) {
+                    errores.add("Falta completar el orden" + campo);
+                }
+                validarTexto(item == null ? null : item.getDescripcion(), "Descripción" + campo, 100, errores);
+            }
+        }
+        if (!errores.isEmpty()) {
+            throw new IllegalArgumentException(String.join(". ", errores));
+        }
+    }
+
+    private void validarTexto(String valor, String campo, int maximo, List<String> errores) {
+        if (valor == null || valor.isBlank()) {
+            errores.add("Falta completar " + campo);
+        } else if (valor.length() > maximo) {
+            errores.add(campo + " admite hasta " + maximo + " caracteres");
         }
     }
 
     private void validarItems(List<ItemOpcionRespuestaDTO> items) {
-        // Una escala debe tener al menos dos ítems.
-        if (items == null || items.size() < 2) {
-            throw new IllegalArgumentException("La escala debe tener al menos dos ítems");
-        }
-
         Set<Integer> ordenes = new HashSet<>();
         Set<String> descripciones = new HashSet<>();
         for (ItemOpcionRespuestaDTO item : items) {
-            // Cada ítem debe tener un orden y una descripción.
-            if (item == null || item.getOrden() == null) {
-                throw new IllegalArgumentException("Cada ítem de la escala debe tener un orden");
-            }
-            validarTexto(item.getDescripcion(), "La descripción del ítem " + item.getOrden(), 100);
-
             // El orden y la descripción no se pueden repetir dentro de la escala.
             if (!ordenes.add(item.getOrden())) {
                 throw new IllegalArgumentException("El orden " + item.getOrden() + " está repetido en la escala");
@@ -180,20 +195,28 @@ public class GestorOpcionesRespuesta {
             throw new IllegalArgumentException("No se pueden agregar ni quitar ítems de la escala");
         }
 
-        Map<Integer, String> descripcionPorOrden = new HashMap<>();
+        // El orden original identifica el ítem cuando se cambia su posición.
+        Map<Integer, ItemOpcionRespuestaDTO> porOrdenOriginal = new HashMap<>();
         for (ItemOpcionRespuestaDTO itemDTO : recibidos) {
-            descripcionPorOrden.put(itemDTO.getOrden(), itemDTO.getDescripcion());
+            Integer ordenOriginal = itemDTO.getOrdenOriginal() != null
+                ? itemDTO.getOrdenOriginal()
+                : itemDTO.getOrden();
+            if (porOrdenOriginal.put(ordenOriginal, itemDTO) != null) {
+                throw new IllegalArgumentException("El orden original " + ordenOriginal + " está repetido");
+            }
         }
 
-        // El orden identifica el ítem dentro de la escala y se conserva durante la edición.
+        // Se comprueba que todos los ítems correspondan a la escala antes de modificarlos.
         for (ItemOpcionRespuesta item : existentes) {
-            if (!descripcionPorOrden.containsKey(item.getOrden())) {
-                throw new IllegalArgumentException("Los órdenes enviados deben coincidir con los de la escala");
+            if (!porOrdenOriginal.containsKey(item.getOrden())) {
+                throw new IllegalArgumentException("Los órdenes originales deben coincidir con los de la escala");
             }
         }
 
         for (ItemOpcionRespuesta item : existentes) {
-            item.setDescripcion(descripcionPorOrden.get(item.getOrden()));
+            ItemOpcionRespuestaDTO itemDTO = porOrdenOriginal.get(item.getOrden());
+            item.setOrden(itemDTO.getOrden());
+            item.setDescripcion(itemDTO.getDescripcion());
         }
     }
 }
