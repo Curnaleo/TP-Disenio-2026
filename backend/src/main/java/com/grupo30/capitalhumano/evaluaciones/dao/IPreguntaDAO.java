@@ -16,5 +16,5 @@ public interface IPreguntaDAO {
 
     void eliminarLogico(int id);
 
-    List<Pregunta> eliminarPorFactor(int idFactor);
+    List<Pregunta> eliminarPorFactor(String codigoFactor);
 }

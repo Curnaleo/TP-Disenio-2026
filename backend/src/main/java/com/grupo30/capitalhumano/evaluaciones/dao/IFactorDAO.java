@@ -15,5 +15,5 @@ public interface IFactorDAO {
 
     void actualizar(Factor factor);
 
-    void eliminarLogico(int id);
+    void eliminarLogico(String codigo);
 }
