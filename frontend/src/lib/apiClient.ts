@@ -1,7 +1,8 @@
 import { obtenerToken } from "./session";
 import { ErrorResponseDTO } from "@/types/error";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+// const API_URL = process.env.NEXT_PUBLIC_API_URL; por defecto es el puerto 3000
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080/api";
 
 export class ApiError extends Error {
     constructor(
