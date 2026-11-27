@@ -11,6 +11,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -154,8 +156,9 @@ class GestorReportesTest {
 		verifyNoInteractions(cuestionarioDAO);
 	}
 
-	@Test
-	void cu028_soloIncluyeCuestionariosDeEvaluacionesSeleccionadasYAceptaElMinimoExacto() {
+	@ParameterizedTest
+	@CsvSource({"6.99, false", "7.0, true", "7.01, true"})
+	void cu028_filtraEvaluacionesYRespetaElLimiteDePonderacion(double puntaje, boolean cumple) {
 		Competencia competencia = new Competencia("LID", "LIDERAZGO", "Desc", true, List.of());
 		Puesto puesto = new Puesto(10, "P001", "ANALISTA", "Desc", "EMPRESA", true, List.of());
 		puesto.setCaracteristicas(List.of(new CaracteristicaPuesto(1, 7.0, puesto, competencia)));
@@ -168,14 +171,14 @@ class GestorReportesTest {
 		when(cuestionarioDAO.listarPorPuestoYEvaluacion(10, 101)).thenReturn(List.of());
 		when(resultadoCompetenciaDAO.listarPorCuestionarios(List.of(1))).thenReturn(List.of(
 			ResultadoCompetencia.builder().cuestionario(cuestionario).competencia(competencia)
-				.puntajeObtenido(7.0).build()
+				.puntajeObtenido(puntaje).build()
 		));
 
 		assertThat(gestorReportes.generarOrdenMerito(10, List.of(100, 101, 100)))
 			.singleElement().satisfies(dto -> {
 				assertThat(dto.getNroDocumento()).isEqualTo("123");
-				assertThat(dto.getCumplePonderacionMinima()).isTrue();
-				assertThat(dto.getPuntajeObtenido()).isEqualTo(7.0);
+				assertThat(dto.getCumplePonderacionMinima()).isEqualTo(cumple);
+				assertThat(dto.getPuntajeObtenido()).isEqualTo(puntaje);
 			});
 	}
 

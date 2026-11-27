@@ -62,6 +62,45 @@ class GestorOpcionesRespuestaTest {
     }
 
     @Test
+    void cu029_aceptaLasLongitudesMaximasDeLosTresCampos() {
+        OpcionRespuestaDTO dto = solicitud("N".repeat(100), List.of(item(1, "I".repeat(100)), item(2, "SI")));
+        dto.setDescripcion("D".repeat(255));
+
+        gestor.altaOpcion(dto);
+
+        ArgumentCaptor<OpcionRespuesta> guardada = ArgumentCaptor.forClass(OpcionRespuesta.class);
+        verify(repositorio).guardar(guardada.capture());
+        assertThat(guardada.getValue().getNombre()).hasSize(100);
+        assertThat(guardada.getValue().getDescripcion()).hasSize(255);
+        assertThat(guardada.getValue().getItems().getFirst().getDescripcion()).hasSize(100);
+    }
+
+    @Test
+    void cu029_informaTodasLasOmisionesDelFormularioEnUnaRespuesta() {
+        OpcionRespuestaDTO dto = new OpcionRespuestaDTO(null, " ", "", null,
+                List.of(new ItemOpcionRespuestaDTO(null, "", null), item(2, "SI")));
+
+        assertThatThrownBy(() -> gestor.altaOpcion(dto))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContainingAll("Nombre de la escala", "Descripción de la escala",
+                        "orden del ítem 1", "Descripción del ítem 1");
+        verifyNoInteractions(repositorio);
+    }
+
+    @Test
+    void cu030_rechazaCambiarElNombreDeSoloLectura() {
+        OpcionRespuesta escala = escalaExistente();
+        when(repositorio.findById(7)).thenReturn(Optional.of(escala));
+
+        assertThatThrownBy(() -> gestor.modificarOpcion(
+                new OpcionRespuestaDTO(7, "OTRA", "DESCRIPCION", true, null)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("No se puede cambiar el nombre");
+        assertThat(escala.getNombre()).isEqualTo("FRECUENCIA");
+        verify(repositorio, never()).actualizar(any());
+    }
+
+    @Test
     void cu029_rechazaUnSoloItem() {
         assertAltaRechazada(solicitud("FRECUENCIA", List.of(item(1, "NUNCA"))), "al menos dos ítems");
     }
