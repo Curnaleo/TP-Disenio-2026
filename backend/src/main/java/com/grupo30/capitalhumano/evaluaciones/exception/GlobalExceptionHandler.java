@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *  * Manejador global de excepciones REST para traducir errores de negocio y validación
  *   * a respuestas JSON consistentes.
  *    */
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -112,18 +114,24 @@ public class GlobalExceptionHandler {
 													                .body(body);
 										    }
 
-			        @ExceptionHandler(Exception.class)
-				    public ResponseEntity<Map<String, Object>> manejarErrorGeneral(
-						                Exception ex) {
 
-					            Map<String, Object> body = new LinkedHashMap<>();
+			    @ExceptionHandler(Exception.class)
+			    public ResponseEntity<Map<String, Object>> manejarErrorGeneral(
+					            Exception ex) {
 
-						            body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-							            body.put("error", HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
-								            body.put("mensaje", ex.getMessage());
+				        log.error("Error no controlado", ex);
 
-									            return ResponseEntity
-											                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-													                    .body(body);
-										        }
+					    Map<String, Object> body = new LinkedHashMap<>();
+
+					        body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+						    body.put("error", HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+						        body.put("mensaje",
+									            ex.getMessage() != null
+										                        ? ex.getMessage()
+													                    : ex.getClass().getSimpleName());
+
+							    return ResponseEntity
+								                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+										            .body(body);
+						    }
 }
