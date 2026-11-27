@@ -152,6 +152,10 @@ public class GestorEvaluaciones {
 
 		Puesto puesto = recuperarPuesto(idPuesto);
 
+		if (puesto.getCaracteristicas() == null || puesto.getCaracteristicas().isEmpty()) {
+			throw new IllegalArgumentException("El puesto seleccionado no tiene competencias asociadas.");
+		}
+
 		List<String> competenciasNoEvaluables = 
 			new ArrayList<>();
 

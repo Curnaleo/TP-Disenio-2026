@@ -12,6 +12,27 @@ interface PopupErrorProps {
     onCerrar: () => void;
 }
 
+async function emitirAlertaSonora() {
+    if (typeof window === "undefined" || !window.AudioContext || !navigator.userActivation?.hasBeenActive) return;
+
+    const audio = new AudioContext();
+    try {
+        await audio.resume();
+        const tono = audio.createOscillator();
+        const volumen = audio.createGain();
+        tono.frequency.value = 440;
+        volumen.gain.value = 0.05;
+        tono.connect(volumen).connect(audio.destination);
+        await new Promise<void>((resolver) => {
+            tono.onended = () => resolver();
+            tono.start();
+            tono.stop(audio.currentTime + 0.15);
+        });
+    } finally {
+        await audio.close();
+    }
+}
+
 export default function PopupError({
                                        mensaje,
                                        detalles,
@@ -24,6 +45,7 @@ export default function PopupError({
 
     useEffect(() => {
         botonRef.current?.focus();
+        void emitirAlertaSonora().catch(() => {});
     }, []);
 
     useEffect(() => {
