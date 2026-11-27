@@ -130,7 +130,7 @@ export default function OrdenMeritoPage() {
                                         placeholder="-"
                                         value={filtros.codigo}
                                         onChange={(e) =>
-                                            setFiltros({ ...filtros, codigo: e.target.value })
+                                            setFiltros({ ...filtros, codigo: e.target.value.toUpperCase() })
                                         }
                                         className={CLASE_INPUT}
                                     />
@@ -142,7 +142,7 @@ export default function OrdenMeritoPage() {
                                         placeholder="-"
                                         value={filtros.nombre}
                                         onChange={(e) =>
-                                            setFiltros({ ...filtros, nombre: e.target.value })
+                                            setFiltros({ ...filtros, nombre: e.target.value.toUpperCase() })
                                         }
                                         className={CLASE_INPUT}
                                     />
@@ -154,7 +154,7 @@ export default function OrdenMeritoPage() {
                                         placeholder="-"
                                         value={filtros.empresa}
                                         onChange={(e) =>
-                                            setFiltros({ ...filtros, empresa: e.target.value })
+                                            setFiltros({ ...filtros, empresa: e.target.value.toUpperCase() })
                                         }
                                         className={CLASE_INPUT}
                                     />
@@ -355,19 +355,22 @@ export default function OrdenMeritoPage() {
                                                 <th className="p-2 text-center">Estado</th>
                                                 <th className="p-2 text-center">Puntaje</th>
                                                 <th className="p-2 text-center">Cumple Mín.</th>
+                                                <th className="p-2 text-center">Fecha Inicio</th>
+                                                <th className="p-2 text-center">Fecha Fin</th>
                                                 <th className="p-2 text-center">Último Ingreso</th>
                                                 <th className="p-2 text-center">Accesos</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {ordenMerito.map((c) => {
+                                            {ordenMerito.map((c, index) => {
                                                 const pos =
-                                                    c.puntajeObtenido !== null
+                                                    c.cumplePonderacionMinima === true
                                                         ? ++posicionActual
                                                         : "-";
+                                                const esCompleto = c.estadoCuestionario === "COMPLETO";
                                                 return (
                                                     <tr
-                                                        key={`${c.tipoDocumento}-${c.nroDocumento}`}
+                                                        key={`${c.tipoDocumento}-${c.nroDocumento}-${index}`}
                                                         className="border-b border-gray-200"
                                                     >
                                                         <td className="p-2 text-center font-bold">
@@ -395,9 +398,19 @@ export default function OrdenMeritoPage() {
                                                                   : "No"}
                                                         </td>
                                                         <td className="p-2 text-center">
-                                                            {formatearFechaHora(
-                                                                c.fechaHoraUltimoIngreso
-                                                            )}
+                                                            {formatearFechaHora(c.fechaInicio)}
+                                                        </td>
+                                                        <td className="p-2 text-center">
+                                                            {esCompleto
+                                                                ? formatearFechaHora(c.fechaFin)
+                                                                : "-"}
+                                                        </td>
+                                                        <td className="p-2 text-center">
+                                                            {esCompleto
+                                                                ? "-"
+                                                                : formatearFechaHora(
+                                                                      c.fechaHoraUltimoIngreso
+                                                                  )}
                                                         </td>
                                                         <td className="p-2 text-center">
                                                             {c.cantidadAccesos ?? 0}

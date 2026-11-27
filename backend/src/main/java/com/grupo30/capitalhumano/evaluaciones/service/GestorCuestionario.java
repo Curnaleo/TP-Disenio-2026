@@ -158,17 +158,17 @@ public class GestorCuestionario {
             competencias.add(caracteristica.getCompetencia());
         }
 
-        List<Pregunta> preguntas = seleccionarPreguntasAleatorias(competencias);
-        if (preguntas.isEmpty()) {
-            throw new IllegalArgumentException("El puesto no tiene preguntas evaluables");
-        }
-
         int preguntasPorBloque = Integer.parseInt(obtenerConfiguracion("CANTIDAD_PREGUNTAS_BLOQUE"));
         if (preguntasPorBloque <= 0) {
             throw new IllegalStateException("La cantidad de preguntas por bloque debe ser mayor a cero");
         }
 
         for (Cuestionario cuestionario : cuestionarios) {
+            // Cada cuestionario selecciona su propio conjunto aleatorio de preguntas (CU026 Obs. 1).
+            List<Pregunta> preguntas = seleccionarPreguntasAleatorias(competencias);
+            if (preguntas.isEmpty()) {
+                throw new IllegalArgumentException("El puesto no tiene preguntas evaluables");
+            }
             guardarBloques(cuestionario, preguntas, preguntasPorBloque);
         }
     }

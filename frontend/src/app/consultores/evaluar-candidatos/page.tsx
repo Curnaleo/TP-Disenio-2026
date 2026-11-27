@@ -285,11 +285,23 @@ export default function EvaluarCandidatosPage() {
                                 <form onSubmit={buscar} className="flex flex-wrap items-end gap-3">
                                     <label className="grid gap-1 text-sm">
                                         Apellido
-                                        <input name="apellido" className={campo} />
+                                        <input
+                                            name="apellido"
+                                            onInput={(e) => {
+                                                e.currentTarget.value = e.currentTarget.value.toUpperCase();
+                                            }}
+                                            className={campo}
+                                        />
                                     </label>
                                     <label className="grid gap-1 text-sm">
                                         Nombre
-                                        <input name="nombre" className={campo} />
+                                        <input
+                                            name="nombre"
+                                            onInput={(e) => {
+                                                e.currentTarget.value = e.currentTarget.value.toUpperCase();
+                                            }}
+                                            className={campo}
+                                        />
                                     </label>
                                     <label className="grid gap-1 text-sm">
                                         N.º de candidato
@@ -330,11 +342,23 @@ export default function EvaluarCandidatosPage() {
                             <form onSubmit={buscarPuestosParaEvaluar} className="flex flex-wrap items-end gap-3">
                                 <label className="grid gap-1 text-sm">
                                     Nombre del puesto
-                                    <input name="nombrePuesto" className={campo} />
+                                    <input
+                                        name="nombrePuesto"
+                                        onInput={(e) => {
+                                            e.currentTarget.value = e.currentTarget.value.toUpperCase();
+                                        }}
+                                        className={campo}
+                                    />
                                 </label>
                                 <label className="grid gap-1 text-sm">
                                     Empresa
-                                    <input name="empresa" className={campo} />
+                                    <input
+                                        name="empresa"
+                                        onInput={(e) => {
+                                            e.currentTarget.value = e.currentTarget.value.toUpperCase();
+                                        }}
+                                        className={campo}
+                                    />
                                 </label>
                                 <button type="submit" className={principal}>Buscar puestos</button>
                             </form>

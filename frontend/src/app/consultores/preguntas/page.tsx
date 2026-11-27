@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -35,7 +35,10 @@ export default function GestionPreguntasPage() {
     const [seleccion, setSeleccion] = useState<PreguntaDTO | null>(null);
     const [editando, setEditando] = useState<PreguntaDTO | null>(null);
     const [confirmarBaja, setConfirmarBaja] = useState<PreguntaDTO | null>(null);
+    const [ultimosFiltros, setUltimosFiltros] = useState<FiltrosPregunta | null>(null);
+    const [mensajeExito, setMensajeExito] = useState<string | null>(null);
     const [aviso, setAviso] = useState("");
+    const versionBusqueda = useRef(0);
 
     useEffect(() => {
         Promise.all([listarCompetenciasCatalogo(), listarFactoresCatalogo()])
@@ -56,36 +59,61 @@ export default function GestionPreguntasPage() {
         ? factores.filter((f) => f.nombreCompetencia === filtros.competencia)
         : factores;
 
-    const buscar = async () => {
-        const hayFiltro = Object.values(filtros).some((v) => v.trim() !== "");
+    useEffect(() => {
+        if (!mensajeExito) return;
+        const alPresionarTecla = () => setMensajeExito(null);
+        window.addEventListener("keydown", alPresionarTecla);
+        return () => window.removeEventListener("keydown", alPresionarTecla);
+    }, [mensajeExito]);
+
+    const buscar = async (criterios: FiltrosPregunta = filtros, confirmacion?: string) => {
+        const hayFiltro = Object.values(criterios).some((v) => v.trim() !== "");
         if (!hayFiltro) {
             setAviso("Ingresá al menos un criterio de búsqueda.");
             return;
         }
         setAviso("");
+        const version = ++versionBusqueda.current;
         try {
-            setResultados(await buscarPreguntas(filtros));
+            const coincidencias = await buscarPreguntas(criterios);
+            if (version !== versionBusqueda.current) return;
+            setUltimosFiltros(criterios);
+            setResultados(coincidencias);
             setSeleccion(null);
+            if (confirmacion) {
+                setMensajeExito(confirmacion);
+            }
         } catch (e) {
+            if (version !== versionBusqueda.current) return;
+            if (confirmacion) {
+                setResultados(null);
+                setPopup("El cambio se guardó. No se pudo actualizar la grilla. Volvé a buscar.");
+                return;
+            }
             setPopup(e instanceof ApiError ? e.message : "Error al buscar preguntas.");
         }
     };
 
     const confirmarEliminar = async () => {
         if (!confirmarBaja) return;
-        const id = confirmarBaja.idPregunta;
+        const { idPregunta, nombre } = confirmarBaja;
         setConfirmarBaja(null);
         try {
-            await eliminarPregunta(id);
+            await eliminarPregunta(idPregunta);
             setSeleccion(null);
-            setResultados(await buscarPreguntas(filtros));
+            await buscar(
+                ultimosFiltros ?? filtros,
+                `Los datos de la pregunta ${nombre} han sido eliminados del sistema.`
+            );
         } catch (e) {
             setPopup(e instanceof ApiError ? e.message : "No se pudo eliminar la pregunta.");
         }
     };
 
     const limpiar = () => {
+        versionBusqueda.current++;
         setFiltros(FILTROS_VACIOS);
+        setUltimosFiltros(null);
         setResultados(null);
         setSeleccion(null);
         setAviso("");
@@ -148,14 +176,14 @@ export default function GestionPreguntasPage() {
                                 <input
                                     placeholder="-"
                                     value={filtros.pregunta}
-                                    onChange={(e) => setFiltros({ ...filtros, pregunta: e.target.value })}
+                                    onChange={(e) => setFiltros({ ...filtros, pregunta: e.target.value.toUpperCase() })}
                                     className={`${CLASE_SELECT} mt-1 text-black`}
                                 />
                             </label>
                         </div>
 
                         <div className="mt-4 flex gap-2">
-                            <button onClick={buscar} className="rounded bg-[#1565c0] px-5 py-2 text-sm font-bold text-white">
+                            <button onClick={() => void buscar()} className="rounded bg-[#1565c0] px-5 py-2 text-sm font-bold text-white">
                                 Buscar
                             </button>
                             <button onClick={limpiar} className="rounded border border-gray-400 bg-white px-3 py-2 text-xs text-gray-600">
@@ -254,19 +282,41 @@ export default function GestionPreguntasPage() {
                     onGuardada={() => {
                         setEditando(null);
                         setSeleccion(null);
-                        void buscar();
+                        void buscar(ultimosFiltros ?? filtros, "La operación ha culminado con éxito");
                     }}
                 />
             )}
             {confirmarBaja && (
                 <PopupConfirmacion
                     titulo="Confirmar eliminación"
-                    mensaje={`¿Está seguro que desea eliminar la pregunta "${confirmarBaja.nombre}"?`}
-                    textoSi="Sí, eliminar"
-                    textoNo="Cancelar"
+                    mensaje={`Los datos de la pregunta ${confirmarBaja.nombre} serán eliminados del sistema`}
+                    textoSi="ELIMINAR"
+                    textoNo="CANCELAR"
                     onSi={() => void confirmarEliminar()}
                     onNo={() => setConfirmarBaja(null)}
                 />
+            )}
+            {mensajeExito && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+                    <div
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="Operación exitosa"
+                        className="w-full max-w-md overflow-hidden rounded-xl border border-neutral-700 bg-[#121212] shadow-2xl"
+                    >
+                        <div className="bg-[#0078d4] px-5 py-3 text-sm font-bold text-white">Información</div>
+                        <p className="px-8 py-8 text-center text-base text-neutral-300">{mensajeExito}</p>
+                        <div className="flex justify-center pb-6">
+                            <button
+                                autoFocus
+                                onClick={() => setMensajeExito(null)}
+                                className="rounded-lg border border-neutral-700 bg-[#1e1e1e] px-8 py-2 text-sm text-neutral-200"
+                            >
+                                Aceptar
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
             {popup && <PopupError mensaje={popup} onCerrar={() => setPopup(null)} />}
         </main>
