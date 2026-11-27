@@ -31,6 +31,7 @@ const OPCIONES_CANDIDATO: OpcionMenu[] = [
   {
     titulo: "Completar cuestionario",
     descripcion: "Responder el cuestionario asignado (CU026)",
+    href: "/cuestionario",
   },
 ];
 
