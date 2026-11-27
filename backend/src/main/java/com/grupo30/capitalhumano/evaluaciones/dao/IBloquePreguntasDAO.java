@@ -9,6 +9,8 @@ public interface IBloquePreguntasDAO {
 
 	void guardar(BloquePreguntas bloque);
 
+	void actualizar(BloquePreguntas bloque);
+
 	Optional<BloquePreguntas> findById(Integer id);
 
 	List<BloquePreguntas> recuperarBloquesPorCuestionario(Integer cuestionarioId);

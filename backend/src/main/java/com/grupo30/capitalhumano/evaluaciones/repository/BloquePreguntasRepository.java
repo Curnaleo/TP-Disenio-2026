@@ -25,6 +25,13 @@ public class BloquePreguntasRepository implements IBloquePreguntasDAO {
 	}
 
 	@Override
+	public void actualizar(
+		BloquePreguntas bloque) {
+
+		entityManager.merge(bloque);
+	}
+
+	@Override
 	public Optional<BloquePreguntas> findById(Integer id) {
 
 		return Optional.ofNullable(

@@ -328,3 +328,21 @@ INSERT INTO resultado_competencia (puntaje_obtenido, id_cuestionario, codigo_com
 SELECT 5.0, q.id_cuestionario, 'COMP002' FROM cuestionario q
 WHERE q.clave = 'CLAVE_CU028_3'
   AND NOT EXISTS (SELECT 1 FROM resultado_competencia rc WHERE rc.id_cuestionario = q.id_cuestionario AND rc.codigo_competencia = 'COMP002');
+
+INSERT INTO configuracion_sistema
+(clave, valor, descripcion)
+VALUES
+(
+	    'DIAS_MAXIMO_CUESTIONARIO_ACTIVO',
+	    '15',
+	    'Dias maximos para iniciar cuestionario'
+);
+
+INSERT INTO configuracion_sistema
+(clave, valor, descripcion)
+VALUES
+(
+	    'CANTIDAD_PREGUNTAS_BLOQUE',
+	    '2',
+	    'Cantidad de preguntas por bloque'
+);
