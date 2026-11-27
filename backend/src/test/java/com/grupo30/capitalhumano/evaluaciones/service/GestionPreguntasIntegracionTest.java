@@ -2,6 +2,9 @@ package com.grupo30.capitalhumano.evaluaciones.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,14 +13,18 @@ import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.grupo30.capitalhumano.evaluaciones.controller.OpcionRespuestaController;
 import com.grupo30.capitalhumano.evaluaciones.dto.ItemOpcionRespuestaDTO;
 import com.grupo30.capitalhumano.evaluaciones.dto.OpcionPreguntaDTO;
 import com.grupo30.capitalhumano.evaluaciones.dto.OpcionRespuestaDTO;
 import com.grupo30.capitalhumano.evaluaciones.dto.PreguntaDTO;
 import com.grupo30.capitalhumano.evaluaciones.entity.RegistroAuditoria;
+import com.grupo30.capitalhumano.evaluaciones.exception.GlobalExceptionHandler;
 
 @SpringBootTest
 @Transactional
@@ -26,6 +33,7 @@ class GestionPreguntasIntegracionTest {
 
     @Autowired private GestorPreguntas preguntas;
     @Autowired private GestorOpcionesRespuesta escalas;
+    @Autowired private OpcionRespuestaController opcionRespuestaController;
     @Autowired private EntityManager entityManager;
 
     @Test
@@ -80,6 +88,31 @@ class GestionPreguntasIntegracionTest {
                 })
                 .extracting(registro -> registro.getEntidad() + "/" + registro.getIdEntidad())
                 .containsExactlyInAnyOrder("Pregunta/" + idPregunta, "OpcionRespuesta/" + idEscala);
+    }
+
+    @Test
+    void cu029_rechazaConElAvisoDeDuplicadoElNombreDeUnaEscalaDadaDeBaja() throws Exception {
+        String nombre = "ESCALA TEST NOMBRE RESERVADO";
+        int id = crearEscala(nombre);
+        escalas.bajaOpcion(id);
+        entityManager.flush();
+        entityManager.clear();
+
+        assertThat(escalas.buscarOpciones(nombre)).isEmpty();
+        MockMvcBuilders.standaloneSetup(opcionRespuestaController)
+                .setControllerAdvice(new GlobalExceptionHandler()).build()
+                .perform(post("/api/opciones-respuesta").contentType(MediaType.APPLICATION_JSON).content("""
+                        {
+                          "nombre": " escala test nombre reservado ",
+                          "descripcion": "DESCRIPCION DE PRUEBA",
+                          "items": [
+                            {"orden": 1, "descripcion": "NUNCA"},
+                            {"orden": 2, "descripcion": "SIEMPRE"}
+                          ]
+                        }
+                        """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.mensaje").value("Ya existe una escala con el nombre " + nombre));
     }
 
     @Test

@@ -120,7 +120,7 @@ class GestorOpcionesRespuestaTest {
 
     @Test
     void cu029_rechazaNombreDuplicado() {
-        when(repositorio.buscarOpciones("FRECUENCIA")).thenReturn(List.of(escalaExistente()));
+        when(repositorio.existePorNombre("FRECUENCIA")).thenReturn(true);
 
         assertAltaRechazada(solicitud(" frecuencia ", List.of(item(1, "NUNCA"), item(2, "SIEMPRE"))),
                 "Ya existe una escala");

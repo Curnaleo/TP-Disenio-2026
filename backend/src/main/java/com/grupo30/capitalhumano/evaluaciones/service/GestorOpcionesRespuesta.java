@@ -56,11 +56,8 @@ public class GestorOpcionesRespuesta {
         validarCampos(nombre, opcionDTO.getDescripcion(), opcionDTO.getItems(), true);
         validarItems(opcionDTO.getItems());
 
-        // La búsqueda del repositorio permite detectar nombres repetidos entre las escalas activas.
-        for (OpcionRespuesta existente : repositorio.buscarOpciones(nombre)) {
-            if (nombre.equalsIgnoreCase(existente.getNombre().strip())) {
-                throw new IllegalArgumentException("Ya existe una escala con el nombre " + nombre);
-            }
+        if (repositorio.existePorNombre(nombre)) {
+            throw new IllegalArgumentException("Ya existe una escala con el nombre " + nombre);
         }
 
         OpcionRespuesta opcion = new OpcionRespuesta(

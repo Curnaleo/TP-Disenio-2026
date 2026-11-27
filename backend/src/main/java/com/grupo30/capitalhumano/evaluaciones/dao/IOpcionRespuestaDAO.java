@@ -9,6 +9,8 @@ public interface IOpcionRespuestaDAO{
 	
 	List<OpcionRespuesta> buscarOpciones(String nombre);
 
+    boolean existePorNombre(String nombre);
+
     Optional<OpcionRespuesta> findById(Integer id);
 
     void guardar(OpcionRespuesta opcion);

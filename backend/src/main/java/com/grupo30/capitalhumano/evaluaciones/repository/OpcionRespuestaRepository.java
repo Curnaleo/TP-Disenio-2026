@@ -49,6 +49,16 @@ public class OpcionRespuestaRepository implements IOpcionRespuestaDAO {
 	}
 
 	@Override
+	public boolean existePorNombre(String nombre) {
+		return !entityManager.createQuery(
+			"SELECT o.id FROM OpcionRespuesta o WHERE UPPER(TRIM(o.nombre)) = UPPER(:nombre)",
+			Integer.class)
+			.setParameter("nombre", nombre)
+			.setMaxResults(1)
+			.getResultList().isEmpty();
+	}
+
+	@Override
 	public Optional<OpcionRespuesta> findById(Integer id) {
 
 		OpcionRespuesta opcion =
