@@ -1,3 +1,9 @@
+export interface CaracteristicaPuestoDTO {
+    codigoCompetencia: string;
+    nombreCompetencia: string;
+    ponderacionMinima: number;
+}
+
 export interface PuestoDTO {
     puestoId: number;
     codigo: string;
@@ -5,6 +11,7 @@ export interface PuestoDTO {
     descripcion: string | null;
     empresa: string;
     activo: boolean | null;
+    caracteristicas: CaracteristicaPuestoDTO[];
     cantidadCandidatos: number | null;
     evaluacionesCompletas: number | null;
 }

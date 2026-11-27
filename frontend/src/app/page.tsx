@@ -20,6 +20,7 @@ const OPCIONES_CONSULTOR: OpcionMenu[] = [
   {
     titulo: "Evaluar candidatos",
     descripcion: "Generar evaluaciones y cuestionarios (CU025)",
+    href: "/consultores/evaluar-candidatos",
   },
   {
     titulo: "Orden de mérito",

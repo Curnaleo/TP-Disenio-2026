@@ -1,7 +1,15 @@
 package com.grupo30.capitalhumano.evaluaciones.service;
 
-import java.time.LocalDate;
 import java.security.SecureRandom;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -18,8 +26,6 @@ import com.grupo30.capitalhumano.evaluaciones.entity.CaracteristicaPuesto;
 import com.grupo30.capitalhumano.evaluaciones.entity.Evaluacion;
 import com.grupo30.capitalhumano.evaluaciones.entity.Cuestionario;
 import com.grupo30.capitalhumano.evaluaciones.entity.EstadoCuestionario;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +50,15 @@ public class GestorEvaluaciones {
 	private final IUsuarioDAO usuarioDAO;
 	private final IFactorDAO factorDAO;
 	private final IPreguntaDAO preguntaDAO;
+
+	// Una sola vista previa por consultor. La evaluación se guarda al confirmar.
+	private final Map<Integer, EvaluacionPendiente> vistasPrevias = new ConcurrentHashMap<>();
+
+	public record CandidatoConClave(CandidatoGestionDTO candidato, String clave) {}
+
+	public record VistaPrevia(UUID id, List<CandidatoConClave> candidatos) {}
+
+	private record EvaluacionPendiente(Integer idPuesto, Instant vence, VistaPrevia vista) {}
 
 	private Usuario obtenerUsuarioActual() {
 
@@ -102,10 +117,11 @@ public class GestorEvaluaciones {
 
 		for (CandidatoGestionDTO candidato : candidatos) {
 
-		cuestionarioDAO.buscarActivoPorCandidato(
-		candidato.getNroCandidato())
-		.ifPresent(c -> candidatosConCuestionario
-				.add(candidato));
+			if (candidato == null || candidato.getNroCandidato() == null) {
+				throw new IllegalArgumentException("Cada candidato debe tener un número de candidato");
+			}
+			cuestionarioDAO.buscarActivoPorCandidato(candidato.getNroCandidato())
+				.ifPresent(c -> candidatosConCuestionario.add(candidato));
 		}
 
 		return candidatosConCuestionario;
@@ -125,7 +141,7 @@ public class GestorEvaluaciones {
 	}
 
 	@Transactional(readOnly = true)
-	private void validarPuestoEvaluable(Integer idPuesto) {
+	public void validarPuestoEvaluable(Integer idPuesto) {
 
 		Puesto puesto = recuperarPuesto(idPuesto);
 
@@ -138,16 +154,12 @@ public class GestorEvaluaciones {
 			Competencia competencia =
 				caracteristica.getCompetencia();
 
-			boolean competenciaEvaluable = true;
+			boolean competenciaEvaluable = false;
 
 			List<Factor> factores =
 				factorDAO.buscarPorCompetencia(
 					competencia.getCodigo()
 				);
-
-			if (factores.isEmpty()) {
-				competenciaEvaluable = false;
-			}
 
 			for (Factor factor : factores) {
 
@@ -156,8 +168,8 @@ public class GestorEvaluaciones {
 					factor.getCodigo()
 				);
 
-				if (preguntas.size() < 2) {
-					competenciaEvaluable = false;
+				if (preguntas.size() >= 2) {
+					competenciaEvaluable = true;
 					break;
 				}
 			}
@@ -218,30 +230,30 @@ public class GestorEvaluaciones {
 
 	private String generarClave() {
 
-		StringBuilder clave =
-			new StringBuilder();
-
-		for (int i = 0; i < 8; i++) {
-
-			clave.append(
-				ALFABETO.charAt(
-					RANDOM.nextInt(
-						ALFABETO.length()
-					)
-				)
-			);
+		while (true) {
+			StringBuilder clave = new StringBuilder();
+			boolean tieneLetra = false;
+			boolean tieneDigito = false;
+			for (int i = 0; i < 8; i++) {
+				char caracter = ALFABETO.charAt(RANDOM.nextInt(ALFABETO.length()));
+				clave.append(caracter);
+				tieneLetra |= Character.isLetter(caracter);
+				tieneDigito |= Character.isDigit(caracter);
+			}
+			if (tieneLetra && tieneDigito) {
+				return clave.toString();
+			}
 		}
-
-		return clave.toString();
 	}
 
 	private void crearCuestionario(
 		Candidato candidato,
-		Evaluacion evaluacion) {
+		Evaluacion evaluacion,
+		String clave) {
 
 		Cuestionario cuestionario =
 			Cuestionario.builder()
-				.clave(generarClave())
+				.clave(clave)
 				.estado(EstadoCuestionario.ACTIVO)
 				.cantidadAccesos(0)
 				.candidato(candidato)
@@ -256,6 +268,43 @@ public class GestorEvaluaciones {
 		Integer idPuesto,
 		List<CandidatoGestionDTO> candidatos) {
 
+		validarSeleccion(idPuesto, candidatos);
+		guardarEvaluacion(idPuesto, obtenerUsuarioActual(), prepararClaves(candidatos));
+	}
+
+	@Transactional(readOnly = true)
+	public VistaPrevia prepararEvaluacion(Integer idPuesto, List<CandidatoGestionDTO> candidatos) {
+		validarSeleccion(idPuesto, candidatos);
+		List<CandidatoConClave> preparados = prepararClaves(candidatos);
+		Usuario consultor = obtenerUsuarioActual();
+		Instant ahora = Instant.now();
+		vistasPrevias.values().removeIf(pendiente -> !pendiente.vence().isAfter(ahora));
+
+		VistaPrevia vista = new VistaPrevia(UUID.randomUUID(), preparados);
+		vistasPrevias.put(consultor.getIdUsuario(),
+			new EvaluacionPendiente(idPuesto, ahora.plusSeconds(900), vista));
+		return vista;
+	}
+
+	@Transactional
+	public void confirmarEvaluacion(Integer idPuesto, UUID idVista) {
+		Usuario consultor = obtenerUsuarioActual();
+		Integer idConsultor = consultor.getIdUsuario();
+		EvaluacionPendiente pendiente = vistasPrevias.get(idConsultor);
+		if (pendiente == null || !pendiente.idPuesto().equals(idPuesto)
+			|| !pendiente.vista().id().equals(idVista) || !pendiente.vence().isAfter(Instant.now())) {
+			throw new IllegalArgumentException("La vista previa ya no está disponible. Volvé a revisar las claves.");
+		}
+
+		List<CandidatoConClave> preparados = pendiente.vista().candidatos();
+		validarSeleccion(idPuesto, preparados.stream().map(CandidatoConClave::candidato).toList());
+		if (!vistasPrevias.remove(idConsultor, pendiente)) {
+			throw new IllegalArgumentException("La vista previa ya no está disponible. Volvé a revisar las claves.");
+		}
+		guardarEvaluacion(idPuesto, consultor, preparados);
+	}
+
+	private void validarSeleccion(Integer idPuesto, List<CandidatoGestionDTO> candidatos) {
 		if (idPuesto == null) {
 			throw new IllegalArgumentException(
 				"Debe seleccionar un puesto"
@@ -284,34 +333,30 @@ public class GestorEvaluaciones {
 		}
 
 		validarPuestoEvaluable(idPuesto);
+	}
 
-		Puesto puesto = recuperarPuesto(idPuesto);
-
-		Usuario usuario = obtenerUsuarioActual();
-
-		Evaluacion evaluacion =
-			crearEvaluacion(
-				puesto,
-				usuario
-			);
-		
+	private List<CandidatoConClave> prepararClaves(List<CandidatoGestionDTO> candidatos) {
+		List<CandidatoConClave> preparados = new ArrayList<>();
+		Set<Integer> incluidos = new HashSet<>();
 		for (CandidatoGestionDTO dto : candidatos) {
+			if (incluidos.add(dto.getNroCandidato())) {
+				preparados.add(new CandidatoConClave(
+					mapToDTO(recuperarCandidato(dto.getNroCandidato())), generarClave()));
+			}
+		}
+		return List.copyOf(preparados);
+	}
 
-			Candidato candidato =
-				candidatoDAO.findById(
-					dto.getNroCandidato()
-				)
-				.orElseThrow(() ->
-					new IllegalArgumentException(
-						"No existe el candidato "
-						+ dto.getNroCandidato()
-					)
-				);
+	private Candidato recuperarCandidato(Integer nroCandidato) {
+		return candidatoDAO.findById(nroCandidato)
+			.orElseThrow(() -> new IllegalArgumentException("No existe el candidato " + nroCandidato));
+	}
 
-			crearCuestionario(
-				candidato,
-				evaluacion
-			);
+	private void guardarEvaluacion(Integer idPuesto, Usuario usuario, List<CandidatoConClave> candidatos) {
+		Evaluacion evaluacion = crearEvaluacion(recuperarPuesto(idPuesto), usuario);
+		for (CandidatoConClave preparado : candidatos) {
+			Candidato candidato = recuperarCandidato(preparado.candidato().getNroCandidato());
+			crearCuestionario(candidato, evaluacion, preparado.clave());
 		}
 	}
 }

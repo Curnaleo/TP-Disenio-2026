@@ -11,7 +11,7 @@ import com.grupo30.capitalhumano.evaluaciones.entity.Candidato;
 import com.grupo30.capitalhumano.evaluaciones.entity.TipoDocumento;
 
 import jakarta.persistence.EntityManager;
-
+import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 
 @Repository
@@ -22,9 +22,20 @@ public class CandidatoRepository implements ICandidatoDAO {
 	private final EntityManager entityManager;
 
 	@Override
-	public List<Candidato> buscar(String apellido, String nombre, Integer nroCandidato) {
-
-		throw new UnsupportedOperationException();
+	public List<Candidato> buscar(String apellido, String nombre, Integer nroCandidato) { // GRANDE CHAT
+		String porNumero = nroCandidato == null ? "" : "AND c.nroCandidato = :nroCandidato ";
+		TypedQuery<Candidato> consulta = entityManager.createQuery(
+			"SELECT c FROM Candidato c WHERE c.eliminado = false "
+				+ "AND LOCATE(LOWER(:apellido), LOWER(c.apellido)) > 0 "
+				+ "AND LOCATE(LOWER(:nombre), LOWER(c.nombre)) > 0 "
+				+ porNumero + "ORDER BY c.apellido, c.nombre, c.nroCandidato",
+			Candidato.class);
+		consulta.setParameter("apellido", apellido == null ? "" : apellido.trim());
+		consulta.setParameter("nombre", nombre == null ? "" : nombre.trim());
+		if (nroCandidato != null) {
+			consulta.setParameter("nroCandidato", nroCandidato);
+		}
+		return consulta.getResultList();
 	}
 
 	@Override

@@ -41,6 +41,6 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
         throw new ApiError(res.status, body);
     }
 
-    if (res.status === 204) return undefined as T;
-    return res.json();
+    const body = await res.text();
+    return body ? JSON.parse(body) as T : undefined as T;
 }
