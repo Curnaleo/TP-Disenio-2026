@@ -19,7 +19,7 @@ export class ApiError extends Error {
     }
 }
 
-export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
+export async function apiFetchRespuesta(path: string, options: RequestInit = {}): Promise<Response> {
     const token = obtenerToken();
 
     const res = await fetch(`${API_URL}${path}`, {
@@ -41,6 +41,11 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
         throw new ApiError(res.status, body);
     }
 
-    if (res.status === 204) return undefined as T;
-    return res.json();
+    return res;
+}
+
+export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
+    const res = await apiFetchRespuesta(path, options);
+    const body = await res.text();
+    return body ? JSON.parse(body) as T : undefined as T;
 }

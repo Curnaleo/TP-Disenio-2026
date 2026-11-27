@@ -62,7 +62,7 @@ public class PreguntaController {
 
 		return ResponseEntity.ok().build();
 	}
-	
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> bajaPregunta(
 		@PathVariable Integer id) {

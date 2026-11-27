@@ -75,7 +75,13 @@ public class GestorCuestionario {
             }
             case ACTIVO -> {
                 verificarPlazoParaIniciar(cuestionario);
-                prepararCuestionario(cuestionario);
+                // Los cuestionarios antiguos sin modelo asignado se preparan al iniciar.
+                if (bloquePreguntasDAO.recuperarBloquesPorCuestionario(cuestionarioId).isEmpty()) {
+                    prepararCuestionarios(cuestionario.getEvaluacion().getPuesto(), List.of(cuestionario));
+                }
+                cuestionario.setFechaHoraInicio(LocalDateTime.now());
+                cuestionario.setEstado(EstadoCuestionario.EN_PROCESO);
+                registrarAcceso(cuestionario);
                 return 0; // Arranca desde el primer bloque
             }
         }
@@ -152,15 +158,7 @@ public class GestorCuestionario {
 	}
     }
 
-    private void prepararCuestionario(Cuestionario cuestionario) {
-        /*
-        El sistema recupera el cuestionario y recupera las competencias que serán
-        evaluadas. Por cada competencia recupera los factores asociados a las
-        mismas y por cada cuestionarioDAO.actor (que disponga de al menos 2 preguntas),
-        recupera las preguntas, con sus respectivas opciones de respuestas.
-        */
-
-        Puesto puesto = cuestionario.getEvaluacion().getPuesto();
+    void prepararCuestionarios(Puesto puesto, List<Cuestionario> cuestionarios) {
         List<Competencia> competencias = new ArrayList<>();
 
         for (CaracteristicaPuesto caracteristica : puesto.getCaracteristicas()) {
@@ -168,13 +166,21 @@ public class GestorCuestionario {
         }
 
         List<Pregunta> preguntas = seleccionarPreguntasAleatorias(competencias);
-        
-        int preguntasPorBloque =
-		Integer.parseInt(
-			obtenerConfiguracion(
-				"CANTIDAD_PREGUNTAS_BLOQUE"
-			)
-		);
+        if (preguntas.isEmpty()) {
+            throw new IllegalArgumentException("El puesto no tiene preguntas evaluables");
+        }
+
+        int preguntasPorBloque = Integer.parseInt(obtenerConfiguracion("CANTIDAD_PREGUNTAS_BLOQUE"));
+        if (preguntasPorBloque <= 0) {
+            throw new IllegalStateException("La cantidad de preguntas por bloque debe ser mayor a cero");
+        }
+
+        for (Cuestionario cuestionario : cuestionarios) {
+            guardarBloques(cuestionario, preguntas, preguntasPorBloque);
+        }
+    }
+
+    private void guardarBloques(Cuestionario cuestionario, List<Pregunta> preguntas, int preguntasPorBloque) {
         int nroBloque = 1;
 
         for (int inicio = 0; inicio < preguntas.size(); inicio += preguntasPorBloque) {
@@ -192,24 +198,14 @@ public class GestorCuestionario {
                     .bloque(bloque)
                     .pregunta(preguntas.get(i))
                     .nroOrden((i - inicio) + 1)
-		    .build();
+                    .build();
 
                 preguntaCuestionarioDAO.guardar(preguntaCuestionario);
             }
 
             nroBloque++;
-        }  
-           	
-    	cuestionario.setFechaHoraInicio(
-			        LocalDateTime.now()
-			);
-
-	cuestionario.setEstado(
-			        EstadoCuestionario.EN_PROCESO
-			);
-	registrarAcceso(cuestionario);
-
-}
+        }
+    }
 
     private void registrarAcceso(
 		            Cuestionario cuestionario) {
