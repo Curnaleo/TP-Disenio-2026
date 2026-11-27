@@ -22,10 +22,69 @@ public class CandidatoRepository implements ICandidatoDAO {
 	private final EntityManager entityManager;
 
 	@Override
-	public List<Candidato> buscar(String apellido, String nombre, Integer nroCandidato) {
+	public List<Candidato> buscar(
+			    String apellido,
+			        String nombre,
+				    Integer nroCandidato) {
 
-		throw new UnsupportedOperationException();
-	}
+		    StringBuilder jpql = new StringBuilder(
+				            """
+					            SELECT c
+						            FROM Candidato c
+							            WHERE c.eliminado = false
+								            """
+									        );
+
+		        if (apellido != null && !apellido.isBlank()) {
+				        jpql.append(
+							            " AND UPPER(c.apellido) LIKE UPPER(:apellido)"
+								            );
+					    }
+
+			    if (nombre != null && !nombre.isBlank()) {
+				            jpql.append(
+							                " AND UPPER(c.nombre) LIKE UPPER(:nombre)"
+									        );
+					        }
+
+			        if (nroCandidato != null) {
+					        jpql.append(
+								            " AND c.nroCandidato = :nroCandidato"
+									            );
+						    }
+
+				    jpql.append(
+						            " ORDER BY c.apellido, c.nombre"
+							        );
+
+				        var query = entityManager.createQuery(
+							        jpql.toString(),
+								        Candidato.class
+									    );
+
+					    if (apellido != null && !apellido.isBlank()) {
+						            query.setParameter(
+									                "apellido",
+											            "%" + apellido.trim() + "%"
+												            );
+							        }
+
+					        if (nombre != null && !nombre.isBlank()) {
+							        query.setParameter(
+										            "nombre",
+											                "%" + nombre.trim() + "%"
+													        );
+								    }
+
+						    if (nroCandidato != null) {
+							            query.setParameter(
+										                "nroCandidato",
+												            nroCandidato
+													            );
+								        }
+
+						        return query.getResultList();
+			    }
 
 	@Override
 	public Optional<Candidato> buscarPorDocumento(TipoDocumento tipo, String nroDocumento) {
