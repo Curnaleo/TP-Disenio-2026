@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import PopupError from "@/components/ui/PopupError";
+import { cerrarSesion } from "@/services/authService";
 
 interface OpcionMenu {
   titulo: string;
@@ -71,8 +72,17 @@ export default function MenuInicioPage() {
   return (
       <main className="min-h-screen bg-white p-6 text-black">
         <div className="mx-auto max-w-3xl bg-[#e5e5e5] shadow">
-          <header className="bg-[#0078d4] px-4 py-2 font-bold text-white">
+          <header className="flex items-center justify-between bg-[#0078d4] px-4 py-2 font-bold text-white">
             Capital Humano - Evaluación de candidatos
+            {/* Login apartado (CU001), se puede quitar junto con app/login */}
+            <div className="flex gap-4 text-xs font-normal">
+              <Link href="/login" className="underline">
+                Iniciar sesión
+              </Link>
+              <button onClick={() => cerrarSesion()} className="underline">
+                Cerrar sesión
+              </button>
+            </div>
           </header>
 
           <div className="space-y-6 p-6">
