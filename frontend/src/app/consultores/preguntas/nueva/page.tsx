@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import PopupError from "@/components/ui/PopupError";
 import PopupConfirmacion from "@/components/ui/PopupConfirmacion";
+import { ApiError } from "@/lib/apiClient";
 import { LIMITES_PREGUNTA } from "@/constants/preguntas";
 import {
     listarCompetenciasCatalogo,
@@ -30,8 +31,8 @@ export default function AltaPreguntaPage() {
     const [factores, setFactores] = useState<FactorDTO[]>([]);
     const [opciones, setOpciones] = useState<OpcionRespuestaDTO[]>([]);
 
-    const [idCompetencia, setIdCompetencia] = useState("");
-    const [idFactor, setIdFactor] = useState("");
+    const [codigoCompetencia, setCodigoCompetencia] = useState("");
+    const [codigoFactor, setCodigoFactor] = useState("");
     const [nombre, setNombre] = useState("");
     const [textoPregunta, setTextoPregunta] = useState("");
     const [descripcion, setDescripcion] = useState("");
@@ -42,8 +43,19 @@ export default function AltaPreguntaPage() {
     const [nombreCreada, setNombreCreada] = useState<string | null>(null);
 
     useEffect(() => {
-        listarCompetenciasCatalogo().then(setCompetencias);
-        listarOpcionesRespuesta().then(setOpciones);
+        Promise.all([listarCompetenciasCatalogo(), listarOpcionesRespuesta()])
+            .then(([comps, ops]) => {
+                setCompetencias(comps);
+                setOpciones(ops);
+            })
+            .catch((e) => {
+                setAviso({
+                    mensaje:
+                        e instanceof ApiError
+                            ? e.message
+                            : "No se pudieron cargar los catálogos desde el servidor.",
+                });
+            });
     }, []);
 
     // Grilla de opciones ordenada por "orden" (CU021)
@@ -52,16 +64,28 @@ export default function AltaPreguntaPage() {
     const valores = ponderaciones.map((p) => (p.trim() === "" ? 0 : Number(p)));
     const suma = valores.reduce((a, b) => a + b, 0);
 
-    const elegirCompetencia = async (id: string) => {
-        setIdCompetencia(id);
-        setIdFactor("");
-        setFactores(id ? await listarFactoresDeCompetencia(Number(id)) : []);
+    const elegirCompetencia = async (codigo: string) => {
+        setCodigoCompetencia(codigo);
+        setCodigoFactor("");
+        if (!codigo) {
+            setFactores([]);
+            return;
+        }
+        try {
+            setFactores(await listarFactoresDeCompetencia(codigo));
+        } catch (e) {
+            setFactores([]);
+            setAviso({
+                mensaje: e instanceof ApiError ? e.message : "No se pudieron cargar los factores.",
+            });
+        }
     };
 
     const elegirOpcion = (id: string) => {
         setIdOpcion(id);
         const opcion = opciones.find((o) => o.id === Number(id));
-        setPonderaciones(opcion ? opcion.items.map(() => "") : []);
+        const itemsOrdenados = opcion ? [...opcion.items].sort((a, b) => a.orden - b.orden) : [];
+        setPonderaciones(itemsOrdenados.map(() => ""));
     };
 
     const cambiarPonderacion = (indice: number, valor: string) => {
@@ -69,8 +93,8 @@ export default function AltaPreguntaPage() {
     };
 
     const limpiar = () => {
-        setIdCompetencia("");
-        setIdFactor("");
+        setCodigoCompetencia("");
+        setCodigoFactor("");
         setFactores([]);
         setNombre("");
         setTextoPregunta("");
@@ -88,8 +112,8 @@ export default function AltaPreguntaPage() {
 
         // 2.A: faltan datos obligatorios (se listan TODOS)
         const faltan: string[] = [];
-        if (!idCompetencia) faltan.push("Competencia");
-        if (!idFactor) faltan.push("Factor");
+        if (!codigoCompetencia) faltan.push("Competencia");
+        if (!codigoFactor) faltan.push("Factor");
         if (!n) faltan.push("Nombre de pregunta");
         if (!t) faltan.push("Pregunta");
         if (!idOpcion) faltan.push("Opciones de respuesta");
@@ -129,16 +153,19 @@ export default function AltaPreguntaPage() {
         }
 
         try {
-            const creada = await crearPregunta({
-                idCompetencia: Number(idCompetencia),
-                idFactor: Number(idFactor),
+            await crearPregunta({
+                codigoCompetencia,
+                codigoFactor,
                 nombre: n,
                 textoPregunta: t,
                 descripcion: d === "" ? null : d,
                 idOpcionRespuesta: Number(idOpcion),
-                ponderaciones: valores,
+                opcionesPregunta: items.map((item, i) => ({
+                    orden: item.orden,
+                    ponderacion: valores[i],
+                })),
             });
-            setNombreCreada(creada.nombre);
+            setNombreCreada(n);
         } catch (e) {
             // 2.C: la pregunta ya existe (aclara cuál validación no se superó)
             if (e instanceof PreguntaDuplicadaError) {
@@ -151,7 +178,12 @@ export default function AltaPreguntaPage() {
                     ],
                 });
             } else {
-                setAviso({ mensaje: "No se pudo registrar la pregunta. Intente nuevamente." });
+                setAviso({
+                    mensaje:
+                        e instanceof ApiError
+                            ? e.message
+                            : "No se pudo registrar la pregunta. Intente nuevamente.",
+                });
             }
         }
     };
@@ -182,13 +214,13 @@ export default function AltaPreguntaPage() {
                             <label className={CLASE_ETIQUETA}>
                                 Competencia *
                                 <select
-                                    value={idCompetencia}
+                                    value={codigoCompetencia}
                                     onChange={(e) => elegirCompetencia(e.target.value)}
                                     className={`${CLASE_CAMPO} mt-1`}
                                 >
                                     <option value="" className="bg-white text-black">Seleccionar competencia...</option>
                                     {competencias.map((c) => (
-                                        <option key={c.id} value={c.id} className="bg-white text-black">
+                                        <option key={c.codigo} value={c.codigo} className="bg-white text-black">
                                             {c.nombre}
                                         </option>
                                     ))}
@@ -198,13 +230,13 @@ export default function AltaPreguntaPage() {
                             <label className={CLASE_ETIQUETA}>
                                 Factor *
                                 <select
-                                    value={idFactor}
-                                    onChange={(e) => setIdFactor(e.target.value)}
+                                    value={codigoFactor}
+                                    onChange={(e) => setCodigoFactor(e.target.value)}
                                     className={`${CLASE_CAMPO} mt-1`}
                                 >
                                     <option value="" className="bg-white text-black">Seleccionar factor...</option>
                                     {factores.map((f) => (
-                                        <option key={f.id} value={f.id} className="bg-white text-black">
+                                        <option key={f.codigo} value={f.codigo} className="bg-white text-black">
                                             {f.nombre}
                                         </option>
                                     ))}
