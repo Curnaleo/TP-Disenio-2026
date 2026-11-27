@@ -39,6 +39,12 @@ public class GestorPreguntas {
 			String factor,
 			String nombre) {
 
+		if (!StringUtils.hasText(competencia)
+				&& !StringUtils.hasText(factor)
+				&& !StringUtils.hasText(nombre)) {
+			throw new IllegalArgumentException("Debe ingresar al menos un criterio de búsqueda.");
+		}
+
 	        List<Pregunta> preguntas =
 			repositorio.buscarPreguntas(
 				competencia,
