@@ -8,7 +8,6 @@ import PopupConfirmacion from "@/components/ui/PopupConfirmacion";
 import PopupError from "@/components/ui/PopupError";
 import {
     CuestionarioCerradoError,
-    finalizarCuestionario,
     guardarBloque,
     iniciarCuestionario,
     obtenerCuestionarioActual,
@@ -46,6 +45,31 @@ const CLASE_BOTON_PRIMARIO =
 const CLASE_BOTON_SECUNDARIO =
     "rounded border border-gray-400 bg-gray-100 px-6 py-2 text-sm text-gray-700 disabled:opacity-50";
 
+async function emitirAlerta() {
+    if (!window.AudioContext || !navigator.userActivation?.hasBeenActive) return;
+
+    const audio = new AudioContext();
+    try {
+        await audio.resume();
+        const tono = audio.createOscillator();
+        const volumen = audio.createGain();
+        tono.frequency.value = 440;
+        volumen.gain.value = 0.05;
+        tono.connect(volumen).connect(audio.destination);
+        await new Promise<void>((resolver) => {
+            tono.onended = () => resolver();
+            tono.start();
+            tono.stop(audio.currentTime + 0.15);
+        });
+    } finally {
+        await audio.close();
+    }
+}
+
+function alertar() {
+    void emitirAlerta().catch(() => {});
+}
+
 export default function CompletarCuestionarioPage() {
     const router = useRouter();
 
@@ -65,8 +89,13 @@ export default function CompletarCuestionarioPage() {
     const mostrarError = (err: unknown, porDefecto: string) =>
         setError(err instanceof Error ? err.message : porDefecto);
 
-    const cargarBloque = async (idCuestionario: number, nroBloque: number) => {
-        const bloque = await recuperarBloque(idCuestionario, nroBloque);
+    const cerrarCuestionario = (motivo: MotivoCierre) => {
+        setPantalla({ tipo: "cerrado", motivo });
+        alertar();
+    };
+
+    const cargarBloque = async (nroBloque: number) => {
+        const bloque = await recuperarBloque(nroBloque);
         setRespuestas({});
         setFaltanResponder(false);
         setPantalla({ tipo: "bloque", bloque });
@@ -74,14 +103,14 @@ export default function CompletarCuestionarioPage() {
     };
 
     // Pasos 3 y 4 (o 1.C si ya estaba en proceso)
-    const comenzar = async (actual: CuestionarioActual) => {
+    const comenzar = async () => {
         setProcesando(true);
         try {
-            const nroBloque = await iniciarCuestionario(actual.idCuestionario);
-            await cargarBloque(actual.idCuestionario, nroBloque);
+            const nroBloque = await iniciarCuestionario();
+            await cargarBloque(nroBloque);
         } catch (err) {
             if (err instanceof CuestionarioCerradoError) {
-                setPantalla({ tipo: "cerrado", motivo: err.motivo });
+                cerrarCuestionario(err.motivo);
             } else {
                 mostrarError(err, "No se pudo iniciar el cuestionario.");
             }
@@ -104,14 +133,14 @@ export default function CompletarCuestionarioPage() {
                         setPantalla({ tipo: "instrucciones" }); // Paso 1
                         break;
                     case "EN_PROCESO":
-                        await comenzar(actual); // 1.C: sigue en el bloque pendiente
+                        await comenzar(); // 1.C: sigue en el bloque pendiente
                         break;
                     case "COMPLETO":
                         setPantalla({ tipo: "completado" });
                         break;
                     case "INCOMPLETO":
                     case "SIN_CONTESTAR":
-                        setPantalla({ tipo: "cerrado", motivo: actual.estado });
+                        cerrarCuestionario(actual.estado);
                         break;
                 }
             } catch (err) {
@@ -130,6 +159,7 @@ export default function CompletarCuestionarioPage() {
         const sinResponder = bloque.preguntas.filter((p) => respuestas[p.idPregCuest] === undefined);
         if (sinResponder.length > 0) {
             setFaltanResponder(true);
+            alertar();
             document
                 .getElementById(`pregunta-${sinResponder[0].idPregCuest}`)
                 ?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -139,8 +169,7 @@ export default function CompletarCuestionarioPage() {
         setProcesando(true);
         try {
             // Paso 7
-            await guardarBloque(
-                cuestionario.idCuestionario,
+            const resultado = await guardarBloque(
                 bloque.nroBloque,
                 bloque.preguntas.map((p) => ({
                     idPregCuest: p.idPregCuest,
@@ -148,17 +177,16 @@ export default function CompletarCuestionarioPage() {
                 }))
             );
 
-            if (bloque.nroBloque < bloque.totalBloques) {
-                // 8.A: siguiente bloque
-                await cargarBloque(cuestionario.idCuestionario, bloque.nroBloque + 1);
-            } else {
-                // Paso 8: último bloque
-                await finalizarCuestionario(cuestionario.idCuestionario);
+            if (resultado.estado === "COMPLETO") {
                 setPantalla({ tipo: "completado" });
+            } else if (resultado.siguienteBloque !== undefined) {
+                await cargarBloque(resultado.siguienteBloque);
+            } else {
+                throw new Error("El servidor no informó el siguiente bloque.");
             }
         } catch (err) {
             if (err instanceof CuestionarioCerradoError) {
-                setPantalla({ tipo: "cerrado", motivo: err.motivo });
+                cerrarCuestionario(err.motivo);
             } else {
                 mostrarError(err, "No se pudo guardar el bloque.");
             }
@@ -185,7 +213,7 @@ export default function CompletarCuestionarioPage() {
                 </button>
                 {/* Paso 2 */}
                 <button
-                    onClick={() => cuestionario && comenzar(cuestionario)}
+                    onClick={comenzar}
                     disabled={procesando}
                     className={CLASE_BOTON_PRIMARIO}
                 >
@@ -281,7 +309,7 @@ export default function CompletarCuestionarioPage() {
                         Salir
                     </button>
                     <button onClick={avanzar} disabled={procesando} className={CLASE_BOTON_PRIMARIO}>
-                        {procesando ? "Guardando..." : esUltimo ? "Terminar" : "Siguiente ▶"}
+                        {procesando ? "Guardando..." : esUltimo ? "Finalizar" : "Siguiente ▶"}
                     </button>
                 </div>
             </div>

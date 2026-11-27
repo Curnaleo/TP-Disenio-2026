@@ -218,6 +218,22 @@ SELECT
 FROM opcion_respuesta
 WHERE nombre='VERDADERO_FALSO';
 
+INSERT INTO pregunta (nombre, texto_pregunta, descripcion, activo, codigo_factor, id_opcion_respuesta)
+SELECT ejemplo.nombre, ejemplo.texto, 'PREGUNTA DE PRUEBA', true, 'FAC003', escala.id_opcion_respuesta
+FROM opcion_respuesta escala
+CROSS JOIN (VALUES
+    ('CONFIDENCIALIDAD', 'MANTENGO LA CONFIDENCIALIDAD DE LA INFORMACIÓN DEL EQUIPO.'),
+    ('COMPROMISOS', 'CUMPLO LOS ACUERDOS QUE ASUMO CON MIS COMPAÑEROS.')
+) AS ejemplo(nombre, texto)
+WHERE escala.nombre = 'VERDADERO_FALSO';
+
+INSERT INTO opcion_pregunta (id_pregunta, id_item_opcion_respuesta, ponderacion)
+SELECT pregunta.id_pregunta, item.id_item,
+    CASE WHEN item.orden = 1 THEN 10.0 ELSE 2.0 END
+FROM pregunta
+JOIN item_opcion_respuesta item ON item.id_opcion_respuesta = pregunta.id_opcion_respuesta
+WHERE pregunta.nombre IN ('WBS', 'LINEA_BASE', 'VALOR_GANADO', 'CONFIDENCIALIDAD', 'COMPROMISOS');
+
 -- =====================================================
 -- PUESTO DE PRUEBA (CU028)
 -- =====================================================
@@ -346,3 +362,10 @@ VALUES
 	    '2',
 	    'Cantidad de preguntas por bloque'
 );
+
+INSERT INTO configuracion_sistema (clave, valor, descripcion) VALUES
+    ('INSTRUCCIONES_CUESTIONARIO',
+     'Respondé todas las preguntas de cada bloque antes de avanzar. Elegí una sola opción por pregunta. Si salís, podés retomar desde el bloque pendiente mientras no superes los límites de tiempo o accesos.',
+     'Instrucciones para el candidato'),
+    ('MINUTOS_MAXIMO_CUESTIONARIO', '60', 'Tiempo máximo desde el primer inicio, en minutos'),
+    ('MAXIMO_ACCESOS_CUESTIONARIO', '5', 'Cantidad máxima de ingresos al cuestionario');

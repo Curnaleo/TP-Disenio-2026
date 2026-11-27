@@ -200,16 +200,22 @@ class GestorEvaluacionesTest {
             cuestionario.setIdCuestionario(1);
             ConfiguracionSistema plazo = new ConfiguracionSistema();
             plazo.setValor("7");
+            ConfiguracionSistema limite = new ConfiguracionSistema();
+            limite.setValor("5");
             when(configuracion.obtener("DIAS_MAXIMO_CUESTIONARIO_ACTIVO")).thenReturn(Optional.of(plazo));
+            when(configuracion.obtener("MINUTOS_MAXIMO_CUESTIONARIO")).thenReturn(Optional.of(limite));
+            when(configuracion.obtener("MAXIMO_ACCESOS_CUESTIONARIO")).thenReturn(Optional.of(limite));
             when(cuestionarios.findById(1)).thenReturn(Optional.of(cuestionario));
             when(bloques.recuperarBloquesPorCuestionario(1))
                 .thenReturn(primerModelo.stream().map(PreguntaCuestionario::getBloque).toList());
 
-            gestorCuestionario.iniciarCuestionario(1);
+            assertThat(gestorCuestionario.iniciarCuestionario(1)).isEqualTo(1);
 
             assertThat(cuestionario.getEstado()).isEqualTo(EstadoCuestionario.EN_PROCESO);
             assertThat(cuestionario.getFechaHoraInicio()).isNotNull();
             assertThat(cuestionario.getCantidadAccesos()).isEqualTo(1);
+            primerModelo.getFirst().getBloque().setCompletado(true);
+            assertThat(gestorCuestionario.iniciarCuestionario(1)).isEqualTo(2);
             verify(bloques, times(4)).guardar(any());
             verify(configuracion).obtener("CANTIDAD_PREGUNTAS_BLOQUE");
         } finally {

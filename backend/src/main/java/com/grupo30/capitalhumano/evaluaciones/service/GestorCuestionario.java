@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Comparator;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,12 +67,9 @@ public class GestorCuestionario {
                 throw new PlazoInicioVencidoException();
             }
             case EN_PROCESO -> {
-                verificarTiempoParaCompletar(cuestionario);
-
-		registrarAcceso(cuestionario);
-
-                // 1.C El actor ya había ingresado a completar el cuestionario previamente
-                return primerBloquePendiente(cuestionario);
+                int nroBloque = primerBloquePendiente(cuestionario);
+                registrarAcceso(cuestionario);
+                return nroBloque;
             }
             case ACTIVO -> {
                 verificarPlazoParaIniciar(cuestionario);
@@ -81,11 +79,17 @@ public class GestorCuestionario {
                 }
                 cuestionario.setFechaHoraInicio(LocalDateTime.now());
                 cuestionario.setEstado(EstadoCuestionario.EN_PROCESO);
+                if (cuestionario.getTiempoMaximo() == null) {
+                    cuestionario.setTiempoMaximo(obtenerLimite("MINUTOS_MAXIMO_CUESTIONARIO"));
+                }
+                if (cuestionario.getMaximoAccesos() == null) {
+                    cuestionario.setMaximoAccesos(obtenerLimite("MAXIMO_ACCESOS_CUESTIONARIO"));
+                }
                 registrarAcceso(cuestionario);
-                return 0; // Arranca desde el primer bloque
+                return primerBloquePendiente(cuestionario);
             }
         }
-        return 0; // CAMBIAR
+        throw new IllegalStateException("Estado de cuestionario desconocido.");
     }
 
     private int primerBloquePendiente(
@@ -139,23 +143,12 @@ public class GestorCuestionario {
         }
     }
 
-    private void verificarTiempoParaCompletar(Cuestionario cuestionario) {
-        // 1.A El usuario superó el tiempo máximo para completarel cuestionario (2)
-        Duration transcurrido = Duration.between(
-            cuestionario.getFechaHoraInicio(),
-            LocalDateTime.now()
-        );
-
-        boolean vencido = transcurrido.compareTo(Duration.ofMinutes(cuestionario.getTiempoMaximo())) >= 0;
-
-        if(vencido){
-            cuestionario.setEstado(EstadoCuestionario.INCOMPLETO);
-            cuestionario.setFechaHoraFin(LocalDateTime.now());
-            cuestionarioDAO.actualizar(cuestionario);
-	    throw new IllegalStateException(
-			        "El cuestionario superó el tiempo máximo"
-			    );
-	}
+    private int obtenerLimite(String clave) {
+        int limite = Integer.parseInt(obtenerConfiguracion(clave).strip());
+        if (limite <= 0) {
+            throw new IllegalStateException("La configuración " + clave + " debe ser mayor a cero.");
+        }
+        return limite;
     }
 
     void prepararCuestionarios(Puesto puesto, List<Cuestionario> cuestionarios) {
@@ -221,6 +214,7 @@ public class GestorCuestionario {
 		        cuestionarioDAO.actualizar(cuestionario);
 	}
 
+    @Transactional(readOnly = true)
     public List<PreguntaExamenDTO> recuperarBloque(int cuestionarioId, int nroBloque) {
         List<BloquePreguntas> bloques= bloquePreguntasDAO.recuperarBloquesPorCuestionario(cuestionarioId);
         
@@ -273,6 +267,10 @@ public class GestorCuestionario {
 					"No existe cuestionario con ID "
 					+ cuestionarioId));
 
+		if (cuestionario.getEstado() != EstadoCuestionario.EN_PROCESO) {
+			throw new IllegalArgumentException("El cuestionario debe estar en proceso para guardar respuestas.");
+		}
+
 		int nroBloque =
 			primerBloquePendiente(cuestionario);
 
@@ -307,7 +305,7 @@ public class GestorCuestionario {
 			RespuestaCandidatoDTO respuesta =
 				respuestas.stream()
 					.filter(r ->
-						r.getIdPregCuest()
+						r != null && r.getIdPregCuest()
 						== preguntaCuestionario
 							.getIdPregCuest())
 					.findFirst()
@@ -325,6 +323,10 @@ public class GestorCuestionario {
 						"No existe la opción "
 						+ respuesta
 							.getIdOpcionPregunta()));
+
+			if (!Objects.equals(opcion.getPregunta().getId(), preguntaCuestionario.getPregunta().getId())) {
+				throw new IllegalArgumentException("La opción seleccionada no pertenece a la pregunta.");
+			}
 
 			preguntaCuestionario.setRespondida(true);
 			preguntaCuestionario.setOpcionElegida(opcion);
@@ -380,11 +382,6 @@ public class GestorCuestionario {
 
 			for (Factor factor :
 				competencia.getFactores()) {
-
-				if (!Boolean.TRUE.equals(
-					factor.getActivo())) {
-						continue;
-				}
 
 				double sumaFactor = 0d;
 
@@ -505,20 +502,20 @@ public class GestorCuestionario {
 						"No existe cuestionario con ID "
 						+ cuestionarioId));
 
-		if (cuestionario.getFechaHoraInicio() == null) {
+		if (cuestionario.getEstado() != EstadoCuestionario.EN_PROCESO
+				|| cuestionario.getFechaHoraInicio() == null) {
 			return false;
 		}
 
+		int tiempoMaximo = cuestionario.getTiempoMaximo() == null
+			? obtenerLimite("MINUTOS_MAXIMO_CUESTIONARIO") : cuestionario.getTiempoMaximo();
 		Duration transcurrido =
 			Duration.between(
 				cuestionario.getFechaHoraInicio(),
 				LocalDateTime.now());
 
 		boolean vencido =
-			transcurrido.compareTo(
-				Duration.ofMinutes(
-					cuestionario.getTiempoMaximo())
-						) >= 0;
+			transcurrido.compareTo(Duration.ofMinutes(tiempoMaximo)) > 0;
 
 		if (vencido) {
 
@@ -545,13 +542,16 @@ public class GestorCuestionario {
 						"No existe cuestionario con ID "
 						+ cuestionarioId));
 
-		if (cuestionario.getMaximoAccesos() == null) {
+		if (cuestionario.getEstado() != EstadoCuestionario.ACTIVO
+				&& cuestionario.getEstado() != EstadoCuestionario.EN_PROCESO) {
 			return false;
 		}
 
+		int maximoAccesos = cuestionario.getMaximoAccesos() == null
+			? obtenerLimite("MAXIMO_ACCESOS_CUESTIONARIO") : cuestionario.getMaximoAccesos();
 		boolean excedido =
 			cuestionario.getCantidadAccesos()
-				>= cuestionario.getMaximoAccesos();
+				>= maximoAccesos;
 		
 		if (excedido) {
 			cuestionario.setEstado(
