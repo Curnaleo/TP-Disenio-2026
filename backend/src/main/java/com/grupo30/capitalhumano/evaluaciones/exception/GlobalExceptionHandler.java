@@ -8,6 +8,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -114,6 +115,22 @@ public class GlobalExceptionHandler {
 													                .body(body);
 										    }
 
+
+			    @ExceptionHandler(ResponseStatusException.class)
+			    public ResponseEntity<Map<String, Object>> manejarResponseStatus(
+					            ResponseStatusException ex) {
+
+				        HttpStatus status = HttpStatus.resolve(ex.getStatusCode().value());
+				        Map<String, Object> body = new LinkedHashMap<>();
+
+				        body.put("status", ex.getStatusCode().value());
+				        body.put("error", status != null ? status.getReasonPhrase() : ex.getStatusCode().toString());
+				        body.put("mensaje", ex.getReason() != null ? ex.getReason() : "Error en la solicitud.");
+
+				        return ResponseEntity
+						                .status(ex.getStatusCode())
+						                .body(body);
+			    }
 
 			    @ExceptionHandler(Exception.class)
 			    public ResponseEntity<Map<String, Object>> manejarErrorGeneral(
