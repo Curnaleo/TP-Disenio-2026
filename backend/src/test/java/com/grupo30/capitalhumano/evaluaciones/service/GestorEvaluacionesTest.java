@@ -3,23 +3,32 @@ package com.grupo30.capitalhumano.evaluaciones.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.grupo30.capitalhumano.evaluaciones.controller.EvaluacionController;
 import com.grupo30.capitalhumano.evaluaciones.dao.IBloquePreguntasDAO;
 import com.grupo30.capitalhumano.evaluaciones.dao.ICandidatoDAO;
 import com.grupo30.capitalhumano.evaluaciones.dao.IConfiguracionSistemaDAO;
@@ -37,6 +46,7 @@ import com.grupo30.capitalhumano.evaluaciones.entity.Competencia;
 import com.grupo30.capitalhumano.evaluaciones.entity.ConfiguracionSistema;
 import com.grupo30.capitalhumano.evaluaciones.entity.Cuestionario;
 import com.grupo30.capitalhumano.evaluaciones.entity.EstadoCuestionario;
+import com.grupo30.capitalhumano.evaluaciones.entity.Evaluacion;
 import com.grupo30.capitalhumano.evaluaciones.entity.Factor;
 import com.grupo30.capitalhumano.evaluaciones.entity.Pregunta;
 import com.grupo30.capitalhumano.evaluaciones.entity.PreguntaCuestionario;
@@ -142,6 +152,11 @@ class GestorEvaluacionesTest {
         when(preguntas.buscarActivasPorFactor("F01")).thenReturn(List.of());
         when(preguntas.buscarActivasPorFactor("F02")).thenReturn(disponibles);
         when(configuracion.obtener("CANTIDAD_PREGUNTAS_BLOQUE")).thenReturn(Optional.of(cantidadPorBloque));
+        doAnswer(invocacion -> {
+            Evaluacion evaluacion = invocacion.getArgument(0);
+            evaluacion.setId(17);
+            return null;
+        }).when(evaluaciones).guardar(any());
 
         SecurityContextHolder.getContext().setAuthentication(
             new UsernamePasswordAuthenticationToken("consultor", null));
@@ -151,7 +166,7 @@ class GestorEvaluacionesTest {
             assertThat(clave).matches("(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]{8}");
             verifyNoInteractions(evaluaciones, bloques, preguntasCuestionario);
 
-            gestor.confirmarEvaluacion(1, vista.id());
+            assertThat(gestor.confirmarEvaluacion(1, vista.id())).isEqualTo(17);
 
             var guardado = ArgumentCaptor.forClass(Cuestionario.class);
             verify(cuestionarios, times(2)).guardar(guardado.capture());
@@ -197,6 +212,60 @@ class GestorEvaluacionesTest {
             assertThat(cuestionario.getCantidadAccesos()).isEqualTo(1);
             verify(bloques, times(4)).guardar(any());
             verify(configuracion).obtener("CANTIDAD_PREGUNTAS_BLOQUE");
+        } finally {
+            SecurityContextHolder.clearContext();
+        }
+    }
+
+    @Test
+    void cu025_exportaClavesGuardadasSoloAlConsultorDeLaEvaluacion() throws IOException {
+        Usuario titular = new Usuario();
+        titular.setIdUsuario(7);
+        Usuario otroConsultor = new Usuario();
+        otroConsultor.setIdUsuario(8);
+        Puesto puesto = new Puesto();
+        puesto.setNombre("Analista de Gestión");
+        Candidato candidato = new Candidato();
+        candidato.setApellido("PÉREZ");
+        candidato.setNombre("ANA");
+        candidato.setTipoDocumento(TipoDocumento.DNI);
+        candidato.setNroDocumento("00123456");
+        Evaluacion evaluacion = new Evaluacion();
+        evaluacion.setUsuario(titular);
+        evaluacion.setPuesto(puesto);
+        evaluacion.getCuestionarios().add(Cuestionario.builder()
+            .candidato(candidato).clave("ABCD1234").build());
+        when(evaluaciones.findById(17)).thenReturn(Optional.of(evaluacion));
+        when(usuarios.buscarPorUser("titular")).thenReturn(Optional.of(titular));
+        when(usuarios.buscarPorUser("otro")).thenReturn(Optional.of(otroConsultor));
+        var controller = new EvaluacionController(gestor);
+
+        try {
+            SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken("titular", null));
+            var respuesta = controller.exportarClavesExcel(17);
+            assertThat(respuesta.getStatusCode()).isEqualTo(HttpStatus.OK);
+            String disposicion = respuesta.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION);
+            assertThat(disposicion).contains("filename*=UTF-8''");
+            assertThat(ContentDisposition.parse(disposicion).getFilename())
+                .matches("\\d{4}(?:-\\d{2}){4}-Analista de Gestión\\.xls");
+            assertThat(respuesta.getHeaders().getCacheControl()).isEqualTo("no-store");
+            try (var libro = new HSSFWorkbook(new ByteArrayInputStream(respuesta.getBody()))) {
+                var hoja = libro.getSheetAt(0);
+                assertThat(hoja.getPhysicalNumberOfRows()).isEqualTo(2);
+                var fila = hoja.getRow(1);
+                assertThat(fila.getCell(0).getStringCellValue()).isEqualTo("PÉREZ");
+                assertThat(fila.getCell(1).getStringCellValue()).isEqualTo("ANA");
+                assertThat(fila.getCell(2).getStringCellValue()).isEqualTo("DNI");
+                assertThat(fila.getCell(3).getStringCellValue()).isEqualTo("00123456");
+                assertThat(fila.getCell(4).getStringCellValue()).isEqualTo("ABCD1234");
+            }
+            assertThat(controller.exportarClavesExcel(17).getStatusCode()).isEqualTo(HttpStatus.OK);
+
+            SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken("otro", null));
+            assertThat(controller.exportarClavesExcel(17).getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+            verify(evaluaciones, never()).guardar(any());
         } finally {
             SecurityContextHolder.clearContext();
         }

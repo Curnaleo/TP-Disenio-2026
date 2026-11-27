@@ -7,6 +7,7 @@ import { ApiError } from "@/lib/apiClient";
 import {
     buscarCandidatos,
     confirmarEvaluacion,
+    exportarClavesExcel,
     prepararEvaluacion,
     validarCandidatos,
     validarPuesto,
@@ -87,8 +88,11 @@ export default function EvaluarCandidatosPage() {
     const [ocupado, setOcupado] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [puestoInvalido, setPuestoInvalido] = useState<string | null>(null);
-    const [finalizado, setFinalizado] = useState(false);
+    const [idEvaluacion, setIdEvaluacion] = useState<number | null>(null);
+    const [archivoExcel, setArchivoExcel] = useState<Awaited<ReturnType<typeof exportarClavesExcel>> | null>(null);
+    const [mensajeExportacion, setMensajeExportacion] = useState<string | null>(null);
 
+    const finalizado = idEvaluacion !== null;
     const puesto = puestos?.find((item) => item.puestoId === puestoId);
     const disponibles = resultados?.filter((candidato) =>
         !seleccionados.some((item) => item.nroCandidato === candidato.nroCandidato),
@@ -198,13 +202,56 @@ export default function EvaluarCandidatosPage() {
         if (!puesto || !vistaPrevia) return;
         void ejecutar(async () => {
             try {
-                await confirmarEvaluacion(puesto.puestoId, vistaPrevia.id);
-                setFinalizado(true);
+                const confirmacion = await confirmarEvaluacion(puesto.puestoId, vistaPrevia.id);
+                setIdEvaluacion(confirmacion.idEvaluacion);
             } catch (causa) {
                 setVistaPrevia(null);
                 setPaso(1);
                 throw causa;
             }
+        });
+    }
+
+    function exportarExcel() {
+        if (idEvaluacion === null) return;
+        const navegador = window as Window & {
+            showSaveFilePicker?: (opciones: { suggestedName: string }) => Promise<FileSystemFileHandle>;
+        };
+        setMensajeExportacion(null);
+
+        void ejecutar(async () => {
+            if (navegador.showSaveFilePicker && archivoExcel) {
+                let destino: FileSystemFileHandle;
+                try {
+                    destino = await navegador.showSaveFilePicker({ suggestedName: archivoExcel.nombre });
+                } catch (causa) {
+                    if (causa instanceof DOMException && causa.name === "AbortError") {
+                        setArchivoExcel(null);
+                        return;
+                    }
+                    throw causa;
+                }
+                const salida = await destino.createWritable();
+                await salida.write(archivoExcel.archivo);
+                await salida.close();
+                setArchivoExcel(null);
+                setMensajeExportacion("Archivo Excel guardado.");
+                return;
+            }
+
+            const excel = await exportarClavesExcel(idEvaluacion);
+            if (navegador.showSaveFilePicker) {
+                setArchivoExcel(excel);
+                return;
+            }
+
+            const url = URL.createObjectURL(excel.archivo);
+            const enlace = document.createElement("a");
+            enlace.href = url;
+            enlace.download = excel.nombre;
+            enlace.click();
+            window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+            setMensajeExportacion("Descarga de Excel iniciada.");
         });
     }
 
@@ -335,6 +382,13 @@ export default function EvaluarCandidatosPage() {
                         </section>
                     )}
 
+                    {finalizado && (
+                        <p role="status" className="text-sm text-gray-600">
+                            {mensajeExportacion ?? (archivoExcel
+                                ? "Elegí dónde guardar el archivo Excel."
+                                : "¿Querés exportar la lista de candidatos y sus claves a Excel?")}
+                        </p>
+                    )}
                     {ocupado && <p role="status" className="text-sm text-gray-600">Procesando…</p>}
                     <div className="flex flex-wrap justify-end gap-2">
                         <button type="button" onClick={salir} className={boton}>{finalizado ? "Volver al inicio" : "Cancelar"}</button>
@@ -348,6 +402,11 @@ export default function EvaluarCandidatosPage() {
                         {paso === 1 && <button type="button" onClick={revisarClaves} className={principal}>Siguiente</button>}
                         {paso === 2 && !finalizado && (
                             <button type="button" onClick={finalizar} className={principal}>Finalizar</button>
+                        )}
+                        {finalizado && (
+                            <button type="button" onClick={exportarExcel} className={principal}>
+                                {archivoExcel ? "Guardar como" : "Exportar Excel"}
+                            </button>
                         )}
                     </div>
                 </fieldset>

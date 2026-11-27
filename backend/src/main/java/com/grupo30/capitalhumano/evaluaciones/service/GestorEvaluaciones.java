@@ -1,8 +1,14 @@
 package com.grupo30.capitalhumano.evaluaciones.service;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -11,6 +17,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.grupo30.capitalhumano.evaluaciones.dao.IFactorDAO;
@@ -289,7 +298,7 @@ public class GestorEvaluaciones {
 	}
 
 	@Transactional
-	public void confirmarEvaluacion(Integer idPuesto, UUID idVista) {
+	public int confirmarEvaluacion(Integer idPuesto, UUID idVista) {
 		Usuario consultor = obtenerUsuarioActual();
 		Integer idConsultor = consultor.getIdUsuario();
 		EvaluacionPendiente pendiente = vistasPrevias.get(idConsultor);
@@ -303,7 +312,48 @@ public class GestorEvaluaciones {
 		if (!vistasPrevias.remove(idConsultor, pendiente)) {
 			throw new IllegalArgumentException("La vista previa ya no está disponible. Volvé a revisar las claves.");
 		}
-		guardarEvaluacion(idPuesto, consultor, preparados);
+		return guardarEvaluacion(idPuesto, consultor, preparados).getId();
+	}
+
+	@Transactional(readOnly = true)
+	public void exportarClavesExcel(int idEvaluacion, String carpeta) {
+		Usuario consultor = obtenerUsuarioActual();
+		Evaluacion evaluacion = evaluacionDAO.findById(idEvaluacion)
+			.filter(e -> consultor.getIdUsuario().equals(e.getUsuario().getIdUsuario()))
+			.orElseThrow(() -> new AccessDeniedException("No tenés acceso a esta evaluación."));
+
+		String nombrePuesto = evaluacion.getPuesto().getNombre()
+			.replaceAll("[\\\\/:*?\"<>|\\p{Cntrl}]", "_").strip();
+		String fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("uuuu-MM-dd-HH-mm"));
+		Path archivo = Path.of(carpeta).resolve(fecha + "-" + nombrePuesto + ".xls");
+
+		try (var libro = new HSSFWorkbook()) {
+			var hoja = libro.createSheet("Claves de ingreso");
+			escribirFila(hoja.createRow(0), "Apellido", "Nombre", "Tipo de documento",
+				"Número de documento", "Clave de ingreso");
+
+			int fila = 1;
+			for (Cuestionario cuestionario : evaluacion.getCuestionarios()) {
+				Candidato candidato = cuestionario.getCandidato();
+				escribirFila(hoja.createRow(fila++), candidato.getApellido(), candidato.getNombre(),
+					candidato.getTipoDocumento().name(), candidato.getNroDocumento(), cuestionario.getClave());
+			}
+
+			for (int columna = 0; columna < 5; columna++) {
+				hoja.setColumnWidth(columna, 24 * 256);
+			}
+			try (var salida = Files.newOutputStream(archivo)) {
+				libro.write(salida);
+			}
+		} catch (IOException ex) {
+			throw new UncheckedIOException("No se pudo generar el archivo Excel.", ex);
+		}
+	}
+
+	private void escribirFila(Row fila, String... valores) {
+		for (int columna = 0; columna < valores.length; columna++) {
+			fila.createCell(columna).setCellValue(valores[columna]);
+		}
 	}
 
 	private void validarSeleccion(Integer idPuesto, List<CandidatoGestionDTO> candidatos) {
@@ -354,7 +404,7 @@ public class GestorEvaluaciones {
 			.orElseThrow(() -> new IllegalArgumentException("No existe el candidato " + nroCandidato));
 	}
 
-	private void guardarEvaluacion(Integer idPuesto, Usuario usuario, List<CandidatoConClave> candidatos) {
+	private Evaluacion guardarEvaluacion(Integer idPuesto, Usuario usuario, List<CandidatoConClave> candidatos) {
 		Puesto puesto = recuperarPuesto(idPuesto);
 		Evaluacion evaluacion = crearEvaluacion(puesto, usuario);
 		List<Cuestionario> cuestionarios = new ArrayList<>();
@@ -363,5 +413,6 @@ public class GestorEvaluaciones {
 			cuestionarios.add(crearCuestionario(candidato, evaluacion, preparado.clave()));
 		}
 		gestorCuestionario.prepararCuestionarios(puesto, cuestionarios);
+		return evaluacion;
 	}
 }

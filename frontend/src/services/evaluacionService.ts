@@ -1,4 +1,4 @@
-import { apiFetch } from "@/lib/apiClient";
+import { apiFetch, apiFetchRespuesta } from "@/lib/apiClient";
 
 export interface CandidatoGestionDTO {
     nroCandidato: number;
@@ -38,6 +38,15 @@ export function prepararEvaluacion(
     });
 }
 
-export function confirmarEvaluacion(idPuesto: number, idVista: string): Promise<void> {
+export function confirmarEvaluacion(idPuesto: number, idVista: string): Promise<{ idEvaluacion: number }> {
     return apiFetch(`/evaluacion/${idPuesto}/confirmar/${idVista}`, { method: "POST" });
+}
+
+export async function exportarClavesExcel(idEvaluacion: number): Promise<{ archivo: Blob; nombre: string }> {
+    const respuesta = await apiFetchRespuesta(`/evaluacion/${idEvaluacion}/claves`, { cache: "no-store" });
+    const disposicion = respuesta.headers.get("Content-Disposition");
+    const nombreCodificado = disposicion?.match(/filename\*=UTF-8''([^;]+)/i)?.[1];
+    if (!nombreCodificado) throw new Error("El servidor no informó el nombre del archivo Excel.");
+
+    return { archivo: await respuesta.blob(), nombre: decodeURIComponent(nombreCodificado) };
 }
