@@ -294,17 +294,16 @@ export default function OrdenMeritoPage() {
                                                 })}
                                             </tbody>
                                         </table>
+                                        <div className="mt-4 flex justify-end">
+                                            <button
+                                                onClick={emitirOrdenMerito}
+                                                className="rounded-lg bg-[#4472c4] px-6 py-2 text-sm font-bold text-white shadow-md"
+                                            >
+                                                Emitir orden de mérito
+                                            </button>
+                                        </div>
                                     </>
                                 )}
-
-                                <div className="mt-4 flex justify-end">
-                                    <button
-                                        onClick={emitirOrdenMerito}
-                                        className="rounded-lg bg-[#4472c4] px-6 py-2 text-sm font-bold text-white shadow-md"
-                                    >
-                                        Emitir orden de mérito
-                                    </button>
-                                </div>
                             </section>
                         </div>
                     )}
