@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -38,6 +38,7 @@ export default function GestionPreguntasPage() {
     const [ultimosFiltros, setUltimosFiltros] = useState<FiltrosPregunta | null>(null);
     const [mensajeExito, setMensajeExito] = useState<string | null>(null);
     const [aviso, setAviso] = useState("");
+    const versionBusqueda = useRef(0);
 
     useEffect(() => {
         Promise.all([listarCompetenciasCatalogo(), listarFactoresCatalogo()])
@@ -65,18 +66,30 @@ export default function GestionPreguntasPage() {
         return () => window.removeEventListener("keydown", alPresionarTecla);
     }, [mensajeExito]);
 
-    const buscar = async (criterios: FiltrosPregunta = filtros) => {
+    const buscar = async (criterios: FiltrosPregunta = filtros, confirmacion?: string) => {
         const hayFiltro = Object.values(criterios).some((v) => v.trim() !== "");
         if (!hayFiltro) {
             setAviso("Ingresá al menos un criterio de búsqueda.");
             return;
         }
         setAviso("");
+        const version = ++versionBusqueda.current;
         try {
+            const coincidencias = await buscarPreguntas(criterios);
+            if (version !== versionBusqueda.current) return;
             setUltimosFiltros(criterios);
-            setResultados(await buscarPreguntas(criterios));
+            setResultados(coincidencias);
             setSeleccion(null);
+            if (confirmacion) {
+                setMensajeExito(confirmacion);
+            }
         } catch (e) {
+            if (version !== versionBusqueda.current) return;
+            if (confirmacion) {
+                setResultados(null);
+                setPopup("El cambio se guardó. No se pudo actualizar la grilla. Volvé a buscar.");
+                return;
+            }
             setPopup(e instanceof ApiError ? e.message : "Error al buscar preguntas.");
         }
     };
@@ -88,14 +101,17 @@ export default function GestionPreguntasPage() {
         try {
             await eliminarPregunta(idPregunta);
             setSeleccion(null);
-            await buscar(ultimosFiltros ?? filtros);
-            setMensajeExito(`Los datos de la pregunta ${nombre} han sido eliminados del sistema.`);
+            await buscar(
+                ultimosFiltros ?? filtros,
+                `Los datos de la pregunta ${nombre} han sido eliminados del sistema.`
+            );
         } catch (e) {
             setPopup(e instanceof ApiError ? e.message : "No se pudo eliminar la pregunta.");
         }
     };
 
     const limpiar = () => {
+        versionBusqueda.current++;
         setFiltros(FILTROS_VACIOS);
         setUltimosFiltros(null);
         setResultados(null);
@@ -266,8 +282,7 @@ export default function GestionPreguntasPage() {
                     onGuardada={() => {
                         setEditando(null);
                         setSeleccion(null);
-                        void buscar(ultimosFiltros ?? filtros);
-                        setMensajeExito("La operación ha culminado con éxito");
+                        void buscar(ultimosFiltros ?? filtros, "La operación ha culminado con éxito");
                     }}
                 />
             )}

@@ -119,7 +119,7 @@ class GestorEvaluacionesTest {
     }
 
     @Test
-    void cu025_confirmaConLasClavesMostradasYElMismoModeloParaAmbosCandidatos() {
+    void cu025_confirmaConLasClavesMostradasYDosPreguntasDelFactorPorCandidato() {
         Candidato candidato = new Candidato();
         candidato.setNroCandidato(42);
         CandidatoGestionDTO seleccion = CandidatoGestionDTO.builder().nroCandidato(42).build();
@@ -183,11 +183,13 @@ class GestorEvaluacionesTest {
             List<PreguntaCuestionario> asignaciones = asignada.getAllValues();
             List<PreguntaCuestionario> primerModelo = asignaciones.subList(0, 2);
             List<PreguntaCuestionario> segundoModelo = asignaciones.subList(2, 4);
-            assertThat(primerModelo).extracting(PreguntaCuestionario::getPregunta).doesNotHaveDuplicates();
+            for (var modelo : List.of(primerModelo, segundoModelo)) {
+                assertThat(modelo).extracting(PreguntaCuestionario::getPregunta)
+                    .hasSize(2).doesNotHaveDuplicates().isSubsetOf(disponibles);
+            }
             for (int i = 0; i < primerModelo.size(); i++) {
                 var primera = primerModelo.get(i);
                 var segunda = segundoModelo.get(i);
-                assertThat(primera.getPregunta()).isSameAs(segunda.getPregunta());
                 assertThat(primera.getBloque().getNroBloque()).isEqualTo(i + 1);
                 assertThat(segunda.getBloque().getNroBloque()).isEqualTo(i + 1);
                 assertThat(primera.getBloque().getCuestionario()).isSameAs(guardados.get(0));
