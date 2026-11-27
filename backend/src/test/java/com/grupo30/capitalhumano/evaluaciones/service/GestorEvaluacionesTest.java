@@ -14,11 +14,14 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -116,6 +119,57 @@ class GestorEvaluacionesTest {
 
         assertThat(gestor.validarCandidatosActivos(List.of(sinActivo, conActivo))).containsExactly(conActivo);
         verifyNoInteractions(puestos, evaluaciones);
+    }
+
+    @Test
+    void cu025_rechazaPuestoSinCompetenciasAntesDeConsultarFactores() {
+        Puesto puesto = new Puesto();
+        puesto.setActivo(true);
+        when(puestos.findById(1)).thenReturn(puesto);
+
+        assertThatThrownBy(() -> gestor.validarPuestoEvaluable(1))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("no tiene competencias asociadas");
+        verifyNoInteractions(factores, preguntas, evaluaciones);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"0, false", "1, false", "2, true", "3, true"})
+    void cu025_limiteDePreguntasActivasPorFactor(int cantidad, boolean evaluable) {
+        Puesto puesto = new Puesto();
+        puesto.setActivo(true);
+        Competencia competencia = new Competencia();
+        competencia.setCodigo("C01");
+        competencia.setNombre("LIDERAZGO");
+        puesto.getCaracteristicas().add(new CaracteristicaPuesto(1, 6.0, puesto, competencia));
+        Factor factor = new Factor();
+        factor.setCodigo("F01");
+        when(puestos.findById(1)).thenReturn(puesto);
+        when(factores.buscarPorCompetencia("C01")).thenReturn(List.of(factor));
+        when(preguntas.buscarActivasPorFactor("F01")).thenReturn(
+                IntStream.range(0, cantidad).mapToObj(indice -> new Pregunta()).toList());
+
+        if (evaluable) {
+            gestor.validarPuestoEvaluable(1);
+        } else {
+            assertThatThrownBy(() -> gestor.validarPuestoEvaluable(1))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("LIDERAZGO");
+        }
+    }
+
+    @Test
+    void cu025_rechazaElLoteCompletoCuandoUnCandidatoYaTieneCuestionarioVigente() {
+        CandidatoGestionDTO disponible = CandidatoGestionDTO.builder().nroCandidato(41).build();
+        CandidatoGestionDTO ocupado = CandidatoGestionDTO.builder().nroCandidato(42)
+                .apellido("PEREZ").nombre("ANA").build();
+        when(cuestionarios.buscarActivoPorCandidato(41)).thenReturn(Optional.empty());
+        when(cuestionarios.buscarActivoPorCandidato(42)).thenReturn(Optional.of(new Cuestionario()));
+
+        assertThatThrownBy(() -> gestor.prepararEvaluacion(1, List.of(disponible, ocupado)))
+                .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("PEREZ, ANA");
+        verify(cuestionarios, never()).guardar(any());
+        verifyNoInteractions(evaluaciones, puestos);
     }
 
     @Test

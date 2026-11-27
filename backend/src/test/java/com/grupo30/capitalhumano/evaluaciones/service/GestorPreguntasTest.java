@@ -82,6 +82,14 @@ class GestorPreguntasTest {
     }
 
     @Test
+    void cu020_rechazaUnaBusquedaSinNingunCriterioInformado() {
+        assertThatThrownBy(() -> gestor.buscarPreguntas(null, "  ", ""))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("al menos un criterio");
+        verifyNoInteractions(preguntas);
+    }
+
+    @Test
     void cu020_busquedaSinCoincidenciasDevuelveListaVacia() {
         when(preguntas.buscarPreguntas(null, null, "INEXISTENTE")).thenReturn(List.of());
 
@@ -108,6 +116,40 @@ class GestorPreguntasTest {
                 .containsExactlyElementsOf(escala.getItems());
         assertThat(guardada.getOpcionesPregunta()).allSatisfy(opcion ->
                 assertThat(opcion.getPregunta()).isSameAs(guardada));
+    }
+
+    @Test
+    void cu021_admiteLosMaximosDeNombreTextoYDescripcion() {
+        prepararReferenciasDeAlta();
+        PreguntaDTO dto = solicitud(4, 6);
+        dto.setNombre("N".repeat(150));
+        dto.setTextoPregunta("P".repeat(500));
+        dto.setDescripcion("D".repeat(255));
+
+        gestor.altaPregunta(dto);
+
+        ArgumentCaptor<Pregunta> guardada = ArgumentCaptor.forClass(Pregunta.class);
+        verify(preguntas).guardar(guardada.capture());
+        assertThat(guardada.getValue().getNombre()).hasSize(150);
+        assertThat(guardada.getValue().getTextoPregunta()).hasSize(500);
+        assertThat(guardada.getValue().getDescripcion()).hasSize(255);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"nombre, Nombre de la pregunta, 150", "texto, Texto de la pregunta, 500",
+        "descripcion, Descripción, 255"})
+    void cu021_rechazaUnCaracterPorEncimaDelMaximo(String campo, String etiqueta, int maximo) {
+        PreguntaDTO dto = solicitud(4, 6);
+        String valor = "X".repeat(maximo + 1);
+        switch (campo) {
+            case "nombre" -> dto.setNombre(valor);
+            case "texto" -> dto.setTextoPregunta(valor);
+            case "descripcion" -> dto.setDescripcion(valor);
+            default -> throw new AssertionError("Campo de prueba desconocido");
+        }
+
+        assertAltaRechazada(dto, etiqueta + " admite hasta " + maximo);
+        verifyNoInteractions(escalas, factores, competencias);
     }
 
     @Test

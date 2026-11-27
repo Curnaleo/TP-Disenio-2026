@@ -12,6 +12,7 @@ Los diagramas conservan sus archivos originales. Los PDF permiten consultarlos y
 | Devolución de etapa 4 | [Correcciones](entregas/etapa-4/correcciones_grupo30_etapa4.md) |
 | Devolución de etapa 5 | [Correcciones](entregas/etapa-5/correcciones_etapa5_grupo30.md) |
 | Enunciado y CUs | [Enunciado TP 2026](casos-de-uso/Enunciado-del-TP-2026-de-Diseo-de-Sistemas-v20263---Gestin-de-Evaluaciones-de-Pe.md) |
+| Pruebas del backend | [Casos por capa y hallazgos](pruebas-backend-por-capa.md) |
 
 ## Al implementar
 
