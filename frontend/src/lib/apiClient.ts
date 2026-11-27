@@ -1,4 +1,4 @@
-import { obtenerToken } from "./session";
+import { obtenerToken, borrarToken } from "./session";
 import { ErrorResponseDTO } from "@/types/error";
 
 // const API_URL = process.env.NEXT_PUBLIC_API_URL; por defecto es el puerto 3000
@@ -34,6 +34,10 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
     if (!res.ok) {
         let body: ErrorResponseDTO | null = null;
         try { body = await res.json(); } catch {}
+        if (res.status === 401 && token) {
+            borrarToken();
+            window.location.href = "/login";
+        }
         throw new ApiError(res.status, body);
     }
 
