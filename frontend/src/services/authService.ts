@@ -1,5 +1,5 @@
 import { apiFetch } from "@/lib/apiClient";
-import { borrarToken, guardarToken } from "@/lib/session";
+import { borrarToken, guardarCandidato, guardarToken } from "@/lib/session";
 import {
     AuthResponseDTO,
     LoginCandidatoRequest,
@@ -23,6 +23,7 @@ export async function loginCandidato(req: LoginCandidatoRequest): Promise<AuthRe
     });
 
     guardarToken(resp.token);
+    if (resp.candidato) guardarCandidato(resp.candidato);
     return resp;
 }
 
