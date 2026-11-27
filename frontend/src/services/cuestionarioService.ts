@@ -1,9 +1,6 @@
 // CU026 - Completar Cuestionario.
-// El back todavía no expone endpoints de cuestionario (solo existe GestorCuestionario, sin controller),
-// así que por ahora todo es mock
-// y la pantalla no se toca.
-//
-// Para probar los flujos alternativos en modo mock, abrir /cuestionario?escenario=<valor>:
+// El back todavía no expone endpoints (solo existe GestorCuestionario),
+// así que por ahora todo es mock y la pantalla no se toca.
 //   activo (default) | en-proceso (1.C) | vencido-activo (1.B) | vencido-tiempo (1.A) | accesos (precondición)
 
 import { obtenerCandidato, obtenerClaimsToken } from "@/lib/session";
@@ -112,7 +109,6 @@ export async function obtenerCuestionarioActual(): Promise<CuestionarioActual> {
 
 // GestorCuestionario.iniciarCuestionario: verifica plazos (1.A / 1.B), arma el cuestionario
 // si estaba ACTIVO (paso 3) y devuelve el bloque desde el que hay que seguir (1.C).
-// Ojo al conectar: el back devuelve 0 cuando arranca desde el principio, y los bloques empiezan en 1.
 export async function iniciarCuestionario(idCuestionario: number): Promise<number> {
     void idCuestionario;
     await esperar();

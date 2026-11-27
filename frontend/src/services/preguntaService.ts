@@ -19,7 +19,7 @@ export interface NuevaPreguntaRequest {
     ponderaciones: number[]; // en el orden de la grilla de opciones
 }
 
-// El back va a responder 409; ahí hay que mapearlo a este error
+// El back va a responder 409;
 export class PreguntaDuplicadaError extends Error {
     constructor(public campo: "nombre" | "texto") {
         super("La pregunta ya existe");
