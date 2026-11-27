@@ -50,6 +50,7 @@ public class GestorEvaluaciones {
 	private final IUsuarioDAO usuarioDAO;
 	private final IFactorDAO factorDAO;
 	private final IPreguntaDAO preguntaDAO;
+	private final GestorCuestionario gestorCuestionario;
 
 	// Una sola vista previa por consultor. La evaluación se guarda al confirmar.
 	private final Map<Integer, EvaluacionPendiente> vistasPrevias = new ConcurrentHashMap<>();
@@ -246,7 +247,7 @@ public class GestorEvaluaciones {
 		}
 	}
 
-	private void crearCuestionario(
+	private Cuestionario crearCuestionario(
 		Candidato candidato,
 		Evaluacion evaluacion,
 		String clave) {
@@ -261,6 +262,7 @@ public class GestorEvaluaciones {
 				.build();
 
 		cuestionarioDAO.guardar(cuestionario);
+		return cuestionario;
 	}
 
 	@Transactional
@@ -353,10 +355,13 @@ public class GestorEvaluaciones {
 	}
 
 	private void guardarEvaluacion(Integer idPuesto, Usuario usuario, List<CandidatoConClave> candidatos) {
-		Evaluacion evaluacion = crearEvaluacion(recuperarPuesto(idPuesto), usuario);
+		Puesto puesto = recuperarPuesto(idPuesto);
+		Evaluacion evaluacion = crearEvaluacion(puesto, usuario);
+		List<Cuestionario> cuestionarios = new ArrayList<>();
 		for (CandidatoConClave preparado : candidatos) {
 			Candidato candidato = recuperarCandidato(preparado.candidato().getNroCandidato());
-			crearCuestionario(candidato, evaluacion, preparado.clave());
+			cuestionarios.add(crearCuestionario(candidato, evaluacion, preparado.clave()));
 		}
+		gestorCuestionario.prepararCuestionarios(puesto, cuestionarios);
 	}
 }

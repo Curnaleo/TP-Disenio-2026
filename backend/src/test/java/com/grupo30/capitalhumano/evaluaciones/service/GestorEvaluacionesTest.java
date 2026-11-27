@@ -2,6 +2,8 @@ package com.grupo30.capitalhumano.evaluaciones.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -9,19 +11,22 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.grupo30.capitalhumano.evaluaciones.dao.IBloquePreguntasDAO;
 import com.grupo30.capitalhumano.evaluaciones.dao.ICandidatoDAO;
+import com.grupo30.capitalhumano.evaluaciones.dao.IConfiguracionSistemaDAO;
 import com.grupo30.capitalhumano.evaluaciones.dao.ICuestionarioDAO;
 import com.grupo30.capitalhumano.evaluaciones.dao.IEvaluacionDAO;
 import com.grupo30.capitalhumano.evaluaciones.dao.IFactorDAO;
+import com.grupo30.capitalhumano.evaluaciones.dao.IPreguntaCuestionarioDAO;
 import com.grupo30.capitalhumano.evaluaciones.dao.IPreguntaDAO;
 import com.grupo30.capitalhumano.evaluaciones.dao.IPuestoDAO;
 import com.grupo30.capitalhumano.evaluaciones.dao.IUsuarioDAO;
@@ -29,13 +34,16 @@ import com.grupo30.capitalhumano.evaluaciones.dto.CandidatoGestionDTO;
 import com.grupo30.capitalhumano.evaluaciones.entity.Candidato;
 import com.grupo30.capitalhumano.evaluaciones.entity.CaracteristicaPuesto;
 import com.grupo30.capitalhumano.evaluaciones.entity.Competencia;
+import com.grupo30.capitalhumano.evaluaciones.entity.ConfiguracionSistema;
 import com.grupo30.capitalhumano.evaluaciones.entity.Cuestionario;
 import com.grupo30.capitalhumano.evaluaciones.entity.EstadoCuestionario;
 import com.grupo30.capitalhumano.evaluaciones.entity.Factor;
 import com.grupo30.capitalhumano.evaluaciones.entity.Pregunta;
+import com.grupo30.capitalhumano.evaluaciones.entity.PreguntaCuestionario;
 import com.grupo30.capitalhumano.evaluaciones.entity.Puesto;
 import com.grupo30.capitalhumano.evaluaciones.entity.TipoDocumento;
 import com.grupo30.capitalhumano.evaluaciones.entity.Usuario;
+import com.grupo30.capitalhumano.evaluaciones.service.GestorEvaluaciones.CandidatoConClave;
 
 @ExtendWith(MockitoExtension.class)
 class GestorEvaluacionesTest {
@@ -47,7 +55,19 @@ class GestorEvaluacionesTest {
     @Mock private IFactorDAO factores;
     @Mock private IPreguntaDAO preguntas;
     @Mock private IUsuarioDAO usuarios;
-    @InjectMocks private GestorEvaluaciones gestor;
+    @Mock private IBloquePreguntasDAO bloques;
+    @Mock private IPreguntaCuestionarioDAO preguntasCuestionario;
+    @Mock private IConfiguracionSistemaDAO configuracion;
+    private GestorEvaluaciones gestor;
+    private GestorCuestionario gestorCuestionario;
+
+    @BeforeEach
+    void prepararGestores() {
+        gestorCuestionario = new GestorCuestionario(cuestionarios, bloques, preguntasCuestionario,
+            configuracion, null, null, null);
+        gestor = new GestorEvaluaciones(candidatos, puestos, evaluaciones, cuestionarios, usuarios,
+            factores, preguntas, gestorCuestionario);
+    }
 
     @Test
     void cu025_busquedaDevuelveDatosIdentificatoriosDelCandidato() {
@@ -89,10 +109,13 @@ class GestorEvaluacionesTest {
     }
 
     @Test
-    void cu025_confirmaUnaSolaVezConLaMismaClaveQueMostro() {
+    void cu025_confirmaConLasClavesMostradasYElMismoModeloParaAmbosCandidatos() {
         Candidato candidato = new Candidato();
         candidato.setNroCandidato(42);
         CandidatoGestionDTO seleccion = CandidatoGestionDTO.builder().nroCandidato(42).build();
+        Candidato segundoCandidato = new Candidato();
+        segundoCandidato.setNroCandidato(43);
+        CandidatoGestionDTO segundaSeleccion = CandidatoGestionDTO.builder().nroCandidato(43).build();
         Usuario consultor = new Usuario();
         consultor.setIdUsuario(7);
         Competencia competencia = new Competencia();
@@ -105,30 +128,75 @@ class GestorEvaluacionesTest {
         sinPreguntas.setCodigo("F01");
         Factor evaluable = new Factor();
         evaluable.setCodigo("F02");
+        List<Pregunta> disponibles = List.of(new Pregunta(), new Pregunta(), new Pregunta());
+        evaluable.getPreguntas().addAll(disponibles);
+        competencia.getFactores().addAll(List.of(sinPreguntas, evaluable));
+        ConfiguracionSistema cantidadPorBloque = new ConfiguracionSistema();
+        cantidadPorBloque.setValor("1");
 
         when(usuarios.buscarPorUser("consultor")).thenReturn(Optional.of(consultor));
         when(puestos.findById(1)).thenReturn(puesto);
         when(candidatos.findById(42)).thenReturn(Optional.of(candidato));
+        when(candidatos.findById(43)).thenReturn(Optional.of(segundoCandidato));
         when(factores.buscarPorCompetencia("C01")).thenReturn(List.of(sinPreguntas, evaluable));
         when(preguntas.buscarActivasPorFactor("F01")).thenReturn(List.of());
-        when(preguntas.buscarActivasPorFactor("F02")).thenReturn(List.of(new Pregunta(), new Pregunta()));
+        when(preguntas.buscarActivasPorFactor("F02")).thenReturn(disponibles);
+        when(configuracion.obtener("CANTIDAD_PREGUNTAS_BLOQUE")).thenReturn(Optional.of(cantidadPorBloque));
 
         SecurityContextHolder.getContext().setAuthentication(
             new UsernamePasswordAuthenticationToken("consultor", null));
         try {
-            var vista = gestor.prepararEvaluacion(1, List.of(seleccion));
+            var vista = gestor.prepararEvaluacion(1, List.of(seleccion, segundaSeleccion));
             String clave = vista.candidatos().getFirst().clave();
             assertThat(clave).matches("(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]{8}");
-            verifyNoInteractions(evaluaciones);
+            verifyNoInteractions(evaluaciones, bloques, preguntasCuestionario);
 
             gestor.confirmarEvaluacion(1, vista.id());
 
             var guardado = ArgumentCaptor.forClass(Cuestionario.class);
-            verify(cuestionarios).guardar(guardado.capture());
-            assertThat(guardado.getValue().getClave()).isEqualTo(clave);
-            assertThat(guardado.getValue().getEstado()).isEqualTo(EstadoCuestionario.ACTIVO);
+            verify(cuestionarios, times(2)).guardar(guardado.capture());
+            List<Cuestionario> guardados = guardado.getAllValues();
+            assertThat(guardados).extracting(Cuestionario::getClave)
+                .containsExactlyElementsOf(vista.candidatos().stream().map(CandidatoConClave::clave).toList());
+            assertThat(guardados).allSatisfy(cuestionario -> {
+                assertThat(cuestionario.getEstado()).isEqualTo(EstadoCuestionario.ACTIVO);
+                assertThat(cuestionario.getFechaHoraInicio()).isNull();
+            });
+
+            var asignada = ArgumentCaptor.forClass(PreguntaCuestionario.class);
+            verify(preguntasCuestionario, times(4)).guardar(asignada.capture());
+            List<PreguntaCuestionario> asignaciones = asignada.getAllValues();
+            List<PreguntaCuestionario> primerModelo = asignaciones.subList(0, 2);
+            List<PreguntaCuestionario> segundoModelo = asignaciones.subList(2, 4);
+            assertThat(primerModelo).extracting(PreguntaCuestionario::getPregunta).doesNotHaveDuplicates();
+            for (int i = 0; i < primerModelo.size(); i++) {
+                var primera = primerModelo.get(i);
+                var segunda = segundoModelo.get(i);
+                assertThat(primera.getPregunta()).isSameAs(segunda.getPregunta());
+                assertThat(primera.getBloque().getNroBloque()).isEqualTo(i + 1);
+                assertThat(segunda.getBloque().getNroBloque()).isEqualTo(i + 1);
+                assertThat(primera.getBloque().getCuestionario()).isSameAs(guardados.get(0));
+                assertThat(segunda.getBloque().getCuestionario()).isSameAs(guardados.get(1));
+            }
             assertThatThrownBy(() -> gestor.confirmarEvaluacion(1, vista.id()))
                 .isInstanceOf(IllegalArgumentException.class);
+
+            Cuestionario cuestionario = guardados.getFirst();
+            cuestionario.setIdCuestionario(1);
+            ConfiguracionSistema plazo = new ConfiguracionSistema();
+            plazo.setValor("7");
+            when(configuracion.obtener("DIAS_MAXIMO_CUESTIONARIO_ACTIVO")).thenReturn(Optional.of(plazo));
+            when(cuestionarios.findById(1)).thenReturn(Optional.of(cuestionario));
+            when(bloques.recuperarBloquesPorCuestionario(1))
+                .thenReturn(primerModelo.stream().map(PreguntaCuestionario::getBloque).toList());
+
+            gestorCuestionario.iniciarCuestionario(1);
+
+            assertThat(cuestionario.getEstado()).isEqualTo(EstadoCuestionario.EN_PROCESO);
+            assertThat(cuestionario.getFechaHoraInicio()).isNotNull();
+            assertThat(cuestionario.getCantidadAccesos()).isEqualTo(1);
+            verify(bloques, times(4)).guardar(any());
+            verify(configuracion).obtener("CANTIDAD_PREGUNTAS_BLOQUE");
         } finally {
             SecurityContextHolder.clearContext();
         }
