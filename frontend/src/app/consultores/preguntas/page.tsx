@@ -5,11 +5,19 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
     buscarPreguntas,
-    listarCompetencias,
-    listarFactores,
+    eliminarPregunta,
     FiltrosPregunta,
 } from "@/services/preguntaService";
+import {
+    listarCompetenciasCatalogo,
+    listarFactoresCatalogo,
+} from "@/services/catalogoService";
+import { ApiError } from "@/lib/apiClient";
+import { CompetenciaDTO } from "@/types/competencia";
+import { FactorDTO } from "@/types/factor";
 import { PreguntaDTO } from "@/types/pregunta";
+import ModalEditarPregunta from "@/features/preguntas/ModalEditarPregunta";
+import PopupConfirmacion from "@/components/ui/PopupConfirmacion";
 import PopupError from "@/components/ui/PopupError";
 
 const FILTROS_VACIOS: FiltrosPregunta = { competencia: "", factor: "", pregunta: "" };
@@ -21,16 +29,32 @@ export default function GestionPreguntasPage() {
     const [popup, setPopup] = useState<string | null>(null);
     const router = useRouter();
     const [filtros, setFiltros] = useState<FiltrosPregunta>(FILTROS_VACIOS);
-    const [competencias, setCompetencias] = useState<string[]>([]);
-    const [factores, setFactores] = useState<string[]>([]);
+    const [competencias, setCompetencias] = useState<CompetenciaDTO[]>([]);
+    const [factores, setFactores] = useState<FactorDTO[]>([]);
     const [resultados, setResultados] = useState<PreguntaDTO[] | null>(null);
     const [seleccion, setSeleccion] = useState<PreguntaDTO | null>(null);
+    const [editando, setEditando] = useState<PreguntaDTO | null>(null);
+    const [confirmarBaja, setConfirmarBaja] = useState<PreguntaDTO | null>(null);
     const [aviso, setAviso] = useState("");
 
     useEffect(() => {
-        listarCompetencias().then(setCompetencias);
-        listarFactores().then(setFactores);
+        Promise.all([listarCompetenciasCatalogo(), listarFactoresCatalogo()])
+            .then(([comps, facts]) => {
+                setCompetencias(comps);
+                setFactores(facts);
+            })
+            .catch((e) => {
+                setPopup(
+                    e instanceof ApiError
+                        ? e.message
+                        : "No se pudieron cargar los filtros de búsqueda."
+                );
+            });
     }, []);
+
+    const factoresVisibles = filtros.competencia
+        ? factores.filter((f) => f.nombreCompetencia === filtros.competencia)
+        : factores;
 
     const buscar = async () => {
         const hayFiltro = Object.values(filtros).some((v) => v.trim() !== "");
@@ -39,8 +63,25 @@ export default function GestionPreguntasPage() {
             return;
         }
         setAviso("");
-        setResultados(await buscarPreguntas(filtros));
-        setSeleccion(null);
+        try {
+            setResultados(await buscarPreguntas(filtros));
+            setSeleccion(null);
+        } catch (e) {
+            setPopup(e instanceof ApiError ? e.message : "Error al buscar preguntas.");
+        }
+    };
+
+    const confirmarEliminar = async () => {
+        if (!confirmarBaja) return;
+        const id = confirmarBaja.idPregunta;
+        setConfirmarBaja(null);
+        try {
+            await eliminarPregunta(id);
+            setSeleccion(null);
+            setResultados(await buscarPreguntas(filtros));
+        } catch (e) {
+            setPopup(e instanceof ApiError ? e.message : "No se pudo eliminar la pregunta.");
+        }
     };
 
     const limpiar = () => {
@@ -72,12 +113,16 @@ export default function GestionPreguntasPage() {
                                 Competencia
                                 <select
                                     value={filtros.competencia}
-                                    onChange={(e) => setFiltros({ ...filtros, competencia: e.target.value })}
+                                    onChange={(e) =>
+                                        setFiltros({ ...filtros, competencia: e.target.value, factor: "" })
+                                    }
                                     className={`${CLASE_SELECT} mt-1`}
                                 >
                                     <option value="" className="bg-white text-black">-</option>
                                     {competencias.map((c) => (
-                                        <option key={c} value={c} className="bg-white text-black">{c}</option>
+                                        <option key={c.codigo} value={c.nombre} className="bg-white text-black">
+                                            {c.nombre}
+                                        </option>
                                     ))}
                                 </select>
                             </label>
@@ -90,8 +135,10 @@ export default function GestionPreguntasPage() {
                                     className={`${CLASE_SELECT} mt-1`}
                                 >
                                     <option value="" className="bg-white text-black">-</option>
-                                    {factores.map((f) => (
-                                        <option key={f} value={f} className="bg-white text-black">{f}</option>
+                                    {factoresVisibles.map((f) => (
+                                        <option key={f.codigo} value={f.nombre} className="bg-white text-black">
+                                            {f.nombre}
+                                        </option>
                                     ))}
                                 </select>
                             </label>
@@ -171,13 +218,13 @@ export default function GestionPreguntasPage() {
                                         <div className="mt-2 flex items-center gap-3">
                                             <span className="text-sm font-semibold">Acciones:</span>
                                             <button
-                                                onClick={() => setPopup("Aún en desarrollo")}
+                                                onClick={() => setEditando(seleccion)}
                                                 className="rounded-lg bg-[#4472c4] px-6 py-2 text-sm font-bold text-white shadow-md"
                                             >
                                                 Modificar
                                             </button>
                                             <button
-                                                onClick={() => setPopup("Aún en desarrollo")}
+                                                onClick={() => setConfirmarBaja(seleccion)}
                                                 className="rounded-lg bg-[#c0392b] px-6 py-2 text-sm font-bold text-white shadow-md"
                                             >
                                                 Eliminar
@@ -200,6 +247,27 @@ export default function GestionPreguntasPage() {
                     </div>
                 </div>
             </div>
+            {editando && (
+                <ModalEditarPregunta
+                    pregunta={editando}
+                    onCancelar={() => setEditando(null)}
+                    onGuardada={() => {
+                        setEditando(null);
+                        setSeleccion(null);
+                        void buscar();
+                    }}
+                />
+            )}
+            {confirmarBaja && (
+                <PopupConfirmacion
+                    titulo="Confirmar eliminación"
+                    mensaje={`¿Está seguro que desea eliminar la pregunta "${confirmarBaja.nombre}"?`}
+                    textoSi="Sí, eliminar"
+                    textoNo="Cancelar"
+                    onSi={() => void confirmarEliminar()}
+                    onNo={() => setConfirmarBaja(null)}
+                />
+            )}
             {popup && <PopupError mensaje={popup} onCerrar={() => setPopup(null)} />}
         </main>
     );

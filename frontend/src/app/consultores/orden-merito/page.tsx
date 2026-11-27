@@ -100,21 +100,25 @@ export default function OrdenMeritoPage() {
     const salir = () => router.push("/");
 
     let posicionActual = 0;
+    const evaluacionesIncluidas =
+        evaluacionesIds.length > 0
+            ? evaluaciones.filter((ev) => evaluacionesIds.includes(ev.idEvaluacion))
+            : evaluaciones;
 
     return (
-        <main className="min-h-screen bg-white p-6 text-black">
-            <div className="mx-auto max-w-5xl bg-[#e5e5e5] shadow">
+        <main className="min-h-screen bg-white p-6 text-black print:p-0">
+            <div className="mx-auto max-w-5xl bg-[#e5e5e5] shadow print:max-w-none print:bg-white print:shadow-none">
                 {/* Barra de título con cruz de cerrar */}
-                <header className="flex items-center justify-between bg-[#0078d4] px-4 py-2 text-white">
+                <header className="flex items-center justify-between bg-[#0078d4] px-4 py-2 text-white print:hidden">
                     <h1 className="font-bold">Emitir Orden de Mérito</h1>
                     <button onClick={salir} aria-label="Cerrar" className="text-xl leading-none">
                         ✕
                     </button>
                 </header>
 
-                <div className="space-y-4 p-4">
+                <div className="space-y-4 p-4 print:p-0">
                     {/* Paso 1: Filtros de búsqueda de Puesto */}
-                    <div>
+                    <div className="print:hidden">
                         <p className="mb-2 text-sm font-semibold text-gray-700">
                             🔍 Buscar Puesto
                         </p>
@@ -176,7 +180,7 @@ export default function OrdenMeritoPage() {
 
                     {/* Resultados de Puestos */}
                     {puestos && (
-                        <div>
+                        <div className="print:hidden">
                             <h2 className="mb-2 text-sm font-bold">Puestos encontrados</h2>
                             <section className="rounded bg-white p-4">
                                 <p className="text-xs text-gray-600">
@@ -224,7 +228,7 @@ export default function OrdenMeritoPage() {
 
                     {/* Paso 2: Evaluaciones del puesto seleccionado */}
                     {puestoSeleccionado && (
-                        <div>
+                        <div className="print:hidden">
                             <h2 className="mb-2 text-sm font-bold">
                                 Evaluaciones de {puestoSeleccionado.nombre}
                             </h2>
@@ -290,17 +294,16 @@ export default function OrdenMeritoPage() {
                                                 })}
                                             </tbody>
                                         </table>
+                                        <div className="mt-4 flex justify-end">
+                                            <button
+                                                onClick={emitirOrdenMerito}
+                                                className="rounded-lg bg-[#4472c4] px-6 py-2 text-sm font-bold text-white shadow-md"
+                                            >
+                                                Emitir orden de mérito
+                                            </button>
+                                        </div>
                                     </>
                                 )}
-
-                                <div className="mt-4 flex justify-end">
-                                    <button
-                                        onClick={emitirOrdenMerito}
-                                        className="rounded-lg bg-[#4472c4] px-6 py-2 text-sm font-bold text-white shadow-md"
-                                    >
-                                        Emitir orden de mérito
-                                    </button>
-                                </div>
                             </section>
                         </div>
                     )}
@@ -309,19 +312,35 @@ export default function OrdenMeritoPage() {
                     {ordenMerito && (
                         <div>
                             <div className="mb-2 flex items-center justify-between">
-                                <h2 className="text-sm font-bold">
+                                <h2 className="text-sm font-bold print:text-base">
                                     Orden de Mérito — {puestoSeleccionado?.nombre}
                                 </h2>
                                 {ordenMerito.length > 0 && (
                                     <button
                                         onClick={() => window.print()}
-                                        className="rounded border border-gray-400 bg-white px-3 py-1 text-xs font-semibold text-gray-700"
+                                        className="rounded border border-gray-400 bg-white px-3 py-1 text-xs font-semibold text-gray-700 print:hidden"
                                     >
                                         Imprimir
                                     </button>
                                 )}
                             </div>
-                            <section className="overflow-x-auto rounded bg-white p-4">
+                            {puestoSeleccionado && (
+                                <div className="mb-3 hidden text-xs text-gray-700 print:block">
+                                    <p>
+                                        <strong>Puesto:</strong> {puestoSeleccionado.codigo} —{" "}
+                                        {puestoSeleccionado.nombre} ({puestoSeleccionado.empresa})
+                                    </p>
+                                    {evaluacionesIncluidas.length > 0 && (
+                                        <p>
+                                            <strong>Evaluaciones:</strong>{" "}
+                                            {evaluacionesIncluidas
+                                                .map((ev) => `${ev.nombreEvaluacion} (${ev.fechaCreacion})`)
+                                                .join(", ")}
+                                        </p>
+                                    )}
+                                </div>
+                            )}
+                            <section className="overflow-x-auto rounded bg-white p-4 print:overflow-visible print:p-0">
                                 {ordenMerito.length === 0 ? (
                                     <p className="text-sm text-gray-600">
                                         No se encontraron candidatos para las evaluaciones seleccionadas.
@@ -394,7 +413,7 @@ export default function OrdenMeritoPage() {
                     )}
 
                     {/* Salir abajo a la derecha */}
-                    <div className="mt-4 flex justify-end">
+                    <div className="mt-4 flex justify-end print:hidden">
                         <button
                             onClick={salir}
                             className="rounded-lg bg-[#7f8c8d] px-8 py-3 text-sm font-bold text-white shadow-md"

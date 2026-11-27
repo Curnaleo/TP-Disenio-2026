@@ -1,104 +1,107 @@
-# TP Diseño de Sistemas 2026
+# TP Diseño de Sistemas 2026 — Grupo 30
 
-Sistema de gestión de evaluaciones de candidatos para puestos de trabajo. El repositorio contiene el proyecto inicial del backend y carpetas reservadas para el frontend, la base de datos y la documentación.
+Sistema de gestión de evaluaciones de candidatos para puestos de trabajo.
 
 ## Estado actual
 
-- **Backend:** generado con Spring Initializr. Todavía no hay funcionalidades del TP implementadas.
-- **Frontend:** carpeta creada; proyecto Next.js pendiente.
-- **Base de datos:** Se creo un docker que contiene la base de datos.
-- **Documentación:** diagramas y devoluciones del grupo 30 disponibles en [docs/README.md](docs/README.md).
+- **Base de datos:** PostgreSQL 17 mediante Docker ([`database/docker-compose.yml`](database/docker-compose.yml)), con esquema generado por Hibernate (`ddl-auto=create`) y datos iniciales en [`backend/src/main/resources/data.sql`](backend/src/main/resources/data.sql).
+- **Backend:** API REST en Spring Boot 4.1.3 (Java 21), Spring Data JPA, Spring Security (JWT stateless), PostgreSQL Driver y Lombok, en el paquete `com.grupo30.capitalhumano.evaluaciones`.
+- **Frontend:** Aplicación web en Next.js 15, React 19, TypeScript y Tailwind CSS 4 en [`frontend/`](frontend/).
+- **Documentación:** Diagramas (DER, clases, secuencia), enunciado y devoluciones en [`docs/README.md`](docs/README.md).
 
 ## Stack
 
-| Componente | Versión o estado |
+| Componente | Versión / Tecnología |
 | --- | --- |
-| Java del proyecto | 21 (`pom.xml`) |
+| Java | 21 (`pom.xml`) |
 | Spring Boot | 4.1.3 |
-| Maven Wrapper | Maven 3.10.1 (`backend/.mvn/wrapper/maven-wrapper.properties`) |
-| Persistencia y seguridad | Spring Data JPA, Spring Security y PostgreSQL Driver |
-| API y validación | Spring Web MVC y Validation |
-| Lombok | Gestionado por Spring Boot |
-| Frontend | Next.js, React y TypeScript: pendiente de crear |
-| Base de datos | PostgreSQL: pendiente de configurar |
+| Maven Wrapper | 3.10.1 (`backend/.mvn/wrapper/maven-wrapper.properties`) |
+| Persistencia y seguridad | Spring Data JPA, Spring Security (JWT), Validation, PostgreSQL Driver |
+| Frontend | Next.js 15.5.29, React 19.1.0, TypeScript 5, Tailwind CSS 4 |
+| Base de datos | PostgreSQL 17 (puerto `5433`) y pgAdmin 4 (puerto `5050`) |
 
-El Java instalado en el equipo puede ser más reciente que Java 21; el proyecto está configurado para compilar con Java 21.
-
-## Estructura actual
+## Estructura del repositorio
 
 ```text
 TP-Disenio-2026/
 ├── backend/
-│   ├── .mvn/wrapper/
-│   ├── src/
-│   │   ├── main/java/com/capitalhumano/evaluaciones/
-│   │   │   └── EvaluacionesApplication.java
-│   │   ├── main/resources/application.properties
-│   │   └── test/java/com/capitalhumano/evaluaciones/
-│   │       └── EvaluacionesApplicationTests.java
-│   ├── mvnw
-│   ├── mvnw.cmd
-│   └── pom.xml
+│   ├── src/main/java/com/grupo30/capitalhumano/evaluaciones/
+│   │   ├── autenticacion/   # JWT, SecurityConfig, AuthController, LDAP simulado
+│   │   ├── config/          # OpenAPI / Swagger
+│   │   ├── controller/      # Pregunta, Competencia, OpcionRespuesta, Evaluacion, Cuestionario, Reporte
+│   │   ├── dao/             # Interfaces DAO
+│   │   ├── dto/             # DTOs de entrada/salida
+│   │   ├── entity/          # Entidades JPA
+│   │   ├── exception/       # GlobalExceptionHandler y excepciones de negocio
+│   │   ├── repository/      # Implementaciones JPA de los DAO
+│   │   └── service/         # Gestores de negocio
+│   └── src/main/resources/
+│       ├── application.properties
+│       └── data.sql         # Datos iniciales de prueba
 ├── frontend/
-│   └── src/                 # Vacía, reservada para Next.js
+│   └── src/
+│       ├── app/             # Rutas App Router (login, menú, consultores, cuestionario)
+│       ├── components/      # Componentes UI reutilizables (popups)
+│       ├── constants/       # Límites y constantes de validación
+│       ├── features/        # Componentes específicos de dominio
+│       ├── lib/             # apiClient (fetch + JWT) y manejo de sesión
+│       ├── services/        # Servicios HTTP hacia la API REST
+│       └── types/           # Tipos TypeScript alineados con los DTOs
 ├── database/
-│   └── scripts/             # Vacía
-├── docs/
-│   ├── casos-de-uso/
-│   ├── der/                 # DER en PDF y PlantUML
-│   ├── diagramas/
-│   │   ├── clases/          # Diagrama de clases en PDF y PlantUML
-│   │   └── secuencia/       # CU020, CU021 y CU025
-│   ├── entregas/
-│   │   ├── etapa-4/         # Devolución del docente
-│   │   └── etapa-5/         # Devolución del docente
-│   └── README.md           # Índice y observaciones pendientes
-├── .gitignore
+│   └── docker-compose.yml   # Servicios postgres y pgadmin
+├── docs/                    # DER, diagramas de clases, secuencia, vistas y entregas
 └── README.md
 ```
 
-Las carpetas que permanecen vacías contienen `.gitkeep` para que Git las conserve. No se han creado todavía `Dockerfile`, `docker-compose.yml` ni `frontend/package.json`.
+## Cómo ejecutar el proyecto
 
-## Backend
+### 1. Base de datos (PostgreSQL)
 
-Configuración de Spring Initializr:
-
-- Maven, Java, Spring Boot 4.1.3, empaquetado Jar y configuración Properties.
-- Grupo: `com.capitalhumano`; artefacto: `evaluaciones`; paquete: `com.capitalhumano.evaluaciones`.
-- Dependencias: Spring Web, Spring Data JPA, Spring Security, Validation, Lombok y PostgreSQL Driver. El generador añadió también dependencias de prueba.
-
-Para ejecutar desde Windows, una vez configurada la conexión con PostgreSQL:
-
-```powershell
-cd backend
-.\mvnw.cmd spring-boot:run
+```bash
+cd database
+docker compose up -d postgres
 ```
 
-En Linux o macOS:
+*(Opcional: `docker compose up -d` para levantar también pgAdmin en `http://localhost:5050`.)*
+
+### 2. Backend (Spring Boot)
 
 ```bash
 cd backend
 ./mvnw spring-boot:run
 ```
 
-Por ahora `application.properties` solo define `spring.application.name=evaluaciones`. Hay que configurar la conexión a la base de datos antes de esperar que arranque la aplicación con Spring Data JPA. Spring Security también protege las rutas por defecto hasta que se defina la autenticación del TP.
+En Linux, si `JAVA_HOME` apunta a otra versión, especificar Java 21:
 
-## Convenciones
+```bash
+JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 ./mvnw spring-boot:run
+```
 
-- Java: nombres de clases en PascalCase, variables y métodos en camelCase; archivos UTF-8.
-- Base de datos: relacional, según el enunciado del TP.
-- El código implementado debe respetar los diagramas y las especificaciones aprobadas.
+El backend queda disponible en `http://localhost:8080` (Swagger UI en `http://localhost:8080/swagger-ui.html`).
 
-## Alcance funcional del TP
+### 3. Frontend (Next.js)
 
-Autenticación; importación de candidatos; exportación de resultados; gestión de puestos, competencias, factores, preguntas y opciones; evaluación de candidatos; resolución de cuestionarios; reporte comparativo y orden de mérito.
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-### Casos de uso a implementar
+El frontend queda disponible en `http://localhost:3000`.
 
-- **CU025** — Evaluar a candidatos.
-- **CU020** — Gestionar preguntas.
-- **CU023** — Dar de alta pregunta.
-- **CU026** — Completar cuestionario.
-- **CU028** — Emitir orden de mérito.
+### Credenciales de prueba (`data.sql`)
 
-Según la última comunicación de la cátedra, la entrega final unificada es el **27/11/2026** y los coloquios de cierre posteriores son obligatorios. Durante la implementación, cada grupo debe mostrar sus avances de código en los espacios de consulta.
+- **Consultor:** usuario `ADMIN` (o `JUAN`), contraseña `admin123` (`app.ldap.enabled=false`).
+- **Candidato:** cualquier candidato asociado a una evaluación generada desde **CU025**, o los cuestionarios precargados en `data.sql`.
+- **Puesto de prueba para CU028:** código `P001` (`ANALISTA DE DATOS`, empresa `GRINGOTTS`).
+
+## Casos de uso implementados (Back + Front)
+
+- **CU001** — Autenticar usuario (consultor y candidato con JWT).
+- **CU020** — Gestionar preguntas (búsqueda con filtros combinados).
+- **CU021** — Dar de alta pregunta (con selección en cascada de competencia/factor y ponderaciones que suman 10).
+- **CU022** — Modificar pregunta.
+- **CU023** — Dar de baja pregunta (baja lógica con auditoría).
+- **CU025** — Evaluar a candidatos (selección de candidatos, validación, selección de puesto, generación de claves y exportación a Excel).
+- **CU026** — Completar cuestionario (inicio, recuperación y guardado por bloques, control de accesos y tiempo máximo).
+- **CU028** — Emitir orden de mérito (búsqueda de puesto, selección de evaluaciones, ordenamiento por puntaje y ponderación mínima, e impresión del reporte).
