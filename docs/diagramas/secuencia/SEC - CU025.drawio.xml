@@ -12,7 +12,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="4" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="Consultor" vertex="1">
-          <mxGeometry height="60" width="30" x="120" y="4465" as="geometry" />
+          <mxGeometry height="60" width="30" x="120" y="4580" as="geometry" />
         </mxCell>
         <mxCell id="5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="UIEvaluarCandidato" vertex="1">
           <mxGeometry height="60" width="120" x="425" y="50" as="geometry" />
@@ -23,7 +23,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="UIEvaluarCandidato" vertex="1">
-          <mxGeometry height="60" width="120" x="425" y="4465" as="geometry" />
+          <mxGeometry height="60" width="120" x="425" y="4580" as="geometry" />
         </mxCell>
         <mxCell id="8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="&lt;div&gt;GestorEvaluaciones&lt;/div&gt;" vertex="1">
           <mxGeometry height="60" width="120" x="840" y="50" as="geometry" />
@@ -64,56 +64,47 @@
         <mxCell id="20" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="ICuestionarioDAO" vertex="1">
           <mxGeometry height="30" width="190" x="2490" y="130" as="geometry" />
         </mxCell>
-        <mxCell id="21" edge="1" parent="1" source="22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=none;endFill=0;dashed=1;" target="37">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="22" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="ExportadorCandidatosExcel" vertex="1">
-          <mxGeometry height="60" width="170" x="2855" y="50" as="geometry" />
-        </mxCell>
         <mxCell id="23" edge="1" parent="1" source="52" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;dashed=1;strokeWidth=1;endArrow=none;endFill=0;" target="8">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="24" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="&lt;div&gt;GestorEvaluaciones&lt;/div&gt;" vertex="1">
-          <mxGeometry height="60" width="120" x="840" y="4475" as="geometry" />
+          <mxGeometry height="60" width="120" x="840" y="4590" as="geometry" />
         </mxCell>
         <mxCell id="25" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" value="" vertex="1">
-          <mxGeometry height="80" width="60" x="1225" y="4465" as="geometry" />
+          <mxGeometry height="80" width="60" x="1225" y="4580" as="geometry" />
         </mxCell>
         <mxCell id="26" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="ICandidatoDAO" vertex="1">
-          <mxGeometry height="30" width="190" x="1160" y="4553" as="geometry" />
+          <mxGeometry height="30" width="190" x="1160" y="4668" as="geometry" />
         </mxCell>
         <mxCell id="27" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" value="" vertex="1">
-          <mxGeometry height="80" width="60" x="1500" y="4465" as="geometry" />
+          <mxGeometry height="80" width="60" x="1500" y="4580" as="geometry" />
         </mxCell>
         <mxCell id="28" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="IPuestoDAO" vertex="1">
-          <mxGeometry height="30" width="190" x="1435" y="4553" as="geometry" />
+          <mxGeometry height="30" width="190" x="1435" y="4668" as="geometry" />
         </mxCell>
         <mxCell id="29" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" value="" vertex="1">
-          <mxGeometry height="80" width="60" x="1750" y="4465" as="geometry" />
+          <mxGeometry height="80" width="60" x="1750" y="4580" as="geometry" />
         </mxCell>
         <mxCell id="30" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="IFactorDAO" vertex="1">
-          <mxGeometry height="30" width="190" x="1685" y="4553" as="geometry" />
+          <mxGeometry height="30" width="190" x="1685" y="4668" as="geometry" />
         </mxCell>
         <mxCell id="31" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" value="" vertex="1">
-          <mxGeometry height="80" width="60" x="2030" y="4465" as="geometry" />
+          <mxGeometry height="80" width="60" x="2030" y="4580" as="geometry" />
         </mxCell>
         <mxCell id="32" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="IPreguntaDAO" vertex="1">
-          <mxGeometry height="30" width="190" x="1965" y="4553" as="geometry" />
+          <mxGeometry height="30" width="190" x="1965" y="4668" as="geometry" />
         </mxCell>
         <mxCell id="33" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" value="" vertex="1">
-          <mxGeometry height="80" width="60" x="2305" y="4465" as="geometry" />
+          <mxGeometry height="80" width="60" x="2305" y="4580" as="geometry" />
         </mxCell>
         <mxCell id="34" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="IEvaluacionDAO" vertex="1">
-          <mxGeometry height="30" width="190" x="2240" y="4553" as="geometry" />
+          <mxGeometry height="30" width="190" x="2240" y="4668" as="geometry" />
         </mxCell>
         <mxCell id="35" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" value="" vertex="1">
-          <mxGeometry height="80" width="60" x="2555" y="4465" as="geometry" />
+          <mxGeometry height="80" width="60" x="2555" y="4580" as="geometry" />
         </mxCell>
         <mxCell id="36" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="ICuestionarioDAO" vertex="1">
-          <mxGeometry height="30" width="190" x="2490" y="4553" as="geometry" />
-        </mxCell>
-        <mxCell id="37" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="ExportadorCandidatosExcel" vertex="1">
-          <mxGeometry height="60" width="170" x="2855" y="4475" as="geometry" />
+          <mxGeometry height="30" width="190" x="2490" y="4668" as="geometry" />
         </mxCell>
         <mxCell id="38" edge="1" parent="1" source="58" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=none;endFill=0;dashed=1;" target="25">
           <mxGeometry relative="1" as="geometry" />
@@ -523,7 +514,7 @@
         </mxCell>
         <UserObject label="alt" mermaidId="n:f0" mermaidBaseStyle="html=1;shape=umlFrame;dashed=1;fixDash=1;dashPattern=2 2;strokeWidth=2;pointerEvents=0;dropTarget=0;fillColor=light-dark(#ECECFF,#1f2020);strokeColor=light-dark(#9370DB,#cccccc);fontSize=16;align=center;verticalAlign=middle;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);height=20;width=50;" mermaidBaseValue="alt" id="123">
           <mxCell parent="1" style="html=1;shape=umlFrame;fixDash=1;strokeWidth=2;pointerEvents=0;dropTarget=0;fillColor=light-dark(#ECECFF,#1f2020);strokeColor=light-dark(#9370DB,#cccccc);fontSize=16;align=center;verticalAlign=middle;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);height=20;width=50;" vertex="1">
-            <mxGeometry height="2490" width="3070" x="40" y="1930" as="geometry" />
+            <mxGeometry height="2605" width="3070" x="40" y="1930" as="geometry" />
           </mxCell>
         </UserObject>
         <mxCell id="124" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;[Presiona «Siguiente» sin seleccionar puesto]&lt;/b&gt;" vertex="1">
@@ -567,13 +558,13 @@
             <mxPoint x="895" y="2190" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="133" connectable="0" parent="132" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="generarEvaluación(idPuesto, candidatosAEvaluar)" vertex="1">
+        <mxCell id="133" connectable="0" parent="132" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="prepararEvaluacion(idPuesto, candidatosAEvaluar)" vertex="1">
           <mxGeometry relative="1" x="0.0202" y="1" as="geometry">
             <mxPoint y="-9" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="134" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-          <mxGeometry height="475" width="10" x="895" y="2165" as="geometry" />
+          <mxGeometry height="684" width="10" x="895" y="2165" as="geometry" />
         </mxCell>
         <UserObject label="loop" mermaidId="n:f0" mermaidBaseStyle="html=1;shape=umlFrame;dashed=1;fixDash=1;dashPattern=2 2;strokeWidth=2;pointerEvents=0;dropTarget=0;fillColor=light-dark(#ECECFF,#1f2020);strokeColor=light-dark(#9370DB,#cccccc);fontSize=16;align=center;verticalAlign=middle;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);height=20;width=50;" mermaidBaseValue="alt" id="135">
           <mxCell parent="1" style="html=1;shape=umlFrame;fixDash=1;strokeWidth=2;pointerEvents=0;dropTarget=0;fillColor=light-dark(#ECECFF,#1f2020);strokeColor=light-dark(#9370DB,#cccccc);fontSize=16;align=center;verticalAlign=middle;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);height=20;width=50;" vertex="1">
@@ -595,7 +586,7 @@
             <mxPoint x="955" y="2140" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="138" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;validarCompetenciaEvaluable(idPuesto)&lt;/b&gt;" vertex="1">
+        <mxCell id="138" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;validarPuestoEvaluable(idPuesto)&lt;/b&gt;" vertex="1">
           <mxGeometry height="30" width="220" x="937" y="2188" as="geometry" />
         </mxCell>
         <mxCell id="139" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
@@ -607,7 +598,7 @@
             <mxPoint x="1770" y="2290" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="141" connectable="0" parent="140" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="buscar(competencia, &quot; &quot;)" vertex="1">
+        <mxCell id="141" connectable="0" parent="140" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="buscarPorCompetencia(codigoCompetencia)" vertex="1">
           <mxGeometry relative="1" x="0.0202" y="1" as="geometry">
             <mxPoint y="-9" as="offset" />
           </mxGeometry>
@@ -637,7 +628,7 @@
             <mxPoint x="2050" y="2404.58" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="147" connectable="0" parent="146" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="buscarPreguntas(competencia, factor, &quot; &quot;)" vertex="1">
+        <mxCell id="147" connectable="0" parent="146" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="buscarActivasPorFactor(codigoFactor)" vertex="1">
           <mxGeometry relative="1" x="0.0202" y="1" as="geometry">
             <mxPoint y="-9" as="offset" />
           </mxGeometry>
@@ -662,18 +653,18 @@
             <mxPoint x="490" y="2626" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="152" connectable="0" parent="151" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="ExcepcionCompetenciasNoEvaluables(listaCompetencias)" vertex="1">
+        <mxCell id="152" connectable="0" parent="151" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Puesto sin competencias o competencias no evaluables" vertex="1">
           <mxGeometry relative="1" x="0.0202" y="1" as="geometry">
             <mxPoint y="-16" as="offset" />
           </mxGeometry>
         </mxCell>
         <UserObject label="alt" mermaidId="n:f0" mermaidBaseStyle="html=1;shape=umlFrame;dashed=1;fixDash=1;dashPattern=2 2;strokeWidth=2;pointerEvents=0;dropTarget=0;fillColor=light-dark(#ECECFF,#1f2020);strokeColor=light-dark(#9370DB,#cccccc);fontSize=16;align=center;verticalAlign=middle;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);height=20;width=50;" mermaidBaseValue="alt" id="153">
           <mxCell parent="1" style="html=1;shape=umlFrame;fixDash=1;strokeWidth=2;pointerEvents=0;dropTarget=0;fillColor=light-dark(#ECECFF,#1f2020);strokeColor=light-dark(#9370DB,#cccccc);fontSize=16;align=center;verticalAlign=middle;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);height=20;width=50;" vertex="1">
-            <mxGeometry height="1820" width="3050" x="50" y="2590" as="geometry" />
+            <mxGeometry height="1935" width="3050" x="50" y="2590" as="geometry" />
           </mxCell>
         </UserObject>
-        <mxCell id="154" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;[alguna competencia del puesto no tiene factores evaluables]&lt;/b&gt;" vertex="1">
-          <mxGeometry height="30" width="380" x="90" y="2585" as="geometry" />
+        <mxCell id="154" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;[Puesto sin competencias o alguna sin un factor con dos preguntas activas]&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="630" x="90" y="2585" as="geometry" />
         </mxCell>
         <mxCell id="155" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.061;entryDx=0;entryDy=0;entryPerimeter=0;" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
@@ -681,7 +672,7 @@
             <mxPoint x="135" y="2680" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="156" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="mostrarError(&quot;Las siguientes competencias no pueden ser evaluadas: ...&quot; )" vertex="1">
+        <mxCell id="156" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Muestra el error de validación del puesto" vertex="1">
           <mxGeometry height="30" width="185" x="222.5" y="2640" as="geometry" />
         </mxCell>
         <mxCell id="157" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;" value="">
@@ -695,7 +686,7 @@
             <mxPoint y="-9" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="159" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e51400;fontColor=#ffffff;strokeColor=#B20000;" value="CU finaliza y vuelve a la pantalla principal" vertex="1">
+        <mxCell id="159" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e51400;fontColor=#ffffff;strokeColor=#B20000;" value="Permanece en la selección del puesto" vertex="1">
           <mxGeometry height="30" width="140" x="500" y="2720" as="geometry" />
         </mxCell>
         <mxCell id="160" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;rounded=0;" value="">
@@ -705,20 +696,20 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="161" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;[todas las competencias son evaluables]&lt;/b&gt;" vertex="1">
-          <mxGeometry height="250" width="250" x="50" y="2760" as="geometry" />
+          <mxGeometry height="30" width="285" x="95" y="2760" as="geometry" />
         </mxCell>
         <UserObject label="loop" mermaidId="n:f0" mermaidBaseStyle="html=1;shape=umlFrame;dashed=1;fixDash=1;dashPattern=2 2;strokeWidth=2;pointerEvents=0;dropTarget=0;fillColor=light-dark(#ECECFF,#1f2020);strokeColor=light-dark(#9370DB,#cccccc);fontSize=16;align=center;verticalAlign=middle;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);height=20;width=50;" mermaidBaseValue="alt" id="162">
           <mxCell parent="1" style="html=1;shape=umlFrame;fixDash=1;strokeWidth=2;pointerEvents=0;dropTarget=0;fillColor=light-dark(#ECECFF,#1f2020);strokeColor=light-dark(#9370DB,#cccccc);fontSize=16;align=center;verticalAlign=middle;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);height=20;width=50;" vertex="1">
-            <mxGeometry height="280" width="1810" x="850" y="3010" as="geometry" />
+            <mxGeometry height="280" width="1810" x="850" y="3390" as="geometry" />
           </mxCell>
         </UserObject>
         <mxCell id="163" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;[por cada candidato a evaluar]&lt;/b&gt;" vertex="1">
-          <mxGeometry height="30" width="220" x="905" y="3010" as="geometry" />
+          <mxGeometry height="30" width="220" x="905" y="3390" as="geometry" />
         </mxCell>
         <mxCell id="164" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="900" y="3240" as="sourcePoint" />
-            <mxPoint x="2578" y="3240" as="targetPoint" />
+            <mxPoint x="900" y="3620" as="sourcePoint" />
+            <mxPoint x="2578" y="3620" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="165" connectable="0" parent="164" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="guardar(cuestionario)" vertex="1">
@@ -733,12 +724,12 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="167" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-          <mxGeometry height="61" width="10" x="2580" y="3231" as="geometry" />
+          <mxGeometry height="61" width="10" x="2580" y="3611" as="geometry" />
         </mxCell>
         <mxCell id="168" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;dashed=1;" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="2580" y="3274.58" as="sourcePoint" />
-            <mxPoint x="902" y="3274.58" as="targetPoint" />
+            <mxPoint x="2580" y="3654.58" as="sourcePoint" />
+            <mxPoint x="902" y="3654.58" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="169" connectable="0" parent="168" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Cuestionario registrado (sin commit)" vertex="1">
@@ -753,12 +744,12 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="171" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-          <mxGeometry height="61" width="10" x="2330" y="2887" as="geometry" />
+          <mxGeometry height="61" width="10" x="2330" y="3267" as="geometry" />
         </mxCell>
         <mxCell id="172" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="902" y="2900" as="sourcePoint" />
-            <mxPoint x="2330" y="2900" as="targetPoint" />
+            <mxPoint x="902" y="3280" as="sourcePoint" />
+            <mxPoint x="2330" y="3280" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="173" connectable="0" parent="172" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="guardar(evaluacion)" vertex="1">
@@ -768,8 +759,8 @@
         </mxCell>
         <mxCell id="174" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;dashed=1;" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="2330" y="2938" as="sourcePoint" />
-            <mxPoint x="902" y="2938" as="targetPoint" />
+            <mxPoint x="2330" y="3318" as="sourcePoint" />
+            <mxPoint x="902" y="3318" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="175" connectable="0" parent="174" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Evaluación registrada (sin commit)" vertex="1">
@@ -779,202 +770,137 @@
         </mxCell>
         <mxCell id="176" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;dashed=1;" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="895" y="3593" as="sourcePoint" />
-            <mxPoint x="490" y="3593" as="targetPoint" />
+            <mxPoint x="895" y="2833" as="sourcePoint" />
+            <mxPoint x="490" y="2833" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="177" connectable="0" parent="176" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Candidatos con sus claves e ID de la evaluación" vertex="1">
+        <mxCell id="177" connectable="0" parent="176" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="VistaPrevia (idVista, candidatos y claves)" vertex="1">
           <mxGeometry relative="1" x="0.0202" y="1" as="geometry">
             <mxPoint y="-16" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="178" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.061;entryDx=0;entryDy=0;entryPerimeter=0;" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="480" y="3620" as="sourcePoint" />
-            <mxPoint x="135" y="3620" as="targetPoint" />
+            <mxPoint x="480" y="2860" as="sourcePoint" />
+            <mxPoint x="135" y="2860" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="179" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="mostrarListaFinalCandidatos(candidatos)" vertex="1">
-          <mxGeometry height="30" width="60" x="280" y="3590" as="geometry" />
+        <mxCell id="179" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Muestra candidatos y claves de la vista previa" vertex="1">
+          <mxGeometry height="30" width="268" x="184" y="2830" as="geometry" />
         </mxCell>
         <UserObject label="alt" mermaidId="n:f0" mermaidBaseStyle="html=1;shape=umlFrame;dashed=1;fixDash=1;dashPattern=2 2;strokeWidth=2;pointerEvents=0;dropTarget=0;fillColor=light-dark(#ECECFF,#1f2020);strokeColor=light-dark(#9370DB,#cccccc);fontSize=16;align=center;verticalAlign=middle;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);height=20;width=50;" mermaidBaseValue="alt" id="180">
           <mxCell parent="1" style="html=1;shape=umlFrame;fixDash=1;strokeWidth=2;pointerEvents=0;dropTarget=0;fillColor=light-dark(#ECECFF,#1f2020);strokeColor=light-dark(#9370DB,#cccccc);fontSize=16;align=center;verticalAlign=middle;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);height=20;width=50;" vertex="1">
-            <mxGeometry height="750" width="3030" x="60" y="3650" as="geometry" />
+            <mxGeometry height="1625" width="3030" x="60" y="2890" as="geometry" />
           </mxCell>
         </UserObject>
         <mxCell id="181" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;[consultor presiona &quot;Cancelar&quot;]&lt;/b&gt;" vertex="1">
-          <mxGeometry height="30" width="205" x="110" y="3650" as="geometry" />
+          <mxGeometry height="30" width="205" x="110" y="2890" as="geometry" />
         </mxCell>
         <mxCell id="182" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.061;entryDx=0;entryDy=0;entryPerimeter=0;" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="480" y="3750" as="sourcePoint" />
-            <mxPoint x="135" y="3750" as="targetPoint" />
+            <mxPoint x="480" y="2990" as="sourcePoint" />
+            <mxPoint x="135" y="2990" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="183" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="vuelve a la pantalla principal" vertex="1">
-          <mxGeometry height="30" width="120" x="255" y="3717" as="geometry" />
+          <mxGeometry height="30" width="120" x="255" y="2957" as="geometry" />
         </mxCell>
-        <mxCell id="184" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e51400;fontColor=#ffffff;strokeColor=#B20000;" value="CU finaliza" vertex="1">
-          <mxGeometry height="30" width="140" x="500" y="3760" as="geometry" />
+        <mxCell id="184" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e51400;fontColor=#ffffff;strokeColor=#B20000;" value="CU finaliza sin guardar" vertex="1">
+          <mxGeometry height="30" width="140" x="500" y="3000" as="geometry" />
         </mxCell>
         <mxCell id="185" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;rounded=0;" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="60" y="3810" as="sourcePoint" />
-            <mxPoint x="3090" y="3810" as="targetPoint" />
+            <mxPoint x="60" y="3050" as="sourcePoint" />
+            <mxPoint x="3090" y="3050" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="186" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;[consultor presiona &quot;Finalizar&quot;]&lt;/b&gt;" vertex="1">
-          <mxGeometry height="30" width="205" x="60" y="3810" as="geometry" />
+          <mxGeometry height="30" width="205" x="60" y="3050" as="geometry" />
         </mxCell>
         <mxCell id="187" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.061;entryDx=0;entryDy=0;entryPerimeter=0;" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="480" y="3930" as="sourcePoint" />
-            <mxPoint x="135" y="3930" as="targetPoint" />
+            <mxPoint x="480" y="4045" as="sourcePoint" />
+            <mxPoint x="135" y="4045" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="188" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="mostrarMensaje(&quot;¿Desea exportar la lista de candidatos con sus claves a Excel?&quot;)" vertex="1">
-          <mxGeometry height="30" width="155" x="237.5" y="3880" as="geometry" />
+          <mxGeometry height="30" width="155" x="237.5" y="3995" as="geometry" />
         </mxCell>
         <mxCell id="189" edge="1" parent="1" source="24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;dashed=1;strokeWidth=1;endArrow=none;endFill=0;" value="">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="900" y="4385" as="sourcePoint" />
-            <mxPoint x="900" y="3070" as="targetPoint" />
+            <mxPoint x="900" y="4500" as="sourcePoint" />
+            <mxPoint x="900" y="3979" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <UserObject label="alt" mermaidId="n:f0" mermaidBaseStyle="html=1;shape=umlFrame;dashed=1;fixDash=1;dashPattern=2 2;strokeWidth=2;pointerEvents=0;dropTarget=0;fillColor=light-dark(#ECECFF,#1f2020);strokeColor=light-dark(#9370DB,#cccccc);fontSize=16;align=center;verticalAlign=middle;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);height=20;width=50;" mermaidBaseValue="alt" id="190">
           <mxCell parent="1" style="html=1;shape=umlFrame;fixDash=1;strokeWidth=2;pointerEvents=0;dropTarget=0;fillColor=light-dark(#ECECFF,#1f2020);strokeColor=light-dark(#9370DB,#cccccc);fontSize=16;align=center;verticalAlign=middle;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);height=20;width=50;" vertex="1">
-            <mxGeometry height="440" width="3010" x="70" y="3950" as="geometry" />
+            <mxGeometry height="440" width="3010" x="70" y="4065" as="geometry" />
           </mxCell>
         </UserObject>
         <mxCell id="191" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;[consultor elige exportar a Excel]&lt;/b&gt;" vertex="1">
-          <mxGeometry height="30" width="205" x="111" y="3950" as="geometry" />
+          <mxGeometry height="30" width="205" x="111" y="4065" as="geometry" />
         </mxCell>
         <mxCell id="192" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="135" y="4010" as="sourcePoint" />
-            <mxPoint x="480" y="4010" as="targetPoint" />
+            <mxPoint x="135" y="4125" as="sourcePoint" />
+            <mxPoint x="480" y="4125" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="193" connectable="0" parent="192" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="confirmarExportacion() = true" vertex="1">
+        <mxCell id="193" connectable="0" parent="192" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Presiona «Exportar Excel»" vertex="1">
           <mxGeometry relative="1" x="0.0202" y="1" as="geometry">
             <mxPoint y="-9" as="offset" />
           </mxGeometry>
-        </mxCell>
-        <mxCell id="194" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.061;entryDx=0;entryDy=0;entryPerimeter=0;" value="">
-          <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="480" y="4055" as="sourcePoint" />
-            <mxPoint x="135" y="4055" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="195" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="seleccionarCarpetaExcel()" vertex="1">
-          <mxGeometry height="30" width="130" x="245" y="4026" as="geometry" />
-        </mxCell>
-        <UserObject label="alt" mermaidId="n:f0" mermaidBaseStyle="html=1;shape=umlFrame;dashed=1;fixDash=1;dashPattern=2 2;strokeWidth=2;pointerEvents=0;dropTarget=0;fillColor=light-dark(#ECECFF,#1f2020);strokeColor=light-dark(#9370DB,#cccccc);fontSize=16;align=center;verticalAlign=middle;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);height=20;width=50;" mermaidBaseValue="alt" id="196">
-          <mxCell parent="1" style="html=1;shape=umlFrame;fixDash=1;strokeWidth=2;pointerEvents=0;dropTarget=0;fillColor=light-dark(#ECECFF,#1f2020);strokeColor=light-dark(#9370DB,#cccccc);fontSize=16;align=center;verticalAlign=middle;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);height=20;width=50;" vertex="1">
-            <mxGeometry height="260" width="2990" x="80" y="4070" as="geometry" />
-          </mxCell>
-        </UserObject>
-        <mxCell id="197" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;" value="">
-          <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="135" y="4130" as="sourcePoint" />
-            <mxPoint x="480" y="4130" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="198" connectable="0" parent="197" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="carpeta" vertex="1">
-          <mxGeometry relative="1" x="0.0202" y="1" as="geometry">
-            <mxPoint y="-9" as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="199" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;[consultor selecciona carpeta y presiona &quot;Guardar&quot;]&lt;/b&gt;" vertex="1">
-          <mxGeometry height="30" width="240" x="135" y="4070" as="geometry" />
         </mxCell>
         <mxCell id="200" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-          <mxGeometry height="60" width="10" x="895" y="4150" as="geometry" />
+          <mxGeometry height="60" width="10" x="895" y="4265" as="geometry" />
         </mxCell>
         <mxCell id="201" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="490" y="4160" as="sourcePoint" />
-            <mxPoint x="895" y="4160" as="targetPoint" />
+            <mxPoint x="490" y="4275" as="sourcePoint" />
+            <mxPoint x="895" y="4275" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="202" connectable="0" parent="201" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="exportarClavesExcel(idEvaluacion, carpeta)" vertex="1">
+        <mxCell id="202" connectable="0" parent="201" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Solicita el Excel de la evaluación confirmada" vertex="1">
           <mxGeometry relative="1" x="0.0202" y="1" as="geometry">
             <mxPoint y="-9" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="203" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;dashed=1;" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="895" y="4200" as="sourcePoint" />
-            <mxPoint x="490" y="4200" as="targetPoint" />
+            <mxPoint x="895" y="4315" as="sourcePoint" />
+            <mxPoint x="490" y="4315" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="204" connectable="0" parent="203" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="ok" vertex="1">
+        <mxCell id="204" connectable="0" parent="203" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Archivo Excel generado por GestorEvaluaciones" vertex="1">
           <mxGeometry relative="1" x="0.0202" y="1" as="geometry">
             <mxPoint y="-16" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="205" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-          <mxGeometry height="40" width="10" x="2935" y="4160" as="geometry" />
-        </mxCell>
-        <mxCell id="206" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;" value="">
-          <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="905" y="4170" as="sourcePoint" />
-            <mxPoint x="2935" y="4170" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="207" connectable="0" parent="206" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="exportar(candidatosConClave, carpeta)" vertex="1">
-          <mxGeometry relative="1" x="0.0202" y="1" as="geometry">
-            <mxPoint y="-9" as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="208" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;dashed=1;" value="">
-          <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="2935" y="4190" as="sourcePoint" />
-            <mxPoint x="905" y="4190" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="209" connectable="0" parent="208" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="ok" vertex="1">
-          <mxGeometry relative="1" x="0.0202" y="1" as="geometry">
-            <mxPoint y="-9" as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="210" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e51400;fontColor=#ffffff;strokeColor=#B20000;" value="CU finaliza y vuelve a la pantalla principal" vertex="1">
-          <mxGeometry height="30" width="140" x="500" y="4210" as="geometry" />
-        </mxCell>
-        <mxCell id="211" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;rounded=0;" value="">
-          <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="80" y="4250" as="sourcePoint" />
-            <mxPoint x="3070" y="4250" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="212" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;[consultor presiona &quot;Cancelar&quot;]&lt;/b&gt;" vertex="1">
-          <mxGeometry height="30" width="195" x="135" y="4250" as="geometry" />
-        </mxCell>
-        <mxCell id="213" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e51400;fontColor=#ffffff;strokeColor=#B20000;" value="CU vuelve al paso de confirmación de exportación" vertex="1">
-          <mxGeometry height="50" width="140" x="500" y="4260" as="geometry" />
+        <mxCell id="210" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e51400;fontColor=#ffffff;strokeColor=#B20000;" value="El navegador descarga el Excel o permite elegir dónde guardarlo" vertex="1">
+          <mxGeometry height="40" width="245" x="500" y="4325" as="geometry" />
         </mxCell>
         <mxCell id="214" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;rounded=0;" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="70" y="4346" as="sourcePoint" />
-            <mxPoint x="3080" y="4346" as="targetPoint" />
+            <mxPoint x="70" y="4461" as="sourcePoint" />
+            <mxPoint x="3080" y="4461" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="215" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;[consultor elige no exportar]&lt;/b&gt;" vertex="1">
-          <mxGeometry height="30" width="195" x="70" y="4340" as="geometry" />
+        <mxCell id="215" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;[consultor vuelve al inicio]&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="195" x="70" y="4455" as="geometry" />
         </mxCell>
         <mxCell id="216" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="135" y="4380" as="sourcePoint" />
-            <mxPoint x="480" y="4380" as="targetPoint" />
+            <mxPoint x="135" y="4495" as="sourcePoint" />
+            <mxPoint x="480" y="4495" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="217" connectable="0" parent="216" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="confirmarExportacion() = false" vertex="1">
+        <mxCell id="217" connectable="0" parent="216" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Volver al inicio" vertex="1">
           <mxGeometry relative="1" x="0.0202" y="1" as="geometry">
             <mxPoint y="-9" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="218" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e51400;fontColor=#ffffff;strokeColor=#B20000;" value="CU finaliza" vertex="1">
-          <mxGeometry height="30" width="140" x="497" y="4362" as="geometry" />
+          <mxGeometry height="30" width="140" x="497" y="4477" as="geometry" />
         </mxCell>
         <mxCell id="219" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;entryX=0.991;entryY=0.116;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
@@ -1027,22 +953,22 @@
           <mxGeometry height="30" width="130" x="919" y="1584" as="geometry" />
         </mxCell>
         <mxCell id="229" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-          <mxGeometry height="791" width="10" x="895" y="2814" as="geometry" />
+          <mxGeometry height="844" width="10" x="895" y="3118" as="geometry" />
         </mxCell>
         <mxCell id="230" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;entryX=0.991;entryY=0.116;entryDx=0;entryDy=0;entryPerimeter=0;" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
             <Array as="points">
-              <mxPoint x="920" y="3040" />
-              <mxPoint x="930" y="3040" />
-              <mxPoint x="930" y="3050" />
-              <mxPoint x="930" y="3070" />
+              <mxPoint x="920" y="2783" />
+              <mxPoint x="930" y="2783" />
+              <mxPoint x="930" y="2793" />
+              <mxPoint x="930" y="2813" />
             </Array>
-            <mxPoint x="905" y="3040" as="sourcePoint" />
-            <mxPoint x="905" y="3070" as="targetPoint" />
+            <mxPoint x="905" y="2783" as="sourcePoint" />
+            <mxPoint x="905" y="2813" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="231" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="generarClaveAleatoria()" vertex="1">
-          <mxGeometry height="30" width="195" x="970" y="3040" as="geometry" />
+        <mxCell id="231" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Genera claves para la vista previa" vertex="1">
+          <mxGeometry height="30" width="250" x="940" y="2783" as="geometry" />
         </mxCell>
         <mxCell id="consulta-nota" parent="1" vertex="1" value="&lt;b&gt;Lectura de puestos&lt;/b&gt;&lt;br&gt;El DAO implementa buscar con JOIN FETCH de las características de cada puesto y de la competencia asociada. El gestor arma los DTO con ese resultado." style="shape=note;size=12;html=1;whiteSpace=wrap;spacing=8;align=left;fontSize=14;">
           <mxGeometry x="1580" y="1500" width="465" height="108" as="geometry" />
@@ -1050,88 +976,112 @@
         <mxCell id="crearEvaluacion" parent="1" edge="1" style="endArrow=classic;rounded=0;html=1;">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="947" y="2830" />
-              <mxPoint x="947" y="2852" />
+              <mxPoint x="947" y="3210" />
+              <mxPoint x="947" y="3232" />
             </Array>
-            <mxPoint x="905" y="2830" as="sourcePoint" />
-            <mxPoint x="905" y="2852" as="targetPoint" />
+            <mxPoint x="905" y="3210" as="sourcePoint" />
+            <mxPoint x="905" y="3232" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="crearEvaluacion-texto" parent="1" vertex="1" value="«create» evaluacion = new Evaluacion(puesto, usuario, fechaCreacion)" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=14;">
-          <mxGeometry x="962" y="2825" width="790" height="34" as="geometry" />
+          <mxGeometry x="962" y="3205" width="790" height="34" as="geometry" />
         </mxCell>
         <mxCell id="crearCuestionario" parent="1" edge="1" style="endArrow=classic;rounded=0;html=1;">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="947" y="3100" />
-              <mxPoint x="947" y="3122" />
+              <mxPoint x="947" y="3480" />
+              <mxPoint x="947" y="3502" />
             </Array>
-            <mxPoint x="905" y="3100" as="sourcePoint" />
-            <mxPoint x="905" y="3122" as="targetPoint" />
+            <mxPoint x="905" y="3480" as="sourcePoint" />
+            <mxPoint x="905" y="3502" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="crearCuestionario-texto" parent="1" vertex="1" value="«create» cuestionario = new Cuestionario(candidato, clave, ACTIVO)" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=14;">
-          <mxGeometry x="962" y="3095" width="790" height="34" as="geometry" />
+        <mxCell id="crearCuestionario-texto" parent="1" vertex="1" value="«create» cuestionario = new Cuestionario(candidato, clave de la vista previa, ACTIVO)" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=14;">
+          <mxGeometry x="962" y="3475" width="790" height="34" as="geometry" />
         </mxCell>
         <mxCell id="asociarCuestionario" parent="1" edge="1" style="endArrow=classic;rounded=0;html=1;">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="947" y="3158" />
-              <mxPoint x="947" y="3180" />
+              <mxPoint x="947" y="3538" />
+              <mxPoint x="947" y="3560" />
             </Array>
-            <mxPoint x="905" y="3158" as="sourcePoint" />
-            <mxPoint x="905" y="3180" as="targetPoint" />
+            <mxPoint x="905" y="3538" as="sourcePoint" />
+            <mxPoint x="905" y="3560" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="asociarCuestionario-texto" parent="1" vertex="1" value="Asociar cuestionario a evaluacion y agregarlo a evaluacion.cuestionarios" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=14;">
-          <mxGeometry x="962" y="3153" width="790" height="34" as="geometry" />
+          <mxGeometry x="962" y="3533" width="790" height="34" as="geometry" />
         </mxCell>
         <mxCell id="commit" parent="1" edge="1" style="endArrow=classic;rounded=0;html=1;">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="947" y="3327" />
-              <mxPoint x="947" y="3349" />
+              <mxPoint x="947" y="3707" />
+              <mxPoint x="947" y="3729" />
             </Array>
-            <mxPoint x="905" y="3327" as="sourcePoint" />
-            <mxPoint x="905" y="3349" as="targetPoint" />
+            <mxPoint x="905" y="3707" as="sourcePoint" />
+            <mxPoint x="905" y="3729" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="commit-texto" parent="1" vertex="1" value="Confirmar la transacción después del último cuestionario" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=14;">
-          <mxGeometry x="962" y="3322" width="790" height="34" as="geometry" />
+        <mxCell id="commit-texto" parent="1" vertex="1" value="Prepara los bloques de todos los cuestionarios y confirma la transacción" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=14;">
+          <mxGeometry x="962" y="3702" width="790" height="34" as="geometry" />
         </mxCell>
-        <mxCell id="txNota" parent="1" vertex="1" value="&lt;b&gt;Una transacción para toda la generación&lt;/b&gt;&lt;br&gt;GestorEvaluaciones inicia la transacción antes de guardar la evaluación. Ambos DAO participan en ella." style="shape=note;size=12;html=1;whiteSpace=wrap;spacing=8;align=left;fontSize=14;">
-          <mxGeometry x="1420" y="2792" width="475" height="79" as="geometry" />
+        <mxCell id="txNota" parent="1" vertex="1" value="&lt;b&gt;Una transacción al confirmar&lt;/b&gt;&lt;br&gt;Guarda la evaluación, los cuestionarios y su distribución en bloques." style="shape=note;size=12;html=1;whiteSpace=wrap;spacing=8;align=left;fontSize=14;">
+          <mxGeometry x="1420" y="3172" width="475" height="79" as="geometry" />
         </mxCell>
         <mxCell id="breakPersistencia" parent="1" vertex="1" value="break" style="shape=umlFrame;html=1;fillColor=none;pointerEvents=0;width=55;height=22;">
-          <mxGeometry x="69" y="3388" width="2640" height="162" as="geometry" />
+          <mxGeometry x="69" y="3768" width="2640" height="162" as="geometry" />
         </mxCell>
         <mxCell id="guardaFallo" parent="1" vertex="1" value="&lt;b&gt;[Falla cualquier guardado o la confirmación]&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=14;">
-          <mxGeometry x="141" y="3387" width="580" height="26" as="geometry" />
+          <mxGeometry x="141" y="3767" width="580" height="26" as="geometry" />
         </mxCell>
         <mxCell id="rollback" parent="1" edge="1" style="endArrow=classic;rounded=0;html=1;">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="947" y="3428" />
-              <mxPoint x="947" y="3450" />
+              <mxPoint x="947" y="3808" />
+              <mxPoint x="947" y="3830" />
             </Array>
-            <mxPoint x="905" y="3428" as="sourcePoint" />
-            <mxPoint x="905" y="3450" as="targetPoint" />
+            <mxPoint x="905" y="3808" as="sourcePoint" />
+            <mxPoint x="905" y="3830" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="rollback-texto" parent="1" vertex="1" value="Rollback de la evaluación y de todos los cuestionarios del lote" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=14;">
-          <mxGeometry x="962" y="3423" width="790" height="34" as="geometry" />
+        <mxCell id="rollback-texto" parent="1" vertex="1" value="Rollback de la evaluación, cuestionarios y bloques del lote" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;strokeColor=none;fillColor=none;fontSize=14;">
+          <mxGeometry x="962" y="3803" width="790" height="34" as="geometry" />
         </mxCell>
         <mxCell id="errorUI" parent="1" edge="1" value="Error al generar la evaluación" style="endArrow=open;endFill=0;html=1;rounded=0;verticalAlign=bottom;spacingBottom=4;fontSize=14;dashed=1;">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="895" y="3491" as="sourcePoint" />
-            <mxPoint x="490" y="3491" as="targetPoint" />
+            <mxPoint x="895" y="3871" as="sourcePoint" />
+            <mxPoint x="490" y="3871" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="errorConsultor" parent="1" edge="1" value="Informa el error y finaliza el intento" style="endArrow=open;endFill=0;html=1;rounded=0;verticalAlign=bottom;spacingBottom=4;fontSize=14;dashed=1;">
+        <mxCell id="errorConsultor" parent="1" edge="1" value="Muestra el error y vuelve a la selección del puesto" style="endArrow=open;endFill=0;html=1;rounded=0;verticalAlign=bottom;spacingBottom=4;fontSize=14;dashed=1;">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="480" y="3530" as="sourcePoint" />
-            <mxPoint x="135" y="3530" as="targetPoint" />
+            <mxPoint x="480" y="3910" as="sourcePoint" />
+            <mxPoint x="135" y="3910" as="targetPoint" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="validacion-al-elegir" parent="1" vertex="1" value="La UI valida el puesto al seleccionarlo. Si se rechaza, al aceptar el aviso vuelve al inicio." style="shape=note;size=10;html=1;whiteSpace=wrap;spacing=6;align=left;">
+          <mxGeometry x="1200" y="1830" width="325" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="finalizar-evaluacion" parent="1" edge="1" value="Presiona «Finalizar»" style="endArrow=classic;html=1;rounded=0;verticalAlign=bottom;labelBackgroundColor=default;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="135" y="3080" as="sourcePoint" />
+            <mxPoint x="480" y="3080" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="confirmar-evaluacion" parent="1" edge="1" value="confirmarEvaluacion(idPuesto, idVista)" style="endArrow=classic;html=1;rounded=0;verticalAlign=bottom;labelBackgroundColor=default;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="490" y="3125" as="sourcePoint" />
+            <mxPoint x="895" y="3125" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="evaluacion-confirmada" parent="1" edge="1" value="idEvaluacion" style="endArrow=classic;html=1;rounded=0;verticalAlign=bottom;labelBackgroundColor=default;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="895" y="3950" as="sourcePoint" />
+            <mxPoint x="490" y="3950" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="preguntas-por-cuestionario" parent="1" vertex="1" value="GestorCuestionario sortea dos preguntas por cada factor evaluable para cada cuestionario y guarda los bloques." style="shape=note;size=10;html=1;whiteSpace=wrap;spacing=6;align=left;">
+          <mxGeometry x="1420" y="3680" width="500" height="64" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
