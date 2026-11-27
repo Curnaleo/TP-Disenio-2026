@@ -229,7 +229,7 @@ WHERE escala.nombre = 'VERDADERO_FALSO';
 
 INSERT INTO opcion_pregunta (id_pregunta, id_item_opcion_respuesta, ponderacion)
 SELECT pregunta.id_pregunta, item.id_item,
-    CASE WHEN item.orden = 1 THEN 10.0 ELSE 2.0 END
+    CASE WHEN item.orden = 1 THEN 10.0 ELSE 0.0 END
 FROM pregunta
 JOIN item_opcion_respuesta item ON item.id_opcion_respuesta = pregunta.id_opcion_respuesta
 WHERE pregunta.nombre IN ('WBS', 'LINEA_BASE', 'VALOR_GANADO', 'CONFIDENCIALIDAD', 'COMPROMISOS');
