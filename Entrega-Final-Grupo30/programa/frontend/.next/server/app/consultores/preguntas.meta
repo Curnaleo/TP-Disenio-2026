@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/consultores/layout,_N_T_/consultores/preguntas/layout,_N_T_/consultores/preguntas/page,_N_T_/consultores/preguntas"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/bea63f1d013af41246331a1d4be60952afd9f94625c1d68901794f0cb5f3f675/$/consultores/preguntas",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/consultores/preguntas/page"
+    },
+    "isFallback": false
+  }
+}

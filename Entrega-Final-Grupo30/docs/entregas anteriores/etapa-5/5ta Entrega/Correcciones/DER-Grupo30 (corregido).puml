@@ -1,0 +1,277 @@
+@startchen
+title DER Completo en 3FN (Capital Humano) - Chen notation (A -(b,a)- B)
+
+' ============================
+' ENTIDADES
+' ============================
+entity Usuario {
+  idUsuario <<key>>
+  nombre
+  activo
+}
+
+entity Candidato {
+  nroCandidato <<key>>
+  apellido
+  nombre
+  nroDocumento
+  tipoDocumento
+  fechaNacimiento
+  genero
+  nacionalidad
+  email
+  escolaridad
+  eliminado
+}
+
+entity Evaluacion {
+  idEvaluacion <<key>>
+  nombreEvaluacion
+  descripcion
+  fechaCreacion
+  activo
+}
+
+entity Cuestionario {
+  idCuestionario <<key>>
+  clave
+  estado
+  fechaHoraInicio
+  fechaHoraFin
+  fechaHoraUltimoIngreso
+  cantidadAccesos
+  maximoAccesos
+  tiempoMaximo
+}
+
+entity Puesto {
+  codigo <<key>>
+  nombre
+  descripcion
+  empresa
+  activo
+}
+
+entity CaracteristicaPuesto {
+  idCaracteristica <<key>>
+  codigoPuesto
+  codigoCompetencia
+  ponderacionMinima
+}
+
+entity Competencia {
+  codigo <<key>>
+  nombre
+  descripcion
+  activo
+}
+
+entity Factor {
+  codigo <<key>>
+  nombre
+  descripcion
+  nroOrden
+  activo
+}
+
+entity Pregunta {
+  idPregunta <<key>>
+  nombre
+  textoPregunta
+  descripcion
+  activo
+}
+
+entity OpcionRespuesta {
+  idOpcionRespuesta <<key>>
+  nombre
+  descripcion
+  activo
+}
+
+entity ItemOpcionRespuesta {
+  idItem <<key>>
+  orden
+  descripcion
+}
+
+entity OpcionPregunta {
+  idOpcionPregunta <<key>>
+  ponderacion
+}
+
+entity BloquePreguntas {
+  idBloque <<key>>
+  nroBloque
+  completado
+}
+
+entity PreguntaCuestionario {
+  idPregCuest <<key>>
+  nroOrden
+  respondida
+}
+
+entity ResultadoFactor {
+  idResultadoFactor <<key>>
+  puntajeObtenido
+}
+
+entity ResultadoCompetencia {
+  idResultadoCompetencia <<key>>
+  puntajeObtenido
+}
+
+entity RegistroAuditoria {
+  idRegistro <<key>>
+  fechaHora
+  accion
+  entidad
+  idEntidad
+}
+
+entity ConfiguracionSistema {
+  clave <<key>>
+  valor
+  descripcion
+}
+
+' ============================
+' RELACIONES
+' ============================
+relationship Tiene {
+}
+
+relationship Responde {
+}
+
+relationship Crea {
+}
+
+relationship SeEvaluaCon {
+}
+
+relationship EsEvaluadoCon {
+}
+
+relationship Utiliza {
+}
+
+relationship EsPara {
+}
+
+relationship Contiene {
+}
+
+relationship Posee {
+}
+
+relationship EsContenidoPor {
+}
+
+relationship Lista {
+}
+
+relationship Organiza {
+}
+
+relationship IntegradoPor {
+}
+
+relationship Referencia {
+}
+
+relationship Constata {
+}
+
+relationship Compone {
+}
+
+relationship Registra {
+}
+
+relationship Corresponde {
+}
+
+' Nuevas relaciones para la pregunta y la opcion elegida.
+relationship Ofrece {
+}
+
+relationship Elige {
+}
+
+relationship GeneraRegistro {
+}
+
+' ============================
+' VINCULOS
+' ============================
+Candidato -(1,1)- Responde
+Responde -(0,N)- Cuestionario
+
+Evaluacion -(1,1)- Contiene
+Contiene -(1,N)- Cuestionario
+
+Usuario -(1,1)- Crea
+Crea -(0,N)- Evaluacion
+
+Evaluacion -(0,N)- EsPara
+EsPara -(1,1)- Puesto
+
+Puesto -(1,1)- Tiene
+Tiene -(1,N)- CaracteristicaPuesto
+
+CaracteristicaPuesto -(0,N)- Utiliza
+Utiliza -(1,1)- Competencia
+
+Competencia -(1,1)- EsEvaluadoCon
+EsEvaluadoCon -(0,N)- Factor
+
+Factor -(1,1)- SeEvaluaCon
+SeEvaluaCon -(0,N)- Pregunta
+
+Pregunta -(0,N)- Posee
+Posee -(1,1)- OpcionRespuesta
+
+OpcionRespuesta -(2,N)- EsContenidoPor
+EsContenidoPor -(1,1)- ItemOpcionRespuesta
+
+ItemOpcionRespuesta -(1,1)- Lista
+Lista -(0,N)- OpcionPregunta
+
+' Cada opcion configurada corresponde a una pregunta.
+Pregunta -(1,1)- Ofrece
+Ofrece -(2,N)- OpcionPregunta
+
+Cuestionario -(1,1)- Organiza
+Organiza -(1,N)- BloquePreguntas
+
+BloquePreguntas -(1,1)- IntegradoPor
+IntegradoPor -(1,N)- PreguntaCuestionario
+
+PreguntaCuestionario -(0,N)- Referencia
+Referencia -(1,1)- Pregunta
+
+' En cada cuestionario, la pregunta puede tener cero o una opcion elegida.
+PreguntaCuestionario -(0,N)- Elige
+Elige -(0,1)- OpcionPregunta
+
+Cuestionario -(1,1)- Constata
+Constata -(0,N)- ResultadoFactor
+
+ResultadoFactor -(0,N)- Compone
+Compone -(1,1)- Factor
+
+Cuestionario -(1,1)- Registra
+Registra -(0,N)- ResultadoCompetencia
+
+ResultadoCompetencia -(0,N)- Corresponde
+Corresponde -(1,1)- Competencia
+
+Usuario -(1,1)- GeneraRegistro
+GeneraRegistro -(0,N)- RegistroAuditoria
+
+' Restriccion de negocio: la OpcionPregunta elegida debe corresponder a
+' la Pregunta referenciada por la misma PreguntaCuestionario.
+
+@endchen

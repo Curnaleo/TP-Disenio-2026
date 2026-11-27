@@ -1,0 +1,11 @@
+{
+  "/_not-found/page": "/_not-found",
+  "/consultores/evaluar-candidatos/page": "/consultores/evaluar-candidatos",
+  "/consultores/orden-merito/page": "/consultores/orden-merito",
+  "/consultores/preguntas/nueva/page": "/consultores/preguntas/nueva",
+  "/consultores/preguntas/page": "/consultores/preguntas",
+  "/cuestionario/page": "/cuestionario",
+  "/favicon.ico/route": "/favicon.ico",
+  "/login/page": "/login",
+  "/page": "/"
+}

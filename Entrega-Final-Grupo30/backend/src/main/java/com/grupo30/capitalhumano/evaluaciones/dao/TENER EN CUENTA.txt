@@ -1,0 +1,8 @@
+Hola, soy Lupo.
+
+Cuando creen un DAO clave que cuando haya un findByID o algo asi usen el Opcional.
+
+Por ejemplo en "interface IPreguntaDAO" tenemos:
+Optional<Pregunta> findById(int id);
+
+Saludos.

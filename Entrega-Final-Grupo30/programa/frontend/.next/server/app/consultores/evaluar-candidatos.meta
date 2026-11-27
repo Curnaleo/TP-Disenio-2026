@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/consultores/layout,_N_T_/consultores/evaluar-candidatos/layout,_N_T_/consultores/evaluar-candidatos/page,_N_T_/consultores/evaluar-candidatos"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/15534fe1ede46f687b6b871fd087260a7f32d9074fe4ccc017395e6e59a966f0/$/consultores/evaluar-candidatos",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/consultores/evaluar-candidatos/page"
+    },
+    "isFallback": false
+  }
+}

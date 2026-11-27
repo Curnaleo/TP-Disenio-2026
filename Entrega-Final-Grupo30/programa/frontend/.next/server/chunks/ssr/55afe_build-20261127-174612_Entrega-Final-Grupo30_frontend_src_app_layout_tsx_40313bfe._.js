@@ -1,0 +1,3 @@
+module.exports=[88910,a=>{"use strict";a.s(["default",()=>d,"metadata",()=>c]);var b=a.i(59998);let c={title:"Capital Humano - Evaluación de Candidatos",description:"Sistema de gestión de evaluaciones de candidatos para puestos de trabajo"};function d({children:a}){return(0,b.jsx)("html",{lang:"es",children:(0,b.jsx)("body",{className:"antialiased",children:a})})}}];
+
+//# sourceMappingURL=55afe_build-20261127-174612_Entrega-Final-Grupo30_frontend_src_app_layout_tsx_40313bfe._.js.map

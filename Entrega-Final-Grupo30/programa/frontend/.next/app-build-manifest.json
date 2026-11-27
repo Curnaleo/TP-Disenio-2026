@@ -1,0 +1,99 @@
+{
+  "pages": {
+    "/_not-found/page": [
+      "static/chunks/4a0759b584f8d705.js",
+      "static/chunks/7abd4a7e7506367a.js",
+      "static/chunks/d60a5ab54bd0e31f.css",
+      "static/chunks/f9fcca75e5a6a180.js",
+      "static/chunks/f067d320bb48d3a7.js",
+      "static/chunks/20ad2b227e3fa1ce.js",
+      "static/chunks/cad7f4b6b8d81e2d.js",
+      "static/chunks/e4f762b8040f4366.js",
+      "static/chunks/turbopack-630c1c64726650a5.js"
+    ],
+    "/consultores/evaluar-candidatos/page": [
+      "static/chunks/4a0759b584f8d705.js",
+      "static/chunks/7abd4a7e7506367a.js",
+      "static/chunks/d60a5ab54bd0e31f.css",
+      "static/chunks/addeba2b4100422b.js",
+      "static/chunks/f9fcca75e5a6a180.js",
+      "static/chunks/f067d320bb48d3a7.js",
+      "static/chunks/20ad2b227e3fa1ce.js",
+      "static/chunks/cad7f4b6b8d81e2d.js",
+      "static/chunks/e4f762b8040f4366.js",
+      "static/chunks/turbopack-630c1c64726650a5.js"
+    ],
+    "/consultores/orden-merito/page": [
+      "static/chunks/4a0759b584f8d705.js",
+      "static/chunks/7abd4a7e7506367a.js",
+      "static/chunks/d60a5ab54bd0e31f.css",
+      "static/chunks/041d7d089da1ad65.js",
+      "static/chunks/f9fcca75e5a6a180.js",
+      "static/chunks/f067d320bb48d3a7.js",
+      "static/chunks/20ad2b227e3fa1ce.js",
+      "static/chunks/cad7f4b6b8d81e2d.js",
+      "static/chunks/e4f762b8040f4366.js",
+      "static/chunks/turbopack-630c1c64726650a5.js"
+    ],
+    "/consultores/preguntas/nueva/page": [
+      "static/chunks/4a0759b584f8d705.js",
+      "static/chunks/7abd4a7e7506367a.js",
+      "static/chunks/d60a5ab54bd0e31f.css",
+      "static/chunks/95683ff896b11d9b.js",
+      "static/chunks/f9fcca75e5a6a180.js",
+      "static/chunks/f067d320bb48d3a7.js",
+      "static/chunks/20ad2b227e3fa1ce.js",
+      "static/chunks/cad7f4b6b8d81e2d.js",
+      "static/chunks/e4f762b8040f4366.js",
+      "static/chunks/turbopack-630c1c64726650a5.js"
+    ],
+    "/consultores/preguntas/page": [
+      "static/chunks/4a0759b584f8d705.js",
+      "static/chunks/7abd4a7e7506367a.js",
+      "static/chunks/d60a5ab54bd0e31f.css",
+      "static/chunks/d35cc58ed1351989.js",
+      "static/chunks/f9fcca75e5a6a180.js",
+      "static/chunks/f067d320bb48d3a7.js",
+      "static/chunks/20ad2b227e3fa1ce.js",
+      "static/chunks/cad7f4b6b8d81e2d.js",
+      "static/chunks/e4f762b8040f4366.js",
+      "static/chunks/turbopack-630c1c64726650a5.js"
+    ],
+    "/cuestionario/page": [
+      "static/chunks/4a0759b584f8d705.js",
+      "static/chunks/7abd4a7e7506367a.js",
+      "static/chunks/d60a5ab54bd0e31f.css",
+      "static/chunks/3314e1765e933b3b.js",
+      "static/chunks/f9fcca75e5a6a180.js",
+      "static/chunks/f067d320bb48d3a7.js",
+      "static/chunks/20ad2b227e3fa1ce.js",
+      "static/chunks/cad7f4b6b8d81e2d.js",
+      "static/chunks/e4f762b8040f4366.js",
+      "static/chunks/turbopack-630c1c64726650a5.js"
+    ],
+    "/login/page": [
+      "static/chunks/4a0759b584f8d705.js",
+      "static/chunks/7abd4a7e7506367a.js",
+      "static/chunks/d60a5ab54bd0e31f.css",
+      "static/chunks/dbe4380516af0002.js",
+      "static/chunks/f9fcca75e5a6a180.js",
+      "static/chunks/f067d320bb48d3a7.js",
+      "static/chunks/20ad2b227e3fa1ce.js",
+      "static/chunks/cad7f4b6b8d81e2d.js",
+      "static/chunks/e4f762b8040f4366.js",
+      "static/chunks/turbopack-630c1c64726650a5.js"
+    ],
+    "/page": [
+      "static/chunks/4a0759b584f8d705.js",
+      "static/chunks/7abd4a7e7506367a.js",
+      "static/chunks/d60a5ab54bd0e31f.css",
+      "static/chunks/cfd22d46e9449afd.js",
+      "static/chunks/f9fcca75e5a6a180.js",
+      "static/chunks/f067d320bb48d3a7.js",
+      "static/chunks/20ad2b227e3fa1ce.js",
+      "static/chunks/cad7f4b6b8d81e2d.js",
+      "static/chunks/e4f762b8040f4366.js",
+      "static/chunks/turbopack-630c1c64726650a5.js"
+    ]
+  }
+}

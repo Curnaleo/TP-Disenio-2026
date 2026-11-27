@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/cuestionario/layout,_N_T_/cuestionario/page,_N_T_/cuestionario"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/29ca5854087963bc614e0c1a2337ec6874d2287442b7058a93e0cc144b026ef8/$/cuestionario",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/cuestionario/page"
+    },
+    "isFallback": false
+  }
+}
